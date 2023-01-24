@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class App extends ConsumerStatefulWidget {
   const App({super.key});
@@ -11,10 +12,11 @@ class App extends ConsumerStatefulWidget {
 class _AppState extends ConsumerState<App> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    final goRouter = ref.watch(goRouteProvider);
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       restorationScopeId: 'Lang Pocket',
-      home: const Text('home'),
+      routerConfig: goRouter,
       onGenerateTitle: (BuildContext context) => 'Lang Pocket',
       // darkTheme: darkMode,
       // theme: lightMode,

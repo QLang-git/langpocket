@@ -7,8 +7,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:langpocket/main.dart';
 import 'package:langpocket/src/app.dart';
 
 void main() {
