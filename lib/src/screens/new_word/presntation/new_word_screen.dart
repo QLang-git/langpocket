@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/screens/new_word/utils/form/word_form.dart';
 import 'package:langpocket/src/screens/new_word/utils/home_app_bar/presentation/new_word_appbar.dart';
+import 'package:langpocket/src/screens/new_word/utils/image_picker/image_previewer.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class NewWordScreen extends StatelessWidget {
@@ -24,7 +25,7 @@ class NewWordScreen extends StatelessWidget {
                 const SizedBox(
                   height: 15,
                 ),
-                const AddImageButton(),
+                const ImagePreviewer(),
                 const SizedBox(
                   height: 40,
                 ),
@@ -61,33 +62,6 @@ class NewWordScreen extends StatelessWidget {
                 ]),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class AddImageButton extends StatelessWidget {
-  const AddImageButton({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(buttonColor),
-          textStyle: MaterialStateProperty.all<TextStyle>(
-              buttonStyle(primaryFontColor))),
-      onPressed: () {},
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Padding(
-            padding: EdgeInsets.all(10.0),
-            child: Icon(Icons.add_a_photo_outlined),
-          ),
-          Text('Add descriptive image'),
-        ],
       ),
     );
   }

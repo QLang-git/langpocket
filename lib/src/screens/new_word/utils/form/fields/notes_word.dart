@@ -18,7 +18,7 @@ class _NotesWordState extends State<NotesWord> {
         maxLines: 5,
         decoration: InputDecoration(
           labelStyle: bodyLarge(primaryColor),
-          hintText: 'write some notes for your new words ( optional )',
+          hintText: 'write some notes for your new words optional',
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(width: 2, color: secondaryColor),
             borderRadius: BorderRadius.circular(20.0),
