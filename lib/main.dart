@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/app.dart';
 // ignore:depend_on_referenced_packages
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:langpocket/src/screens/new_word/data/local/local_words_group_repository.dart';
+import 'package:langpocket/src/screens/new_word/data/local/sembast_words_repo.dart';
 
 void main() async {
   await runZonedGuarded(runAppSafely, errorHandle);
@@ -16,8 +18,14 @@ Future<void> runAppSafely() async {
   //GoRouter.setUrlPathStrategy(UrlPathStrategy.path);
   usePathUrlStrategy();
 
+  //* wait for repository to be created befor running the app
+  final localNewWordRepo = await SembastWordsRepo.makeDefault();
+
   // * Entry point of the app
-  runApp(const ProviderScope(child: App()));
+  runApp(ProviderScope(
+      child: ProviderScope(overrides: [
+    localWordsRepoProvider.overrideWithValue(localNewWordRepo)
+  ], child: const App())));
 //* if any uncaught Error happens
   errorScreen();
 }

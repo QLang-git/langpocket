@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:langpocket/src/screens/new_word/utils/form/fields/example_word.dart';
-import 'package:langpocket/src/screens/new_word/utils/form/fields/foreign_word.dart';
-import 'package:langpocket/src/screens/new_word/utils/form/fields/mean_word.dart';
-import 'package:langpocket/src/screens/new_word/utils/form/fields/notes_word.dart';
+import 'package:langpocket/src/screens/new_word/presntation/utils/form/fields/example_word.dart';
+import 'package:langpocket/src/screens/new_word/presntation/utils/form/fields/foreign_word.dart';
+import 'package:langpocket/src/screens/new_word/presntation/utils/form/fields/mean_word.dart';
+import 'package:langpocket/src/screens/new_word/presntation/utils/form/fields/notes_word.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:langpocket/src/utils/global_states.dart';
 
@@ -18,16 +18,14 @@ class NewWordForm extends ConsumerStatefulWidget {
 }
 
 class NewWordFormState extends ConsumerState<NewWordForm> {
-  // Create a global key that uniquely identifies the Form widget
-  // and allows validation of the form.
-  //
-
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
 
     final numberOfMeaning = ref.watch(numberOfMeaningProvider);
     final numberOfExamplse = ref.watch(numberOfExamplesProvider);
+    final List<String> examples = [];
+    final List<String> means = [];
 
     return Form(
       key: widget.formKey,
@@ -47,14 +45,20 @@ class NewWordFormState extends ConsumerState<NewWordForm> {
               Expanded(
                 flex: 6,
                 child: Column(children: [
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 12),
-                    child: MeanWord(isAdditional: false),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: MeanWord(
+                      isAdditional: false,
+                      means: means,
+                    ),
                   ),
                   for (int i = 0; i < numberOfMeaning; i++) ...[
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 12),
-                      child: MeanWord(isAdditional: true),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: MeanWord(
+                        isAdditional: true,
+                        means: means,
+                      ),
                     ),
                   ],
                   //! button to add new meaning for the word
@@ -97,10 +101,16 @@ class NewWordFormState extends ConsumerState<NewWordForm> {
           ),
           //! Examples field
 
-          const ExampleWord(exampleNumber: 1),
-          const ExampleWord(exampleNumber: 2),
+          ExampleWord(
+            exampleNumber: 1,
+            examples: examples,
+          ),
+          ExampleWord(
+            exampleNumber: 2,
+            examples: examples,
+          ),
           for (int i = 3; i < numberOfExamplse; i++) ...[
-            ExampleWord(exampleNumber: i)
+            ExampleWord(exampleNumber: i, examples: examples)
           ],
 
           //! add new examples

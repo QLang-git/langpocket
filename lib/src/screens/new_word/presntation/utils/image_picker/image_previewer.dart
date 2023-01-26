@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:langpocket/src/screens/new_word/controller/new_word_controller.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
-class ImagePreviewer extends StatefulWidget {
+class ImagePreviewer extends ConsumerStatefulWidget {
   const ImagePreviewer({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<ImagePreviewer> createState() => _ImagePreviewerState();
+  ConsumerState<ImagePreviewer> createState() => _ImagePreviewerState();
 }
 
-class _ImagePreviewerState extends State<ImagePreviewer> {
+class _ImagePreviewerState extends ConsumerState<ImagePreviewer> {
   List<String> images = [];
 
   @override
@@ -44,6 +46,7 @@ class _ImagePreviewerState extends State<ImagePreviewer> {
                             setState(() {
                               images.removeAt(index);
                             });
+                            ref.read(imagesProvider.notifier).state = images;
                           },
                           icon: const Icon(
                             Icons.close_outlined,
@@ -58,33 +61,38 @@ class _ImagePreviewerState extends State<ImagePreviewer> {
         const SizedBox(
           height: 15,
         ),
-        ElevatedButton(
-          style: ButtonStyle(
-              backgroundColor: images.length < 5
-                  ? MaterialStateProperty.all<Color>(buttonColor)
+        Consumer(
+          builder: (context, ref, child) {
+            return ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor: images.length < 5
+                      ? MaterialStateProperty.all<Color>(buttonColor)
+                      : null,
+                  textStyle: MaterialStateProperty.all<TextStyle>(
+                      buttonStyle(primaryFontColor))),
+              onPressed: images.length < 5
+                  ? () async {
+                      final image = await ImagePicker()
+                          .pickImage(source: ImageSource.gallery);
+                      if (image == null) return;
+                      setState(() {
+                        images.add(image.path);
+                      });
+                      ref.read(imagesProvider.notifier).state = images;
+                    }
                   : null,
-              textStyle: MaterialStateProperty.all<TextStyle>(
-                  buttonStyle(primaryFontColor))),
-          onPressed: images.length < 5
-              ? () async {
-                  final image = await ImagePicker()
-                      .pickImage(source: ImageSource.gallery);
-                  if (image == null) return;
-                  setState(() {
-                    images.add(image.path);
-                  });
-                }
-              : null,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Padding(
-                padding: EdgeInsets.all(10.0),
-                child: Icon(Icons.add_a_photo_outlined),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Icon(Icons.add_a_photo_outlined),
+                  ),
+                  Text('Add descriptive image'),
+                ],
               ),
-              Text('Add descriptive image'),
-            ],
-          ),
+            );
+          },
         ),
       ],
     );

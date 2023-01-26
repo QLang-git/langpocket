@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
@@ -21,13 +22,24 @@ class _NewWordAppBarState extends State<NewWordAppBar> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 20, left: 15),
-            child: IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.preview_outlined,
-                  size: 35,
-                  color: primaryFontColor,
-                )),
+            child: Consumer(
+              builder: (context, ref, child) {
+                return IconButton(
+                    onPressed: () {
+                      // print(AddNewWord(ref).getWord().foreign);
+                      // print(AddNewWord(ref).getWord().means);
+                      // print(AddNewWord(ref).getWord().images);
+                      // print(AddNewWord(ref).getWord().note);
+                      // print(AddNewWord(ref).getWord().wordId);
+                      // print(AddNewWord(ref).getWord().examples);
+                    },
+                    icon: Icon(
+                      Icons.preview_outlined,
+                      size: 35,
+                      color: primaryFontColor,
+                    ));
+              },
+            ),
           )
         ],
         foregroundColor: Colors.black87,
