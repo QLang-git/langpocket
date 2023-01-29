@@ -77,10 +77,10 @@ final foreignProvider = StateProvider<String>((ref) {
   return '';
 });
 final meansProvider = StateProvider<List<String>>((ref) {
-  return [];
+  return List.filled(4, '', growable: true);
 });
 final examplesProvider = StateProvider<List<String>>((ref) {
-  return [];
+  return List.filled(6, '', growable: true);
 });
 final imagesProvider = StateProvider<List<String>>((ref) {
   return [];

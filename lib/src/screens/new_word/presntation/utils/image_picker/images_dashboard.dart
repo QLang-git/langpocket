@@ -4,16 +4,16 @@ import 'package:image_picker/image_picker.dart';
 import 'package:langpocket/src/screens/new_word/controller/new_word_controller.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
-class ImagePreviewer extends ConsumerStatefulWidget {
-  const ImagePreviewer({
+class ImagesDashboard extends ConsumerStatefulWidget {
+  const ImagesDashboard({
     Key? key,
   }) : super(key: key);
 
   @override
-  ConsumerState<ImagePreviewer> createState() => _ImagePreviewerState();
+  ConsumerState<ImagesDashboard> createState() => _ImagePreviewerState();
 }
 
-class _ImagePreviewerState extends ConsumerState<ImagePreviewer> {
+class _ImagePreviewerState extends ConsumerState<ImagesDashboard> {
   List<String> images = [];
 
   @override
