@@ -4,8 +4,6 @@ import 'package:langpocket/src/screens/new_word/presntation/utils/form/fields/ex
 import 'package:langpocket/src/screens/new_word/presntation/utils/form/fields/foreign_word.dart';
 import 'package:langpocket/src/screens/new_word/presntation/utils/form/fields/mean_word.dart';
 import 'package:langpocket/src/screens/new_word/presntation/utils/form/fields/notes_word.dart';
-import 'package:langpocket/src/utils/constants/breakpoints.dart';
-import 'package:langpocket/src/utils/global_states.dart';
 
 class NewWordForm extends ConsumerStatefulWidget {
   final GlobalKey<FormState> formKey;

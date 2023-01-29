@@ -25,6 +25,7 @@ class _ForeignWordState extends State<ForeignWord> {
         padding: const EdgeInsets.only(bottom: 10),
         child: Consumer(builder: (context, ref, child) {
           return TextFormField(
+            onChanged: (value) => inputText = value,
             style: headline3(primaryFontColor),
             decoration: InputDecoration(
               labelStyle: bodyLarge(primaryColor),

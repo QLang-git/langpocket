@@ -15,7 +15,6 @@ class _WordViewState extends State<WordView> {
   bool _showContent = false;
   @override
   Widget build(BuildContext context) {
-    print(widget.means);
     TextToSpeech tts = TextToSpeech();
     return Card(
       elevation: 3,
