@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/screens/home/presntation/home_screen.dart';
-import 'package:langpocket/src/screens/new_word/controller/new_word_controller.dart';
+import 'package:langpocket/src/screens/new_word/controller/word_controller.dart';
 import 'package:langpocket/src/screens/new_word/presntation/new_word_screen.dart';
 import 'package:langpocket/src/screens/word_previewer/presntation/word_previewer_screen.dart';
 import 'package:langpocket/src/utils/routes/not_found_screen.dart';

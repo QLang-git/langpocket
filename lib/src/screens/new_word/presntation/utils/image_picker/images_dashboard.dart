@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:langpocket/src/screens/new_word/controller/new_word_controller.dart';
+import 'package:langpocket/src/screens/new_word/controller/word_controller.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class ImagesDashboard extends ConsumerStatefulWidget {
