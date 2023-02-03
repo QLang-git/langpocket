@@ -29,7 +29,7 @@ class _SystemHash {
   }
 }
 
-String _$goRouteHash() => r'0a342f761271fe4366527fca353b497cffb5b27a';
+String _$goRouteHash() => r'873687222b0a3bc268d07dc9961b9de7408d7d34';
 
 /// See also [goRoute].
 final goRouteProvider = Provider<GoRouter>(

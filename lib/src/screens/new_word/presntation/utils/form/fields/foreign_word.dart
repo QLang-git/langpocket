@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:langpocket/src/screens/new_word/controller/word_controller.dart';
+import 'package:langpocket/src/screens/new_word/presntation/new_word_screen.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
@@ -16,15 +16,18 @@ class ForeignWord extends StatefulWidget {
 class _ForeignWordState extends State<ForeignWord> {
   TextToSpeech tts = TextToSpeech();
   String? inputText;
+  final inputController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final states = context.findAncestorStateOfType<NewWordScreenState>()!;
     return Expanded(
       flex: 6,
       child: Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: Consumer(builder: (context, ref, child) {
           return TextFormField(
+            controller: inputController,
             onChanged: (value) => inputText = value,
             style: headline3(primaryFontColor),
             decoration: InputDecoration(
@@ -57,11 +60,9 @@ class _ForeignWordState extends State<ForeignWord> {
               if (value == null || value.isEmpty) {
                 return 'Please enter the word';
               } else {
-                ref.read(wordIdProvider.notifier).state =
-                    DateTime.now().microsecondsSinceEpoch.toString();
-                ref.read(foreignProvider.notifier).state = value;
+                states.setForeignWord(value);
+                return null;
               }
-              return null;
             },
           );
         }),

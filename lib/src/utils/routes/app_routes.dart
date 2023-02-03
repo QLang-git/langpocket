@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/screens/home/presntation/home_screen.dart';
-import 'package:langpocket/src/screens/new_word/controller/word_controller.dart';
 import 'package:langpocket/src/screens/new_word/presntation/new_word_screen.dart';
 import 'package:langpocket/src/screens/word_previewer/presntation/word_previewer_screen.dart';
 import 'package:langpocket/src/utils/routes/not_found_screen.dart';
@@ -11,6 +10,21 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'app_routes.g.dart';
 
 enum AppRoute { home, newWord, wordView }
+
+class WordDataToView {
+  final String foreignWord;
+  final List<String> wordMeans;
+  final List<String> wordImages;
+  final List<String> wordExamples;
+  final String wordNote;
+
+  WordDataToView(
+      {required this.foreignWord,
+      required this.wordMeans,
+      required this.wordImages,
+      required this.wordExamples,
+      required this.wordNote});
+}
 
 @Riverpod(keepAlive: true)
 GoRouter goRoute(GoRouteRef ref) {
@@ -33,18 +47,14 @@ GoRouter goRoute(GoRouteRef ref) {
                       path: 'view',
                       name: AppRoute.wordView.name,
                       pageBuilder: (context, state) {
-                        final imageList = ref.watch(imagesProvider);
-                        final foreignWord = ref.watch(foreignProvider);
-                        final means = ref.watch(meansProvider);
-                        final examples = ref.watch(examplesProvider);
-                        final note = ref.watch(noteProvider);
+                        final word = state.extra as WordDataToView;
                         return _navGoRight(
                             WordPreviewerScreen(
-                              imageList: imageList,
-                              foreignWord: foreignWord,
-                              means: means,
-                              examples: examples,
-                              note: note,
+                              imageList: word.wordImages,
+                              foreignWord: word.foreignWord,
+                              means: word.wordMeans,
+                              examples: word.wordExamples,
+                              note: word.wordNote,
                             ),
                             state);
                       })

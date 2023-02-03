@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/primary_button.dart';
+import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 /// Placeholder widget showing a message and CTA to go back to the home screen.
@@ -19,7 +20,7 @@ class EmptyPlaceholderWidget extends StatelessWidget {
           children: [
             Text(
               message,
-              style: Theme.of(context).textTheme.headline4,
+              style: headline2Bold(primaryFontColor),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),

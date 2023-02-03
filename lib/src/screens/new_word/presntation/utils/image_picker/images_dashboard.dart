@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:langpocket/src/screens/new_word/controller/word_controller.dart';
+import 'package:langpocket/src/screens/new_word/presntation/new_word_screen.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
-class ImagesDashboard extends ConsumerStatefulWidget {
+class ImagesDashboard extends StatefulWidget {
   const ImagesDashboard({
     Key? key,
   }) : super(key: key);
 
   @override
-  ConsumerState<ImagesDashboard> createState() => _ImagePreviewerState();
+  State<ImagesDashboard> createState() => _ImagePreviewerState();
 }
 
-class _ImagePreviewerState extends ConsumerState<ImagesDashboard> {
+class _ImagePreviewerState extends State<ImagesDashboard> {
   List<String> images = [];
 
   @override
   Widget build(BuildContext context) {
+    final states = context.findAncestorStateOfType<NewWordScreenState>()!;
+
     return Column(
       children: [
         if (images.isNotEmpty)
@@ -46,7 +48,7 @@ class _ImagePreviewerState extends ConsumerState<ImagesDashboard> {
                             setState(() {
                               images.removeAt(index);
                             });
-                            ref.read(imagesProvider.notifier).state = images;
+                            states.setWordImages(images);
                           },
                           icon: const Icon(
                             Icons.close_outlined,
@@ -78,7 +80,7 @@ class _ImagePreviewerState extends ConsumerState<ImagesDashboard> {
                       setState(() {
                         images.add(image.path);
                       });
-                      ref.read(imagesProvider.notifier).state = images;
+                      states.setWordImages(images);
                     }
                   : null,
               child: Row(

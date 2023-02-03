@@ -4,8 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/app.dart';
 // ignore:depend_on_referenced_packages
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
-import 'package:langpocket/src/data/local/repository/local_group_repository.dart';
 
 void main() async {
   await runZonedGuarded(runAppSafely, errorHandle);
@@ -17,6 +15,7 @@ Future<void> runAppSafely() async {
   // turn off the # in the URLs on the web
   //GoRouter.setUrlPathStrategy(UrlPathStrategy.path);
   usePathUrlStrategy();
+
   // * Entry point of the app
   runApp(const ProviderScope(child: App()));
 //* if any uncaught Error happens

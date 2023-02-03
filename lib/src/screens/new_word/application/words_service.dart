@@ -5,56 +5,69 @@ import 'package:langpocket/src/data/remote/remote_group_repository.dart';
 
 // showing words depending on auth to shows the local or remote words
 class WordsServices {
-  //! you should add also auth repo here
-  final LocalGroupRepository _localGroupRepository;
-  final RemoteGroupRepository _remoteWordsRepository;
-  var user;
-  WordsServices(
-      {required LocalGroupRepository localGroupRepository,
-      required RemoteGroupRepository remoteWordsRepository})
-      : _remoteWordsRepository = remoteWordsRepository,
-        _localGroupRepository = localGroupRepository;
+  final Ref ref;
+
+  WordsServices({required this.ref});
+
+  _StatesDependencies _initialStates() {
+    final local = ref.watch(localGroupRepositoryProvider);
+    final remote = ref.watch(remoteGroupRepositoryProvider);
+    return _StatesDependencies(
+      localGroupRepository: local,
+      remoteGroupRepository: remote,
+    );
+  }
 
   // get the group of words depending on the user auth
-
+  var user = false;
   Future<List<GroupData>> fetchGrops() async {
+    final states = _initialStates();
     if (user) {
-      return await _remoteWordsRepository.fetchGroups(0);
+      return await states.remoteGroupRepository.fetchGroups(0);
     } else {
-      return await _localGroupRepository.fetchGroups();
+      return await states.localGroupRepository.fetchGroups();
     }
   }
 
 // save the words depending on auth
-  Future<WordData> addNewWords(WordCompanion word) async {
+  Future<void> addNewWordInGroup(WordCompanion word) async {
+    final states = _initialStates();
     if (user) {
-      return await _remoteWordsRepository.addNewWordInGroup(word, 0);
+      await states.remoteGroupRepository.addNewWordInGroup(word, 0);
     } else {
-      return await _localGroupRepository.addNewWordInGroup(word);
+      await states.localGroupRepository.addNewWordInGroup(word);
     }
   }
 
   //sets the geven group in the local or remote db depending on user satate
   // in remote or local
   Future<GroupData> createGroup(GroupCompanion newGroup) async {
+    final states = _initialStates();
     if (user) {
-      return await _remoteWordsRepository.createGroup(newGroup, 0);
+      return await states.remoteGroupRepository.createGroup(newGroup, 0);
     } else {
-      return await _localGroupRepository.createGroup(newGroup);
+      return await states.localGroupRepository.createGroup(newGroup);
     }
   }
 
   Future<GroupData> fetchGroupByTime(DateTime now) async {
+    final states = _initialStates();
     if (user) {
-      return await _remoteWordsRepository.fetchGroupByTime(now, 0);
+      return await states.remoteGroupRepository.fetchGroupByTime(now, 0);
     } else {
-      return await _localGroupRepository.fetchGroupByTime(now);
+      return await states.localGroupRepository.fetchGroupByTime(now);
     }
   }
 }
 
-final wordsServicesProvider = Provider<WordsServices>((ref) {
-  return WordsServices(
-      localGroupRepository: ref.watch(localGroupRepositoryProvider),
-      remoteWordsRepository: ref.watch(remoteGroupRepositoryProvider));
-});
+final wordsServicesProvider =
+    Provider.autoDispose<WordsServices>((ref) => WordsServices(ref: ref));
+
+class _StatesDependencies {
+  final LocalGroupRepository localGroupRepository;
+  final RemoteGroupRepository remoteGroupRepository;
+
+  _StatesDependencies(
+      {required this.localGroupRepository,
+      required this.remoteGroupRepository});
+}

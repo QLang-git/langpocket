@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:langpocket/src/screens/new_word/controller/word_controller.dart';
+import 'package:langpocket/src/screens/new_word/presntation/new_word_screen.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class NotesWord extends StatefulWidget {
@@ -13,6 +13,7 @@ class NotesWord extends StatefulWidget {
 class _NotesWordState extends State<NotesWord> {
   @override
   Widget build(BuildContext context) {
+    final states = context.findAncestorStateOfType<NewWordScreenState>()!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
       child: Consumer(
@@ -33,7 +34,7 @@ class _NotesWordState extends State<NotesWord> {
             ),
             validator: (value) {
               if (value != null) {
-                ref.read(noteProvider.notifier).state = value;
+                states.setNote(value);
               }
               return null;
             },
