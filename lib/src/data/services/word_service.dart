@@ -4,10 +4,10 @@ import 'package:langpocket/src/data/local/repository/local_group_repository.dart
 import 'package:langpocket/src/data/remote/remote_group_repository.dart';
 
 // showing words depending on auth to shows the local or remote words
-class WordsServices {
+class WordServices {
   final Ref ref;
 
-  WordsServices({required this.ref});
+  WordServices({required this.ref});
 
   _StatesDependencies _initialStates() {
     final local = ref.watch(localGroupRepositoryProvider);
@@ -20,12 +20,12 @@ class WordsServices {
 
   // get the group of words depending on the user auth
   var user = false;
-  Future<List<GroupData>> fetchGrops() async {
+  Stream<List<GroupData>> watchGroups() {
     final states = _initialStates();
     if (user) {
-      return await states.remoteGroupRepository.fetchGroups(0);
+      return states.remoteGroupRepository.watchGroups(0);
     } else {
-      return await states.localGroupRepository.fetchGroups();
+      return states.localGroupRepository.watchGroups();
     }
   }
 
@@ -58,10 +58,28 @@ class WordsServices {
       return await states.localGroupRepository.fetchGroupByTime(now);
     }
   }
+
+  Stream<List<WordData>> watchWordsGroupId(int groupId) {
+    final states = _initialStates();
+    if (user) {
+      return states.remoteGroupRepository.watchWordsByGroupId(0);
+    } else {
+      return states.localGroupRepository.watchWordsByGroupId(groupId);
+    }
+  }
+
+  Future<List<WordData>> fetchWordsByGroupId(int groupId) async {
+    final states = _initialStates();
+    if (user) {
+      return await states.remoteGroupRepository.fetchWordsByGroupId(0);
+    } else {
+      return await states.localGroupRepository.fetchWordsByGroupId(groupId);
+    }
+  }
 }
 
 final wordsServicesProvider =
-    Provider.autoDispose<WordsServices>((ref) => WordsServices(ref: ref));
+    Provider<WordServices>((ref) => WordServices(ref: ref));
 
 class _StatesDependencies {
   final LocalGroupRepository localGroupRepository;

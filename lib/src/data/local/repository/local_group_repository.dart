@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:langpocket/src/data/local/connection/web.dart';
 
 import 'drift_group_repository.dart';
 
@@ -12,6 +11,8 @@ abstract class LocalGroupRepository {
   Future<GroupData> createGroup(GroupCompanion newgroup);
   Future<void> addNewWordInGroup(WordCompanion newWord);
   Future<WordData> fetchWordbyId(int groupId);
+  Stream<List<WordData>> watchWordsByGroupId(int groupId);
+  Future<List<WordData>> fetchWordsByGroupId(int groupId);
 }
 
 final localGroupRepositoryProvider = Provider<LocalGroupRepository>((ref) {

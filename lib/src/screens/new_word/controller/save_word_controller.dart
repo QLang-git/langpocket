@@ -1,11 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
-import 'package:langpocket/src/data/local/repository/local_group_repository.dart';
-import 'package:langpocket/src/data/remote/remote_group_repository.dart';
-import 'package:langpocket/src/screens/new_word/application/words_service.dart';
+import 'package:langpocket/src/data/services/word_service.dart';
 
 class SaveWordController extends StateNotifier<AsyncValue<void>> {
-  final WordsServices wordsServices;
+  final WordServices wordsServices;
 
   SaveWordController({
     required this.wordsServices,
@@ -36,7 +34,6 @@ class SaveWordController extends StateNotifier<AsyncValue<void>> {
           wordNote: wordNote,
           wordDate: now);
       await wordsServices.addNewWordInGroup(newWordCompanion);
-      print('great is saved');
       return true;
     });
     if (res.hasError) {
@@ -47,8 +44,7 @@ class SaveWordController extends StateNotifier<AsyncValue<void>> {
   }
 
   //! helper function
-  Future<int> _checkTodayGroup(
-      DateTime now, WordsServices wordsServices) async {
+  Future<int> _checkTodayGroup(DateTime now, WordServices wordsServices) async {
     final todayDate = DateTime(
       now.day,
       now.month,
@@ -66,7 +62,7 @@ class SaveWordController extends StateNotifier<AsyncValue<void>> {
 }
 
 final saveWordControllerProvider =
-    StateNotifierProvider.autoDispose<SaveWordController, AsyncValue<void>>(
+    StateNotifierProvider<SaveWordController, AsyncValue<void>>(
         (ref) => SaveWordController(
               wordsServices: ref.watch(wordsServicesProvider),
             ),

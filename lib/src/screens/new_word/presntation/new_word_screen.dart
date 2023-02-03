@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/screens/new_word/controller/save_word_controller.dart';
 import 'package:langpocket/src/screens/new_word/presntation/utils/form/word_form.dart';
@@ -108,6 +109,7 @@ class NewWordScreenState extends State<NewWordScreen> {
                       wordNote = '';
                     });
                     formKey.currentState?.reset();
+                    context.pop();
                     // state.when(
                     //     data: (saved) {
                     //       ref.read(foreignProvider.notifier).state = '';

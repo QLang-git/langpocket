@@ -28,6 +28,7 @@ dependencies:
   path: ^1.8.2
   sqlite3: ^1.9.1
   http: ^0.13.5
+  progress_indicators: ^1.0.0
   
   
 

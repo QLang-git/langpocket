@@ -17,6 +17,7 @@ class HomeScreen extends StatelessWidget {
         appBar: const HomeAppBar(),
         backgroundColor: backgroundColor,
         body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
             child: Column(

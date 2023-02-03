@@ -7,10 +7,12 @@ class AsyncValueWidget<T> extends StatelessWidget {
       {super.key,
       required this.value,
       required this.data,
-      this.padding = const EdgeInsets.all(0)});
+      this.padding = const EdgeInsets.all(0),
+      this.loading = const CircularProgressIndicator()});
   final AsyncValue<T> value;
   final Widget Function(T) data;
   final EdgeInsetsGeometry padding;
+  final Widget loading;
 
   @override
   Widget build(BuildContext context) {

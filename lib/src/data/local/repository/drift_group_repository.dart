@@ -27,12 +27,14 @@ class DriftGroupRepository extends _$DriftGroupRepository
 
   @override
   Future<void> addNewWordInGroup(WordCompanion newWord) async {
-    await into(word).insert(newWord);
+    await word.insertOne(newWord);
+    //await into(word).insert(newWord);
   }
 
   @override
   Future<GroupData> createGroup(GroupCompanion newGroup) async {
-    return await into(group).insertReturning(newGroup);
+    return await group.insertReturning(newGroup);
+    //return await into(group).insertReturning(newGroup);
   }
 
   @override
@@ -63,4 +65,12 @@ class DriftGroupRepository extends _$DriftGroupRepository
           ..where((group) => group.creatingTime.year.equals(now.year)))
         .getSingle();
   }
+
+  @override
+  Stream<List<WordData>> watchWordsByGroupId(int groupId) =>
+      (select(word)..where((tbl) => tbl.group.equals(groupId))).watch();
+
+  @override
+  Future<List<WordData>> fetchWordsByGroupId(int groupId) async =>
+      await (select(word)..where((tbl) => tbl.group.equals(groupId))).get();
 }
