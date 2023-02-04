@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:langpocket/src/screens/group/presntation/group_screen.dart';
 import 'package:langpocket/src/screens/home/presntation/home_screen.dart';
 import 'package:langpocket/src/screens/new_word/presntation/new_word_screen.dart';
 import 'package:langpocket/src/screens/word_previewer/presntation/word_previewer_screen.dart';
@@ -9,7 +10,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_routes.g.dart';
 
-enum AppRoute { home, newWord, wordView }
+enum AppRoute { home, newWord, wordView, group }
 
 class WordDataToView {
   final String foreignWord;
@@ -59,6 +60,23 @@ GoRouter goRoute(GoRouteRef ref) {
                             state);
                       })
                 ]),
+            GoRoute(
+              path: 'group/:id/:name/:date',
+              name: AppRoute.group.name,
+              pageBuilder: (context, state) {
+                final groupId = state.params['id']!;
+                final groupName = state.params['name']!;
+                final groupDate = state.params['date']!;
+
+                return _navGoRight(
+                    GroupScreen(
+                      groupId: groupId,
+                      groupName: groupName,
+                      date: groupDate,
+                    ),
+                    state);
+              },
+            )
           ]),
     ],
     errorBuilder: (context, state) => const NotFoundScreen(),

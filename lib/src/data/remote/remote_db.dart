@@ -62,5 +62,11 @@ class RemoteDb implements RemoteGroupRepository {
     throw UnimplementedError();
   }
 
+  @override
+  Future<void> updateGroupName(int groupId, String newName) {
+    // TODO: implement updateGroupName
+    throw UnimplementedError();
+  }
+
   // we tell the database where to store the data with this constructor
 }

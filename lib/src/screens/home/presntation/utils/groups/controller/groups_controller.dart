@@ -3,31 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/services/word_service.dart';
 
-// class ShowGroupsController
-//     extends StateNotifier<Stream<List<GroupData>>> {
-//   final WordServices wordsServices;
-
-//   ShowGroupsController({
-//     required this.wordsServices,
-//   }) : super( []);
-
-//   void watchGroups() async {
-//     final res = await AsyncValue.guard(() async {
-//       return wordsServices.watchGrops();
-//     });
-//     if (res.hasError) {
-//       state = AsyncValue.error(res.error!, StackTrace.current);
-//     } else {
-//       state = res;
-//     }
-//   }
-// }
-
-// final showGroupsControllerProvider = StateNotifierProvider.autoDispose<
-//         ShowGroupsController, AsyncValue<Stream<List<GroupData>>>>(
-//     (ref) => ShowGroupsController(
-//           wordsServices: ref.watch(wordsServicesProvider),
-//         ));
 final groupsControllerProvider = StreamProvider<List<GroupData>>((ref) {
   final groups = ref.watch(wordsServicesProvider).watchGroups();
   return groups;
@@ -109,7 +84,7 @@ DayLogo setDayLogo(DateTime dateTime) {
           'Sat');
     case 7:
       return DayLogo(
-          Colors.yellow[400]!,
+          Colors.amber[600]!,
           const Icon(
             Icons.wb_sunny_rounded,
             color: Colors.white,

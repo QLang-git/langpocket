@@ -76,6 +76,15 @@ class WordServices {
       return await states.localGroupRepository.fetchWordsByGroupId(groupId);
     }
   }
+
+  Future<void> updateGroupName(int groupId, String newName) async {
+    final states = _initialStates();
+    if (user) {
+      await states.remoteGroupRepository.updateGroupName(groupId, newName);
+    } else {
+      await states.localGroupRepository.updateGroupName(groupId, newName);
+    }
+  }
 }
 
 final wordsServicesProvider =

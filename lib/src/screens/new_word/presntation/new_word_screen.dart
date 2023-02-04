@@ -55,9 +55,6 @@ class NewWordScreenState extends State<NewWordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Note: This is a GlobalKey<FormState>,
-    // not a GlobalKey<MyCustomFormState>.
-
     return ResponsiveCenter(
         child: Scaffold(
             backgroundColor: backgroundColor,
@@ -153,38 +150,3 @@ class NewWordScreenState extends State<NewWordScreen> {
             )));
   }
 }
-//  state.isLoading
-//                   ? null
-//                   : () {
-//                       //! 1- Validate returns true if the form is valid, or false otherwise.
-//                       if (formKey.currentState!.validate()) {
-                        //! 2-save the word in db
-                        // ref
-                        //     .read(saveWordControllerProvider.notifier)
-                        //     .addNewWord();
-//                         //! clear states and word's form if saved successed
-                        // state.when(
-                        //     data: (saved) {
-                        //       ref.read(foreignProvider.notifier).state = '';
-                        //       ref.read(meansProvider.notifier).state = [];
-                        //       ref.read(examplesProvider.notifier).state = [];
-                        //       ref.read(noteProvider.notifier).state = '';
-                        //       formKey.currentState?.reset();
-                        //       return ScaffoldMessenger.of(context).showSnackBar(
-                        //         const SnackBar(
-                        //             content: Text('The word has been saved')),
-                        //       );
-                        //     },
-                        //     error: ((error, stackTrace) =>
-                        //         ScaffoldMessenger.of(context).showSnackBar(
-                        //           const SnackBar(
-                        //               content: Text(
-                        //                   'The Word is not saved, Try again')),
-                        //         )),
-                        //     loading: () => ScaffoldMessenger.of(context)
-                        //         .showSnackBar(const SnackBar(
-                        //             content: CircularProgressIndicator())));
-
-                        // If the form is valid, display a snackbar. In the real world,
-                        // you'd often call a server or save the information in a database.
-                  

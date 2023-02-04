@@ -13,6 +13,7 @@ abstract class LocalGroupRepository {
   Future<WordData> fetchWordbyId(int groupId);
   Stream<List<WordData>> watchWordsByGroupId(int groupId);
   Future<List<WordData>> fetchWordsByGroupId(int groupId);
+  Future<void> updateGroupName(int groupId, String newName);
 }
 
 final localGroupRepositoryProvider = Provider<LocalGroupRepository>((ref) {

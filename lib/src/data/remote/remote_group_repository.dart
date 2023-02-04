@@ -13,6 +13,7 @@ abstract class RemoteGroupRepository {
   Future<GroupData> fetchGroupByTime(DateTime now, int userId);
   Stream<List<WordData>> watchWordsByGroupId(int groupId);
   Future<List<WordData>> fetchWordsByGroupId(int groupId);
+  Future<void> updateGroupName(int groupId, String newName);
 }
 
 final remoteGroupRepositoryProvider = Provider<RemoteGroupRepository>((ref) {

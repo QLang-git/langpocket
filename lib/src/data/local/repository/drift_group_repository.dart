@@ -73,4 +73,10 @@ class DriftGroupRepository extends _$DriftGroupRepository
   @override
   Future<List<WordData>> fetchWordsByGroupId(int groupId) async =>
       await (select(word)..where((tbl) => tbl.group.equals(groupId))).get();
+
+  @override
+  Future<void> updateGroupName(int groupId, String newName) async {
+    await (update(group)..where((tbl) => tbl.id.equals(groupId)))
+        .write(GroupCompanion(groupName: Value(newName)));
+  }
 }
