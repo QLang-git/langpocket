@@ -29,6 +29,7 @@ dependencies:
   sqlite3: ^1.9.1
   http: ^0.13.5
   progress_indicators: ^1.0.0
+  flutter_speed_dial: ^6.2.0
   
   
 

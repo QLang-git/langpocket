@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:langpocket/src/screens/new_word/presntation/new_word_screen.dart';
+import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 

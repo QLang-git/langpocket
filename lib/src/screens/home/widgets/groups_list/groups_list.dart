@@ -1,57 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
-import 'package:langpocket/src/screens/home/presntation/utils/groups/controller/groups_controller.dart';
+import 'package:langpocket/src/screens/home/widgets/groups_list/controller/groups_controller.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
-class GroupsList extends StatelessWidget {
+class GroupsList extends ConsumerStatefulWidget {
   const GroupsList({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 15),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Groups',
-                  style: GoogleFonts.robotoFlex(
-                    color: primaryFontColor,
-                    fontSize: 30,
-                    fontWeight: FontWeight.w600,
-                  )),
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonColor,
-                  ),
-                  onPressed: () {},
-                  child: Text(
-                    'Todo',
-                    style: buttonStyle(Colors.white),
-                  ))
-            ],
-          ),
-        ),
-        const Groups()
-      ],
-    );
-  }
+  ConsumerState<ConsumerStatefulWidget> createState() => _GroupsListState();
 }
 
-class Groups extends ConsumerStatefulWidget {
-  const Groups({super.key});
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _GroupState();
-}
-
-class _GroupState extends ConsumerState<Groups> {
+class _GroupsListState extends ConsumerState<GroupsList> {
   @override
   Widget build(BuildContext context) {
     final groupsList = ref.watch(groupsControllerProvider);

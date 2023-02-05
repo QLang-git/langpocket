@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:langpocket/src/screens/new_word/presntation/new_word_screen.dart';
+import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class ImagesDashboard extends StatefulWidget {
@@ -38,7 +40,8 @@ class _ImagePreviewerState extends State<ImagesDashboard> {
                         margin: const EdgeInsets.all(10.0),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10)),
-                        child: Image.network(images[index], fit: BoxFit.cover),
+                        child: Image.memory(base64Decode(images[index]),
+                            fit: BoxFit.cover),
                       ),
                       Positioned(
                         top: 0,
@@ -77,8 +80,10 @@ class _ImagePreviewerState extends State<ImagesDashboard> {
                       final image = await ImagePicker()
                           .pickImage(source: ImageSource.gallery);
                       if (image == null) return;
+                      final bytes = await image.readAsBytes();
+                      final base64 = base64Encode(bytes);
                       setState(() {
-                        images.add(image.path);
+                        images.add(base64);
                       });
                       states.setWordImages(images);
                     }

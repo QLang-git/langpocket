@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/screens/word_previewer/presntation/utils/appbar/word_previewer_appbar.dart';
-import 'package:langpocket/src/screens/word_previewer/presntation/utils/examples_view/examples_view.dart';
-import 'package:langpocket/src/screens/word_previewer/presntation/utils/note_view/note_view.dart';
-import 'package:langpocket/src/screens/word_previewer/presntation/utils/word_view/word_view.dart';
-import 'package:langpocket/src/screens/word_previewer/presntation/utils/image_view/image_view.dart';
+import 'package:langpocket/src/screens/word_previewer/app_bar/word_previewer_appbar.dart';
+import 'package:langpocket/src/screens/word_previewer/widgets/examples_view/examples_view.dart';
+import 'package:langpocket/src/screens/word_previewer/widgets/note_view/note_view.dart';
+import 'package:langpocket/src/screens/word_previewer/widgets/word_view/word_view.dart';
+import 'package:langpocket/src/screens/word_previewer/widgets/image_view/image_view.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class WordPreviewerScreen extends StatelessWidget {

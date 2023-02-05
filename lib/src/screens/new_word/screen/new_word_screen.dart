@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/screens/new_word/controller/save_word_controller.dart';
-import 'package:langpocket/src/screens/new_word/presntation/utils/form/word_form.dart';
-import 'package:langpocket/src/screens/new_word/presntation/utils/app_bar/new_word_appbar.dart';
-import 'package:langpocket/src/screens/new_word/presntation/utils/image_picker/images_dashboard.dart';
+import 'package:langpocket/src/screens/new_word/widgets/form/word_form.dart';
+import 'package:langpocket/src/screens/new_word/app_bar/new_word_appbar.dart';
+import 'package:langpocket/src/screens/new_word/widgets/image_picker/images_dashboard.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class NewWordScreen extends StatefulWidget {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
-import 'package:langpocket/src/screens/group/presntation/group_screen.dart';
-import 'package:langpocket/src/screens/home/presntation/home_screen.dart';
-import 'package:langpocket/src/screens/new_word/presntation/new_word_screen.dart';
-import 'package:langpocket/src/screens/word_previewer/presntation/word_previewer_screen.dart';
+import 'package:langpocket/src/screens/group/screen/group_screen.dart';
+import 'package:langpocket/src/screens/home/screen/home_screen.dart';
+import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
+import 'package:langpocket/src/screens/word_previewer/screen/word_previewer_screen.dart';
 import 'package:langpocket/src/utils/routes/not_found_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

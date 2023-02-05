@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:langpocket/src/screens/new_word/presntation/utils/form/fields/example_word.dart';
-import 'package:langpocket/src/screens/new_word/presntation/utils/form/fields/foreign_word.dart';
-import 'package:langpocket/src/screens/new_word/presntation/utils/form/fields/mean_word.dart';
-import 'package:langpocket/src/screens/new_word/presntation/utils/form/fields/notes_word.dart';
+import 'package:langpocket/src/screens/new_word/widgets/form/fields/example_word.dart';
+import 'package:langpocket/src/screens/new_word/widgets/form/fields/foreign_word.dart';
+import 'package:langpocket/src/screens/new_word/widgets/form/fields/mean_word.dart';
+import 'package:langpocket/src/screens/new_word/widgets/form/fields/notes_word.dart';
 
 class NewWordForm extends ConsumerStatefulWidget {
   final GlobalKey<FormState> formKey;

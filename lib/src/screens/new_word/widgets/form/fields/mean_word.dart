@@ -1,49 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:langpocket/src/screens/new_word/presntation/new_word_screen.dart';
+import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
-class ExampleWord extends StatefulWidget {
-  const ExampleWord({super.key});
+class MeanWord extends StatefulWidget {
+  const MeanWord({
+    Key? key,
+  }) : super(key: key);
 
   @override
-  State<ExampleWord> createState() => _ExampleWordState();
+  State<MeanWord> createState() => _MeanWordState();
 }
 
-class _ExampleWordState extends State<ExampleWord> {
-  final exampleControllers = [
-    TextEditingController(),
-    TextEditingController(),
-  ];
+class _MeanWordState extends State<MeanWord> {
+  final meaningControllers = [TextEditingController()];
+
   @override
   Widget build(BuildContext context) {
     final states = context.findAncestorStateOfType<NewWordScreenState>()!;
+
     return Column(children: [
-      Align(
-        alignment: Alignment.centerLeft,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 7),
-          child: Text(
-            '+ Add examples',
-            style: headline2Bold(primaryFontColor),
-          ),
-        ),
-      ),
-      for (int i = 0; i < exampleControllers.length; i++)
+      for (int i = 0; i < meaningControllers.length; i++)
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.only(bottom: 12),
           child: TextFormField(
-            controller: exampleControllers[i],
+            controller: meaningControllers[i],
             style: headline3(primaryFontColor),
             decoration: InputDecoration(
-              suffixIcon: i > 1
+              suffixIcon: i > 0
                   ? TextButton(
                       onPressed: () {
-                        exampleControllers[i].clear();
-                        states.setWordExample('', i);
-                        states.setWordExample('', i + 1);
+                        meaningControllers[i].clear();
+                        states.setWordMeans('', i);
+                        states.setWordMeans('', i + 1);
 
                         setState(() {
-                          exampleControllers.remove(exampleControllers[i]);
+                          meaningControllers.removeAt(i);
                         });
                       },
                       child: Padding(
@@ -62,7 +53,7 @@ class _ExampleWordState extends State<ExampleWord> {
                       ),
                     ),
               labelStyle: bodyLarge(primaryColor),
-              label: Text('example ${i + 1}'),
+              label: const Text('Mean'),
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(width: 2, color: secondaryColor),
                 borderRadius: BorderRadius.circular(20.0),
@@ -72,24 +63,24 @@ class _ExampleWordState extends State<ExampleWord> {
               ),
             ),
             // The validator receives the text that the user has entered.
-            validator: i < 2
+            validator: meaningControllers[i] == meaningControllers.first
                 ? (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter one meaning for this word';
                     } else {
-                      states.setWordExample(value, i);
+                      states.setWordMeans(value, i);
                     }
                     return null;
                   }
                 : ((value) {
                     if (value != null) {
-                      states.setWordExample(value, i);
+                      states.setWordMeans(value, i);
                     }
                     return null;
                   }),
           ),
         ),
-      if (exampleControllers.length < 5)
+      if (meaningControllers.length < 3)
         TextButton(
           style: TextButton.styleFrom(
             backgroundColor: buttonColor,
@@ -97,7 +88,7 @@ class _ExampleWordState extends State<ExampleWord> {
           ),
           onPressed: () {
             setState(() {
-              exampleControllers.add(TextEditingController());
+              meaningControllers.add(TextEditingController());
             });
           },
           child: const Icon(

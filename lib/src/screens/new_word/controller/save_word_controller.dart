@@ -28,7 +28,7 @@ class SaveWordController extends StateNotifier<AsyncValue<void>> {
       final newWordCompanion = WordCompanion.insert(
           group: groupId,
           foreignWord: foreignWord,
-          wordMeans: wordImages,
+          wordMeans: wordMeans,
           wordImages: wordImages,
           wordExamples: wordExamples,
           wordNote: wordNote,
@@ -45,17 +45,12 @@ class SaveWordController extends StateNotifier<AsyncValue<void>> {
 
   //! helper function
   Future<int> _checkTodayGroup(DateTime now, WordServices wordsServices) async {
-    final todayDate = DateTime(
-      now.day,
-      now.month,
-      now.year,
-    );
     try {
       final todayGroup = await wordsServices.fetchGroupByTime(now);
       return todayGroup.id;
     } catch (e) {
       final newGroup = await wordsServices.createGroup(GroupCompanion.insert(
-          groupName: todayDate.toString(), creatingTime: now));
+          groupName: 'Group ${now.day}/${now.month}', creatingTime: now));
       return newGroup.id;
     }
   }
