@@ -68,5 +68,11 @@ class RemoteDb implements RemoteGroupRepository {
     throw UnimplementedError();
   }
 
+  @override
+  Future<void> deleteWordById(int wordId) {
+    // TODO: implement deleteWordById
+    throw UnimplementedError();
+  }
+
   // we tell the database where to store the data with this constructor
 }

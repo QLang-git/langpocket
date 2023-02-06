@@ -85,6 +85,15 @@ class WordServices {
       await states.localGroupRepository.updateGroupName(groupId, newName);
     }
   }
+
+  Future<void> deleteWordById(int wordId) async {
+    final states = _initialStates();
+    if (user) {
+      await states.remoteGroupRepository.deleteWordById(wordId);
+    } else {
+      await states.localGroupRepository.deleteWordById(wordId);
+    }
+  }
 }
 
 final wordsServicesProvider =

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/data/services/word_service.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class NewGroupInfo {
   final int groupId;
@@ -13,4 +14,18 @@ final updateGroupNameProvider =
   await ref
       .watch(wordsServicesProvider)
       .updateGroupName(groupInfo.groupId, groupInfo.groupName);
+});
+
+final deleteWordByIdProvider =
+    FutureProvider.family<void, int>((ref, wordId) async {
+  await ref.watch(wordsServicesProvider).deleteWordById(wordId);
+});
+
+final wordInfoProvider = StateProvider<WordDataToView>((ref) {
+  return WordDataToView(
+      foreignWord: '',
+      wordMeans: [],
+      wordImages: [],
+      wordExamples: [],
+      wordNote: '');
 });

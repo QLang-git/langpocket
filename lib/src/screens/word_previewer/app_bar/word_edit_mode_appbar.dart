@@ -2,9 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:go_router/go_router.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 
-class WordPreviewerAppBar extends StatelessWidget with PreferredSizeWidget {
-  const WordPreviewerAppBar({super.key});
+class WordEditModeAppBar extends StatelessWidget with PreferredSizeWidget {
+  final String foreignWord;
+  final List<String> imageList;
+  final List<String> means;
+  final List<String> examples;
+  final String note;
+  const WordEditModeAppBar(
+      {super.key,
+      required this.foreignWord,
+      required this.imageList,
+      required this.means,
+      required this.examples,
+      required this.note});
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
@@ -18,6 +30,26 @@ class WordPreviewerAppBar extends StatelessWidget with PreferredSizeWidget {
         toolbarHeight: 75,
         foregroundColor: Colors.black87,
         backgroundColor: Colors.transparent,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 13, top: 5),
+            child: IconButton(
+              onPressed: () => context.pushNamed(AppRoute.editMode.name,
+                  extra: WordDataToView(
+                    foreignWord: foreignWord,
+                    wordMeans: means,
+                    wordImages: imageList,
+                    wordExamples: examples,
+                    wordNote: note,
+                  )),
+              icon: Icon(
+                Icons.edit_document,
+                color: primaryFontColor,
+                size: 30,
+              ),
+            ),
+          ),
+        ],
         title: Row(
           children: [
             IconButton(
@@ -35,7 +67,7 @@ class WordPreviewerAppBar extends StatelessWidget with PreferredSizeWidget {
                 padding: const EdgeInsets.only(right: 15),
                 child: Center(
                   child: Text(
-                    'word view',
+                    foreignWord,
                     style: headline1Bold(primaryFontColor),
                   ),
                 ),

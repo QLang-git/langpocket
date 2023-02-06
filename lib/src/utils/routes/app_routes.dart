@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:langpocket/src/screens/group/controller/group_controller.dart';
 import 'package:langpocket/src/screens/group/screen/group_screen.dart';
 import 'package:langpocket/src/screens/home/screen/home_screen.dart';
 import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
+import 'package:langpocket/src/screens/word_edit/screen/edit_mode_word_screen.dart';
 import 'package:langpocket/src/screens/word_previewer/screen/word_previewer_screen.dart';
 import 'package:langpocket/src/utils/routes/not_found_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_routes.g.dart';
 
-enum AppRoute { home, newWord, wordView, group }
+enum AppRoute {
+  home,
+  newWord,
+  wordView,
+  group,
+  word,
+  editMode,
+}
 
 class WordDataToView {
   final String foreignWord;
@@ -19,12 +28,13 @@ class WordDataToView {
   final List<String> wordExamples;
   final String wordNote;
 
-  WordDataToView(
-      {required this.foreignWord,
-      required this.wordMeans,
-      required this.wordImages,
-      required this.wordExamples,
-      required this.wordNote});
+  WordDataToView({
+    required this.foreignWord,
+    required this.wordMeans,
+    required this.wordImages,
+    required this.wordExamples,
+    required this.wordNote,
+  });
 }
 
 @Riverpod(keepAlive: true)
@@ -51,6 +61,7 @@ GoRouter goRoute(GoRouteRef ref) {
                         final word = state.extra as WordDataToView;
                         return _navGoRight(
                             WordPreviewerScreen(
+                              editMode: false,
                               imageList: word.wordImages,
                               foreignWord: word.foreignWord,
                               means: word.wordMeans,
@@ -76,6 +87,41 @@ GoRouter goRoute(GoRouteRef ref) {
                     ),
                     state);
               },
+            ),
+            GoRoute(
+              path: 'word-screen',
+              name: AppRoute.word.name,
+              pageBuilder: (context, state) {
+                final word = ref.watch(wordInfoProvider);
+                return _navGoRight(
+                    WordPreviewerScreen(
+                      editMode: true,
+                      imageList: word.wordImages,
+                      foreignWord: word.foreignWord,
+                      means: word.wordMeans,
+                      examples: word.wordExamples,
+                      note: word.wordNote,
+                    ),
+                    state);
+              },
+              routes: [
+                GoRoute(
+                  path: 'edit-mode',
+                  name: AppRoute.editMode.name,
+                  pageBuilder: (context, state) {
+                    final word = state.extra as WordDataToView;
+                    return _navGoRight(
+                        EditModeWordScreen(
+                          imageList: word.wordImages,
+                          foreignWord: word.foreignWord,
+                          means: word.wordMeans,
+                          examples: word.wordExamples,
+                          note: word.wordNote,
+                        ),
+                        state);
+                  },
+                )
+              ],
             )
           ]),
     ],

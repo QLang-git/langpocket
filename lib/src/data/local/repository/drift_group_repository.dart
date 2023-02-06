@@ -79,4 +79,9 @@ class DriftGroupRepository extends _$DriftGroupRepository
     await (update(group)..where((tbl) => tbl.id.equals(groupId)))
         .write(GroupCompanion(groupName: Value(newName)));
   }
+
+  @override
+  Future<void> deleteWordById(int wordId) async {
+    await (delete(word)..where((tbl) => tbl.id.equals(wordId))).go();
+  }
 }
