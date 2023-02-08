@@ -34,14 +34,16 @@ class WordEditModeAppBar extends StatelessWidget with PreferredSizeWidget {
           Padding(
             padding: const EdgeInsets.only(right: 13, top: 5),
             child: IconButton(
-              onPressed: () => context.pushNamed(AppRoute.editMode.name,
-                  extra: WordDataToView(
-                    foreignWord: foreignWord,
-                    wordMeans: means,
-                    wordImages: imageList,
-                    wordExamples: examples,
-                    wordNote: note,
-                  )),
+              onPressed: () => context.push(
+                '${GoRouter.of(context).location}/edit-mode',
+                extra: WordDataToView(
+                  foreignWord: foreignWord,
+                  wordMeans: means,
+                  wordImages: imageList,
+                  wordExamples: examples,
+                  wordNote: note,
+                ),
+              ),
               icon: Icon(
                 Icons.edit_document,
                 color: primaryFontColor,

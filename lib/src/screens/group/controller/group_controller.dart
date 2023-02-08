@@ -20,12 +20,3 @@ final deleteWordByIdProvider =
     FutureProvider.family<void, int>((ref, wordId) async {
   await ref.watch(wordsServicesProvider).deleteWordById(wordId);
 });
-
-final wordInfoProvider = StateProvider<WordDataToView>((ref) {
-  return WordDataToView(
-      foreignWord: '',
-      wordMeans: [],
-      wordImages: [],
-      wordExamples: [],
-      wordNote: '');
-});

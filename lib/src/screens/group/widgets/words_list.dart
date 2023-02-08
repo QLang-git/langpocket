@@ -14,8 +14,14 @@ import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
 class WordsGroups extends ConsumerStatefulWidget {
+  final String groupName;
+  final String date;
   final int groupId;
-  const WordsGroups({super.key, required this.groupId});
+  const WordsGroups(
+      {required this.groupName,
+      required this.date,
+      super.key,
+      required this.groupId});
 
   @override
   ConsumerState<WordsGroups> createState() => _WordsGroupsState();
@@ -118,17 +124,19 @@ class _WordsGroupsState extends ConsumerState<WordsGroups> {
                         child: Consumer(
                           builder: (context, ref, child) => InkWell(
                             onTap: () {
-                              ref.read(wordInfoProvider.notifier).state =
-                                  WordDataToView(
-                                foreignWord: word.foreignWord,
-                                wordMeans: word.meansList(),
-                                wordImages: word.imagesList(),
-                                wordExamples: word.examplesList(),
-                                wordNote: word.wordNote,
-                              );
-                              context.pushNamed(
-                                AppRoute.word.name,
-                              );
+                              context.pushNamed(AppRoute.word.name,
+                                  extra: WordDataToView(
+                                    foreignWord: word.foreignWord,
+                                    wordMeans: word.meansList(),
+                                    wordImages: word.imagesList(),
+                                    wordExamples: word.examplesList(),
+                                    wordNote: word.wordNote,
+                                  ),
+                                  params: {
+                                    'id': widget.groupId.toString(),
+                                    'name': widget.groupName,
+                                    'date': widget.date
+                                  });
                             },
                             child: SizedBox(
                               width: double.infinity,

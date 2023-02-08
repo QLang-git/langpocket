@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
-import 'package:langpocket/src/screens/group/controller/group_controller.dart';
 import 'package:langpocket/src/screens/group/screen/group_screen.dart';
 import 'package:langpocket/src/screens/home/screen/home_screen.dart';
 import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
@@ -72,57 +71,58 @@ GoRouter goRoute(GoRouteRef ref) {
                       })
                 ]),
             GoRoute(
-              path: 'group/:id/:name/:date',
-              name: AppRoute.group.name,
-              pageBuilder: (context, state) {
-                final groupId = state.params['id']!;
-                final groupName = state.params['name']!;
-                final groupDate = state.params['date']!;
+                path: 'group/:id/:name/:date',
+                name: AppRoute.group.name,
+                pageBuilder: (context, state) {
+                  final groupId = state.params['id']!;
+                  final groupName = state.params['name']!;
+                  final groupDate = state.params['date']!;
 
-                return _navGoRight(
-                    GroupScreen(
-                      groupId: groupId,
-                      groupName: groupName,
-                      date: groupDate,
-                    ),
-                    state);
-              },
-            ),
-            GoRoute(
-              path: 'word-screen',
-              name: AppRoute.word.name,
-              pageBuilder: (context, state) {
-                final word = ref.watch(wordInfoProvider);
-                return _navGoRight(
-                    WordPreviewerScreen(
-                      editMode: true,
-                      imageList: word.wordImages,
-                      foreignWord: word.foreignWord,
-                      means: word.wordMeans,
-                      examples: word.wordExamples,
-                      note: word.wordNote,
-                    ),
-                    state);
-              },
-              routes: [
-                GoRoute(
-                  path: 'edit-mode',
-                  name: AppRoute.editMode.name,
-                  pageBuilder: (context, state) {
-                    final word = state.extra as WordDataToView;
-                    return _navGoRight(
-                        EditModeWordScreen(
-                          imageList: word.wordImages,
-                          foreignWord: word.foreignWord,
-                          means: word.wordMeans,
-                          examples: word.wordExamples,
-                          note: word.wordNote,
-                        ),
-                        state);
-                  },
-                )
-              ],
-            )
+                  return _navGoRight(
+                      GroupScreen(
+                        groupId: groupId,
+                        groupName: groupName,
+                        date: groupDate,
+                      ),
+                      state);
+                },
+                routes: [
+                  GoRoute(
+                    path: 'word-screen',
+                    name: AppRoute.word.name,
+                    pageBuilder: (context, state) {
+                      final word = state.extra as WordDataToView;
+                      return _navGoRight(
+                          WordPreviewerScreen(
+                            editMode: true,
+                            imageList: word.wordImages,
+                            foreignWord: word.foreignWord,
+                            means: word.wordMeans,
+                            examples: word.wordExamples,
+                            note: word.wordNote,
+                          ),
+                          state);
+                    },
+                    routes: [
+                      GoRoute(
+                        path: 'edit-mode',
+                        name: AppRoute.editMode.name,
+                        pageBuilder: (context, state) {
+                          final word = state.extra as WordDataToView;
+                          return _navGoRight(
+                              EditModeWordScreen(
+                                imageList: word.wordImages,
+                                foreignWord: word.foreignWord,
+                                means: word.wordMeans,
+                                examples: word.wordExamples,
+                                note: word.wordNote,
+                              ),
+                              state);
+                        },
+                      )
+                    ],
+                  )
+                ]),
           ]),
     ],
     errorBuilder: (context, state) => const NotFoundScreen(),
