@@ -88,7 +88,7 @@ GoRouter goRoute(GoRouteRef ref) {
                 },
                 routes: [
                   GoRoute(
-                    path: 'word-screen',
+                    path: '/:wordId',
                     name: AppRoute.word.name,
                     pageBuilder: (context, state) {
                       final word = state.extra as WordDataToView;
@@ -111,6 +111,7 @@ GoRouter goRoute(GoRouteRef ref) {
                           final word = state.extra as WordDataToView;
                           return _navGoRight(
                               EditModeWordScreen(
+                                wordId: 'TODO',
                                 imageList: word.wordImages,
                                 foreignWord: word.foreignWord,
                                 means: word.wordMeans,

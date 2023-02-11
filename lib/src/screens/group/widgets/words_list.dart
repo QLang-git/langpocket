@@ -124,19 +124,9 @@ class _WordsGroupsState extends ConsumerState<WordsGroups> {
                         child: Consumer(
                           builder: (context, ref, child) => InkWell(
                             onTap: () {
-                              context.pushNamed(AppRoute.word.name,
-                                  extra: WordDataToView(
-                                    foreignWord: word.foreignWord,
-                                    wordMeans: word.meansList(),
-                                    wordImages: word.imagesList(),
-                                    wordExamples: word.examplesList(),
-                                    wordNote: word.wordNote,
-                                  ),
-                                  params: {
-                                    'id': widget.groupId.toString(),
-                                    'name': widget.groupName,
-                                    'date': widget.date
-                                  });
+                              context.pushNamed(AppRoute.word.name, params: {
+                                'wordId': word.id.toString(),
+                              });
                             },
                             child: SizedBox(
                               width: double.infinity,

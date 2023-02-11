@@ -94,6 +94,24 @@ class WordServices {
       await states.localGroupRepository.deleteWordById(wordId);
     }
   }
+
+  Future<void> updateWordInfo(int wordId, WordCompanion wordCompanion) async {
+    final states = _initialStates();
+    if (user) {
+      await states.remoteGroupRepository.upadateWordInf(wordId, wordCompanion);
+    } else {
+      await states.localGroupRepository.upadateWordInf(wordId, wordCompanion);
+    }
+  }
+
+  Stream<WordData> watchWordById(int wordId) {
+    final states = _initialStates();
+    if (user) {
+      return states.remoteGroupRepository.watchWordById(wordId);
+    } else {
+      return states.localGroupRepository.watchWordById(wordId);
+    }
+  }
 }
 
 final wordsServicesProvider =

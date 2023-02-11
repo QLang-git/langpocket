@@ -74,5 +74,17 @@ class RemoteDb implements RemoteGroupRepository {
     throw UnimplementedError();
   }
 
+  @override
+  Future<void> upadateWordInf(int wordId, WordCompanion wordCompanion) {
+    // TODO: implement upadateWordInf
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<WordData> watchWordById(int wordId) {
+    // TODO: implement watchWordById
+    throw UnimplementedError();
+  }
+
   // we tell the database where to store the data with this constructor
 }

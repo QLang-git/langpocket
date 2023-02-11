@@ -11,14 +11,21 @@ class EditExampleWord extends StatefulWidget {
 }
 
 class _EditExampleWordState extends State<EditExampleWord> {
+  late List<TextEditingController> exampleControllers;
   @override
-  Widget build(BuildContext context) {
-    final states = context.findAncestorStateOfType<EditModeWordScreenState>()!;
-    final exampleControllers = [
+  void initState() {
+    exampleControllers = [
       ...widget.currentExamples
           .map((text) => TextEditingController(text: text))
           .toList()
     ];
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final states = context.findAncestorStateOfType<EditModeWordScreenState>()!;
+
     return Column(children: [
       Align(
         alignment: Alignment.centerLeft,
@@ -34,6 +41,11 @@ class _EditExampleWordState extends State<EditExampleWord> {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: TextFormField(
+            onChanged: (value) {
+              final examples =
+                  exampleControllers.map((element) => element.text).toList();
+              states.changeExampleListTo(examples);
+            },
             controller: exampleControllers[i],
             style: headline3(primaryFontColor),
             decoration: InputDecoration(
@@ -42,10 +54,8 @@ class _EditExampleWordState extends State<EditExampleWord> {
                       onPressed: () {
                         exampleControllers[i].clear();
                         states.updateWordExample('', i);
-                        states.updateWordExample('', i + 1);
-
                         setState(() {
-                          exampleControllers.remove(exampleControllers[i]);
+                          exampleControllers.removeAt(i);
                         });
                       },
                       child: Padding(

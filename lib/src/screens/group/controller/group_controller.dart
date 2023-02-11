@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/data/services/word_service.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class NewGroupInfo {
   final int groupId;

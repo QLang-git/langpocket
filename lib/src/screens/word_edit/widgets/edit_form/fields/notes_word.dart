@@ -12,17 +12,25 @@ class EditNotesWord extends StatefulWidget {
 }
 
 class _EditNotesWordState extends State<EditNotesWord> {
+  late TextEditingController inputController;
+  @override
+  void initState() {
+    inputController = TextEditingController(text: widget.currentNote);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final states = context.findAncestorStateOfType<EditModeWordScreenState>()!;
-    final inputController = TextEditingController(text: widget.currentNote);
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
       child: Consumer(
         builder: (context, ref, child) {
           return TextFormField(
             controller: inputController,
+            onChanged: (value) {
+              states.updateNote(value);
+            },
             style: headline3(primaryFontColor),
             maxLines: 5,
             decoration: InputDecoration(

@@ -17,18 +17,18 @@ class EditForeignWord extends StatefulWidget {
 
 class _EditForeignWordState extends State<EditForeignWord> {
   TextToSpeech tts = TextToSpeech();
+  late TextEditingController inputController;
   String? inputText;
   @override
   void initState() {
     inputText = widget.currentForeignWord;
+    inputController = TextEditingController(text: widget.currentForeignWord);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final states = context.findAncestorStateOfType<EditModeWordScreenState>()!;
-    final inputController =
-        TextEditingController(text: widget.currentForeignWord);
     return Expanded(
       flex: 6,
       child: Padding(
@@ -36,7 +36,10 @@ class _EditForeignWordState extends State<EditForeignWord> {
         child: Consumer(builder: (context, ref, child) {
           return TextFormField(
             controller: inputController,
-            onChanged: (value) => inputText = value,
+            onChanged: (value) {
+              inputText = value;
+              states.updateForeignWord(value);
+            },
             style: headline3(primaryFontColor),
             decoration: InputDecoration(
               labelStyle: bodyLarge(primaryColor),

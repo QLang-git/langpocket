@@ -6,6 +6,7 @@ import 'package:langpocket/src/screens/word_edit/widgets/edit_word_image/edit_wo
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class EditModeWordScreen extends StatefulWidget {
+  final String wordId;
   final List<String> imageList;
   final String foreignWord;
   final List<String> means;
@@ -17,7 +18,8 @@ class EditModeWordScreen extends StatefulWidget {
       required this.foreignWord,
       required this.means,
       required this.examples,
-      required this.note});
+      required this.note,
+      required this.wordId});
 
   @override
   State<EditModeWordScreen> createState() => EditModeWordScreenState();
@@ -25,9 +27,9 @@ class EditModeWordScreen extends StatefulWidget {
 
 class EditModeWordScreenState extends State<EditModeWordScreen> {
   final formKey = GlobalKey<FormState>();
-  List<String> updatedWordMeans = [];
+  List<String> updatedWordMeans = List.filled(6, '');
   List<String> updatedWordImages = [];
-  List<String> updatedWordExample = [];
+  List<String> updatedWordExample = List.filled(6, '');
   String updatedWordNote = '';
   String updatedforeignWord = '';
 
@@ -40,6 +42,18 @@ class EditModeWordScreenState extends State<EditModeWordScreen> {
   void updateWordExample(String example, int targetIndex) {
     setState(() {
       updatedWordExample[targetIndex] = example;
+    });
+  }
+
+  void changeExampleListTo(List<String> examples) {
+    setState(() {
+      updatedWordExample = examples;
+    });
+  }
+
+  void changeMeaningListTo(List<String> means) {
+    setState(() {
+      updatedWordMeans = means;
     });
   }
 

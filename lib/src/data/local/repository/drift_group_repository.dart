@@ -84,4 +84,15 @@ class DriftGroupRepository extends _$DriftGroupRepository
   Future<void> deleteWordById(int wordId) async {
     await (delete(word)..where((tbl) => tbl.id.equals(wordId))).go();
   }
+
+  @override
+  Future<void> upadateWordInf(int wordId, WordCompanion wordCompanion) async {
+    await (update(word)..where((tbl) => tbl.id.equals(wordId)))
+        .write(wordCompanion);
+  }
+
+  @override
+  Stream<WordData> watchWordById(int wordId) {
+    return (select(word)..where((tbl) => tbl.id.equals(wordId))).watchSingle();
+  }
 }

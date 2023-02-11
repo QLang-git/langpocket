@@ -14,14 +14,20 @@ class EditMeanWord extends StatefulWidget {
 }
 
 class _EditMeanWordState extends State<EditMeanWord> {
+  late List<TextEditingController> meaningControllers;
   @override
-  Widget build(BuildContext context) {
-    final states = context.findAncestorStateOfType<EditModeWordScreenState>()!;
-    final meaningControllers = [
+  void initState() {
+    meaningControllers = [
       ...widget.curentMeans
           .map((intit) => TextEditingController(text: intit))
           .toList()
     ];
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final states = context.findAncestorStateOfType<EditModeWordScreenState>()!;
 
     return Column(children: [
       for (int i = 0; i < meaningControllers.length; i++)
@@ -29,6 +35,11 @@ class _EditMeanWordState extends State<EditMeanWord> {
           padding: const EdgeInsets.only(bottom: 12),
           child: TextFormField(
             controller: meaningControllers[i],
+            onChanged: (value) {
+              final means =
+                  meaningControllers.map((element) => element.text).toList();
+              states.changeMeaningListTo(means);
+            },
             style: headline3(primaryFontColor),
             decoration: InputDecoration(
               suffixIcon: i > 0
@@ -36,8 +47,6 @@ class _EditMeanWordState extends State<EditMeanWord> {
                       onPressed: () {
                         meaningControllers[i].clear();
                         states.updateWordMeans('', i);
-                        states.updateWordMeans('', i + 1);
-
                         setState(() {
                           meaningControllers.removeAt(i);
                         });
