@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
+import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/screens/group/screen/group_screen.dart';
 import 'package:langpocket/src/screens/home/screen/home_screen.dart';
 import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
 import 'package:langpocket/src/screens/word_edit/screen/edit_mode_word_screen.dart';
 import 'package:langpocket/src/screens/word_previewer/screen/word_previewer_screen.dart';
+import 'package:langpocket/src/screens/word_view/screen/word_view_screen.dart';
 import 'package:langpocket/src/utils/routes/not_found_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -60,7 +63,6 @@ GoRouter goRoute(GoRouteRef ref) {
                         final word = state.extra as WordDataToView;
                         return _navGoRight(
                             WordPreviewerScreen(
-                              editMode: false,
                               imageList: word.wordImages,
                               foreignWord: word.foreignWord,
                               means: word.wordMeans,
@@ -88,34 +90,24 @@ GoRouter goRoute(GoRouteRef ref) {
                 },
                 routes: [
                   GoRoute(
-                    path: '/:wordId',
+                    path: ':wordId',
                     name: AppRoute.word.name,
                     pageBuilder: (context, state) {
-                      final word = state.extra as WordDataToView;
-                      return _navGoRight(
-                          WordPreviewerScreen(
-                            editMode: true,
-                            imageList: word.wordImages,
-                            foreignWord: word.foreignWord,
-                            means: word.wordMeans,
-                            examples: word.wordExamples,
-                            note: word.wordNote,
-                          ),
-                          state);
+                      final wordId = state.params['wordId']!;
+                      return _navGoRight(WordViewScreen(wordId: wordId), state);
                     },
                     routes: [
                       GoRoute(
                         path: 'edit-mode',
-                        name: AppRoute.editMode.name,
                         pageBuilder: (context, state) {
-                          final word = state.extra as WordDataToView;
+                          final word = state.extra as WordData;
                           return _navGoRight(
                               EditModeWordScreen(
-                                wordId: 'TODO',
-                                imageList: word.wordImages,
+                                wordId: word.id.toString(),
+                                imageList: word.imagesList(),
                                 foreignWord: word.foreignWord,
-                                means: word.wordMeans,
-                                examples: word.wordExamples,
+                                means: word.meansList(),
+                                examples: word.examplesList(),
                                 note: word.wordNote,
                               ),
                               state);
@@ -126,6 +118,8 @@ GoRouter goRoute(GoRouteRef ref) {
                 ]),
           ]),
     ],
+    errorPageBuilder: (context, state) =>
+        _navGoUp(const NotFoundScreen(), state),
     errorBuilder: (context, state) => const NotFoundScreen(),
   );
 }

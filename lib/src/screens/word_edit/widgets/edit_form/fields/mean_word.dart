@@ -36,9 +36,7 @@ class _EditMeanWordState extends State<EditMeanWord> {
           child: TextFormField(
             controller: meaningControllers[i],
             onChanged: (value) {
-              final means =
-                  meaningControllers.map((element) => element.text).toList();
-              states.changeMeaningListTo(means);
+              states.updateWordMeans(value, i);
             },
             style: headline3(primaryFontColor),
             decoration: InputDecoration(

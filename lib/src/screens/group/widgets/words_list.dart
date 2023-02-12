@@ -126,6 +126,9 @@ class _WordsGroupsState extends ConsumerState<WordsGroups> {
                             onTap: () {
                               context.pushNamed(AppRoute.word.name, params: {
                                 'wordId': word.id.toString(),
+                                'id': widget.groupId.toString(),
+                                'name': widget.groupName,
+                                'date': widget.date
                               });
                             },
                             child: SizedBox(

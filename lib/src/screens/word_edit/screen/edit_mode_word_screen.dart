@@ -28,7 +28,7 @@ class EditModeWordScreen extends StatefulWidget {
 class EditModeWordScreenState extends State<EditModeWordScreen> {
   final formKey = GlobalKey<FormState>();
   List<String> updatedWordMeans = List.filled(6, '');
-  List<String> updatedWordImages = [];
+  List<String> updatedWordImages = ['', ''];
   List<String> updatedWordExample = List.filled(6, '');
   String updatedWordNote = '';
   String updatedforeignWord = '';
@@ -42,18 +42,6 @@ class EditModeWordScreenState extends State<EditModeWordScreen> {
   void updateWordExample(String example, int targetIndex) {
     setState(() {
       updatedWordExample[targetIndex] = example;
-    });
-  }
-
-  void changeExampleListTo(List<String> examples) {
-    setState(() {
-      updatedWordExample = examples;
-    });
-  }
-
-  void changeMeaningListTo(List<String> means) {
-    setState(() {
-      updatedWordMeans = means;
     });
   }
 
@@ -85,6 +73,7 @@ class EditModeWordScreenState extends State<EditModeWordScreen> {
               means: widget.means,
               examples: widget.examples,
               note: widget.note,
+              formKey: formKey,
             ),
             backgroundColor: backgroundColor,
             body: SingleChildScrollView(

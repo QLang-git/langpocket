@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:langpocket/src/common_widgets/custom_warning_dialog.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/screens/word_edit/controller/word_editor_controller.dart';
@@ -15,6 +16,7 @@ class WordEditorAppbar extends StatefulWidget with PreferredSizeWidget {
   final List<String> means;
   final List<String> examples;
   final String note;
+  final GlobalKey<FormState> formKey;
   const WordEditorAppbar({
     super.key,
     required this.imageList,
@@ -22,6 +24,7 @@ class WordEditorAppbar extends StatefulWidget with PreferredSizeWidget {
     required this.means,
     required this.examples,
     required this.note,
+    required this.formKey,
   });
 
   @override
@@ -39,17 +42,30 @@ class _WordEditorAppbarState extends State<WordEditorAppbar> {
     }
 
     Future<void> saveNewUpdate(WidgetRef ref) async {
-      final newInfo = NewWordInfo(
-          1,
-          WordCompanion(
-            foreignWord: Value(states.updatedforeignWord),
-            wordMeans: Value(states.updatedWordMeans.join('-')),
-            wordImages: Value(states.updatedWordImages.join('-')),
-            wordExamples: Value(states.updatedWordExample.join('-')),
-            wordNote: Value(states.updatedWordNote),
-          ));
+      if (widget.formKey.currentState!.validate()) {
+        final newInfo = NewWordInfo(
+            1,
+            WordCompanion(
+              foreignWord: Value(states.updatedforeignWord),
+              wordMeans: Value(states.updatedWordMeans.join('-')),
+              wordImages: Value(states.updatedWordImages.join('-')),
+              wordExamples: Value(states.updatedWordExample.join('-')),
+              wordNote: Value(states.updatedWordNote),
+            ));
 
-      ref.read(updateWordInfoProvider(newInfo));
+        final res = ref.read(updateWordInfoProvider(newInfo));
+        if (!res.hasError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('The word has been updated')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Server Error, try again')),
+          );
+        }
+        widget.formKey.currentState?.reset();
+        context.pop();
+      }
     }
 
     return ResponsiveCenter(
@@ -62,54 +78,21 @@ class _WordEditorAppbarState extends State<WordEditorAppbar> {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-            onPressed: (states.updatedforeignWord.isEmpty ||
-                        states.updatedforeignWord
-                                .compareTo(widget.foreignWord) ==
-                            0) &&
-                    (listEquals(states.updatedWordMeans, List.filled(6, '')) ||
-                        listEquals(cleanList(states.updatedWordMeans),
-                            widget.means)) &&
-                    (listEquals(
-                            states.updatedWordExample, List.filled(6, '')) ||
-                        listEquals(cleanList(states.updatedWordExample),
-                            widget.examples)) &&
-                    (states.updatedWordImages.isEmpty ||
-                        listEquals(cleanList(states.updatedWordImages),
-                            widget.imageList)) &&
-                    ((states.updatedWordNote.isEmpty && widget.note.isEmpty) ||
-                        states.updatedWordNote.compareTo(widget.note) == 0)
+            onPressed: (isWordInfoSimilar(states, cleanList))
                 ? null
                 : () {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('save changes'),
-                            content:
-                                const Text('Are you sure to save the changes'),
-                            actions: <Widget>[
-                              TextButton(
-                                style: TextButton.styleFrom(
-                                  textStyle:
-                                      Theme.of(context).textTheme.labelLarge,
-                                ),
-                                child: const Text('Cancel'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                              TextButton(
-                                style: TextButton.styleFrom(
-                                  textStyle:
-                                      Theme.of(context).textTheme.labelLarge,
-                                ),
-                                child: const Text('Save'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          );
+                          return Consumer(
+                              builder: (context, ref, child) =>
+                                  CustomWarningDialog(
+                                      onCancel: () {},
+                                      title: const Text('save changes'),
+                                      cancelOption: const Text('Cancel'),
+                                      message: const Text(
+                                          'Are you sure to save the changes'),
+                                      onSave: () => saveNewUpdate(ref)));
                         });
                   },
             icon: Icon(
@@ -123,57 +106,24 @@ class _WordEditorAppbarState extends State<WordEditorAppbar> {
           children: [
             IconButton(
               onPressed: () {
-                if ((states.updatedforeignWord.isEmpty ||
-                        states.updatedforeignWord
-                                .compareTo(widget.foreignWord) ==
-                            0) &&
-                    (listEquals(states.updatedWordMeans, List.filled(6, '')) ||
-                        listEquals(cleanList(states.updatedWordMeans),
-                            widget.means)) &&
-                    (listEquals(
-                            states.updatedWordExample, List.filled(6, '')) ||
-                        listEquals(cleanList(states.updatedWordExample),
-                            widget.examples)) &&
-                    (states.updatedWordImages.isEmpty ||
-                        listEquals(cleanList(states.updatedWordImages),
-                            widget.imageList)) &&
-                    ((states.updatedWordNote.isEmpty && widget.note.isEmpty) ||
-                        states.updatedWordNote.compareTo(widget.note) == 0)) {
+                if (isWordInfoSimilar(states, cleanList)) {
+                  context.pop();
+                } else {
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('save changes'),
-                          content:
-                              const Text('The changes you made wont be saved\n'
-                                  'if you leaved without saving'),
-                          actions: <Widget>[
-                            TextButton(
-                              style: TextButton.styleFrom(
-                                textStyle:
-                                    Theme.of(context).textTheme.labelLarge,
-                              ),
-                              child: const Text('Leave anyway'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                context.pop();
-                              },
-                            ),
-                            TextButton(
-                              style: TextButton.styleFrom(
-                                textStyle:
-                                    Theme.of(context).textTheme.labelLarge,
-                              ),
-                              child: const Text('Save'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
+                        return Consumer(
+                          builder: (context, ref, child) => CustomWarningDialog(
+                            onCancel: () => context.pop(),
+                            cancelOption: const Text('Leave anyway'),
+                            title: const Text('save changes'),
+                            message: const Text(
+                                'The changes you made wont be saved\n'
+                                'if you leaved without saving'),
+                            onSave: () => saveNewUpdate(ref),
+                          ),
                         );
                       });
-                } else {
-                  context.pop();
                 }
               },
               icon: Icon(
@@ -197,5 +147,21 @@ class _WordEditorAppbarState extends State<WordEditorAppbar> {
         ),
       ),
     );
+  }
+
+  bool isWordInfoSimilar(EditModeWordScreenState states,
+      List<String> Function(List<String> list) cleanList) {
+    return (states.updatedforeignWord.isEmpty ||
+            states.updatedforeignWord.compareTo(widget.foreignWord) == 0) &&
+        (listEquals(states.updatedWordMeans, List.filled(6, '')) ||
+            listEquals(cleanList(states.updatedWordMeans), widget.means)) &&
+        (listEquals(states.updatedWordExample, List.filled(6, '')) ||
+            listEquals(
+                cleanList(states.updatedWordExample), widget.examples)) &&
+        (listEquals(states.updatedWordImages, ['', '']) ||
+            listEquals(
+                cleanList(states.updatedWordImages), widget.imageList)) &&
+        ((states.updatedWordNote.isEmpty ||
+            states.updatedWordNote.compareTo(widget.note) == 0));
   }
 }

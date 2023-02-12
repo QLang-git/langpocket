@@ -92,7 +92,7 @@ class _EditWordImageState extends State<EditWordImage> {
                       setState(() {
                         images.add(base64);
                       });
-                      // states.setWordImages(images);
+                      states.updateWordImages(images);
                     }
                   : null,
               child: Row(

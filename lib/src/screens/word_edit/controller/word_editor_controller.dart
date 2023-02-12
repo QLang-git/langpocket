@@ -15,10 +15,3 @@ final updateWordInfoProvider =
       .watch(wordsServicesProvider)
       .updateWordInfo(wordNew.wordId, wordNew.wordCompanion);
 });
-
-final watchWordbyIdProvider =
-    StreamProvider.family<WordData, int>((ref, wordId) {
-  final words = ref.watch(wordsServicesProvider).watchWordById(wordId);
-
-  return words;
-});

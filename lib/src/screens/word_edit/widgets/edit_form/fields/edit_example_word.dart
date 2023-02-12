@@ -42,9 +42,7 @@ class _EditExampleWordState extends State<EditExampleWord> {
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: TextFormField(
             onChanged: (value) {
-              final examples =
-                  exampleControllers.map((element) => element.text).toList();
-              states.changeExampleListTo(examples);
+              states.updateWordExample(value, i);
             },
             controller: exampleControllers[i],
             style: headline3(primaryFontColor),
@@ -109,7 +107,7 @@ class _EditExampleWordState extends State<EditExampleWord> {
           ),
           onPressed: () {
             setState(() {
-              exampleControllers.add(TextEditingController());
+              exampleControllers.add(TextEditingController(text: ''));
             });
           },
           child: const Icon(
