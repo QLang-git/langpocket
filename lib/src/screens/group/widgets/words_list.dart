@@ -1,13 +1,12 @@
-import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
-import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/screens/group/controller/group_controller.dart';
+import 'package:langpocket/src/screens/group/widgets/custom_practice_dialog.dart';
+import 'package:langpocket/src/screens/group/widgets/word_info.dart';
 import 'package:langpocket/src/screens/home/widgets/groups_list/controller/groups_controller.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
@@ -131,6 +130,25 @@ class _WordsGroupsState extends ConsumerState<WordsGroups> {
                                 'date': widget.date
                               });
                             },
+                            onLongPress: () {
+                              const double padding = 20;
+                              const double avatarRadius = 45;
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext buildContext) =>
+                                      CustomPracticeDialog(
+                                        wordData: word,
+                                        padding: padding,
+                                        avatarRadius: avatarRadius,
+                                        date: widget.date,
+                                        name: widget.groupName,
+                                        groupId: widget.groupId.toString(),
+                                      ));
+
+                              // title: Text(
+                              //     'study word ${word.foreignWord}'),
+                              // content: ));
+                            },
                             child: SizedBox(
                               width: double.infinity,
                               height: 100,
@@ -138,7 +156,7 @@ class _WordsGroupsState extends ConsumerState<WordsGroups> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  _WordInfo(word: word),
+                                  WordInfo(word: word),
                                   Padding(
                                     padding: const EdgeInsets.only(right: 10),
                                     child: IconButton(
@@ -162,71 +180,5 @@ class _WordsGroupsState extends ConsumerState<WordsGroups> {
                 }),
           );
         });
-  }
-}
-
-class _WordInfo extends StatelessWidget {
-  final WordData word;
-  const _WordInfo({required this.word});
-
-  @override
-  Widget build(BuildContext context) {
-    final getRandomExample = Random().nextInt(word.examplesList().length);
-    return Row(
-      children: [
-        SizedBox(
-          height: double.infinity,
-          width: 90,
-          child: word.wordImages.isNotEmpty
-              ? Image.memory(
-                  base64Decode(word.imagesList().first),
-                  fit: BoxFit.fill,
-                )
-              : Container(
-                  color: Colors.grey[400],
-                  child: Center(
-                    child: Icon(
-                      Icons.image_not_supported_outlined,
-                      size: 50,
-                      color: primaryFontColor,
-                    ),
-                  ),
-                ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                word.foreignWord,
-                style: headline3Bold(primaryFontColor),
-              ),
-              Row(
-                children: [
-                  Text('Means: ', style: bodyLarge(primaryFontColor)),
-                  Text(
-                    word.meansList().join(','),
-                    overflow: TextOverflow.ellipsis,
-                    style: bodyLargeBold(secondaryColor),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Text('Example: ', style: bodyLarge(primaryFontColor)),
-                  Text(
-                    word.examplesList()[getRandomExample],
-                    overflow: TextOverflow.ellipsis,
-                    style: bodyLargeBold(secondaryColor),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        )
-      ],
-    );
   }
 }

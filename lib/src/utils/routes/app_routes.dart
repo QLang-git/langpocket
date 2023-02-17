@@ -6,6 +6,7 @@ import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/screens/group/screen/group_screen.dart';
 import 'package:langpocket/src/screens/home/screen/home_screen.dart';
 import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
+import 'package:langpocket/src/screens/practice/spelling/screen/practice_spelling_screen.dart';
 import 'package:langpocket/src/screens/word_edit/screen/edit_mode_word_screen.dart';
 import 'package:langpocket/src/screens/word_previewer/screen/word_previewer_screen.dart';
 import 'package:langpocket/src/screens/word_view/screen/word_view_screen.dart';
@@ -14,14 +15,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_routes.g.dart';
 
-enum AppRoute {
-  home,
-  newWord,
-  wordView,
-  group,
-  word,
-  editMode,
-}
+enum AppRoute { home, newWord, wordView, group, word, editMode, spelling }
 
 class WordDataToView {
   final String foreignWord;
@@ -110,6 +104,21 @@ GoRouter goRoute(GoRouteRef ref) {
                                 examples: word.examplesList(),
                                 note: word.wordNote,
                               ),
+                              state);
+                        },
+                      ),
+                      GoRoute(
+                        path: 'spelling',
+                        name: AppRoute.spelling.name,
+                        pageBuilder: (context, state) {
+                          final word = state.extra as WordData;
+
+                          return _navGoUp(
+                              PracticeSpellingScreen(
+                                  imageList: word.imagesList(),
+                                  foreignWord: word.foreignWord,
+                                  meanList: word.meansList(),
+                                  examplesList: word.examplesList()),
                               state);
                         },
                       )

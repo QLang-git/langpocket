@@ -28,6 +28,10 @@ class _WordViewState extends State<WordView> {
             title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Text(
+                  widget.foreignWord,
+                  style: headline2Bold(primaryFontColor),
+                ),
                 TextButton(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 18),
@@ -39,10 +43,6 @@ class _WordViewState extends State<WordView> {
                   onPressed: () {
                     tts.speak(widget.foreignWord);
                   },
-                ),
-                Text(
-                  widget.foreignWord,
-                  style: headline2Bold(primaryFontColor),
                 ),
               ],
             ),
