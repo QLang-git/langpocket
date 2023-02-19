@@ -4,15 +4,19 @@ import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class CustomDialogSpelling extends StatelessWidget {
-  final String foreignWord;
+  final String message;
   final Function reload;
+  final Function enableExamples;
+  final String withExampleButton;
   const CustomDialogSpelling(
-      {super.key, required this.foreignWord, required this.reload});
+      {super.key,
+      required this.reload,
+      required this.message,
+      required this.enableExamples,
+      required this.withExampleButton});
 
   @override
   Widget build(BuildContext context) {
-    // final states =
-    //     context.findAncestorStateOfType<PracticeSpellingScreenState>()!;
     return ResponsiveCenter(
       child: Dialog(
           shape: RoundedRectangleBorder(
@@ -49,7 +53,7 @@ class CustomDialogSpelling extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: Text(
-                    'You wrote " $foreignWord " 5 times correctly.\nKeep practicing  spelling several times for better results.',
+                    message,
                     softWrap: true,
                     style: headline3(primaryFontColor),
                   ),
@@ -62,17 +66,18 @@ class CustomDialogSpelling extends StatelessWidget {
                       backgroundColor: Colors.green[400],
                     ),
                     onPressed: () {
-                      //!todo
+                      enableExamples();
+                      context.pop();
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Text(
-                            'Spelling the word in a sentence ',
+                            withExampleButton,
                           ),
-                          Icon(Icons.near_me)
+                          const Icon(Icons.near_me)
                         ],
                       ),
                     )),

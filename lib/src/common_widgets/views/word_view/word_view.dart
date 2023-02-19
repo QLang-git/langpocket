@@ -5,7 +5,12 @@ import 'package:text_to_speech/text_to_speech.dart';
 class WordView extends StatefulWidget {
   final String foreignWord;
   final List<String> means;
-  const WordView({super.key, required this.foreignWord, required this.means});
+  final bool noVoice;
+  const WordView(
+      {super.key,
+      required this.foreignWord,
+      required this.means,
+      this.noVoice = false});
 
   @override
   State<WordView> createState() => _WordViewState();
@@ -28,22 +33,27 @@ class _WordViewState extends State<WordView> {
             title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  widget.foreignWord,
-                  style: headline2Bold(primaryFontColor),
-                ),
-                TextButton(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    child: Icon(
-                      Icons.volume_up_outlined,
-                      color: primaryColor,
-                    ),
+                SizedBox(
+                  width: 120,
+                  child: Text(
+                    widget.foreignWord,
+                    style: headline2Bold(primaryFontColor),
+                    textAlign: TextAlign.right,
                   ),
-                  onPressed: () {
-                    tts.speak(widget.foreignWord);
-                  },
                 ),
+                if (!widget.noVoice)
+                  TextButton(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      child: Icon(
+                        Icons.volume_up_outlined,
+                        color: primaryColor,
+                      ),
+                    ),
+                    onPressed: () {
+                      tts.speak(widget.foreignWord);
+                    },
+                  ),
               ],
             ),
             trailing: TextButton(
