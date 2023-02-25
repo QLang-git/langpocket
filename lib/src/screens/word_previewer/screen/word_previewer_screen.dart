@@ -6,19 +6,12 @@ import 'package:langpocket/src/common_widgets/views/note_view/note_view.dart';
 import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
 import 'package:langpocket/src/screens/word_previewer/app_bar/word_previewer_appbar.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class WordPreviewerScreen extends StatefulWidget {
-  final List<String> imageList;
-  final String foreignWord;
-  final List<String> means;
-  final List<String> examples;
-  final String note;
+  final WordDataToView wordData;
   const WordPreviewerScreen({
-    required this.imageList,
-    required this.foreignWord,
-    required this.means,
-    required this.examples,
-    required this.note,
+    required this.wordData,
     super.key,
   });
 
@@ -38,22 +31,22 @@ class _WordPreviewerScreenState extends State<WordPreviewerScreen> {
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
           child: Column(
             children: [
-              ImageView(imageList: widget.imageList),
+              ImageView(imageList: widget.wordData.wordImages),
               const SizedBox(
                 height: 15,
               ),
               WordView(
-                foreignWord: widget.foreignWord,
-                means: widget.means,
+                foreignWord: widget.wordData.foreignWord,
+                means: widget.wordData.wordMeans,
               ),
               const SizedBox(
                 height: 20,
               ),
-              ExamplesView(examples: widget.examples),
+              ExamplesView(examples: widget.wordData.wordExamples),
               const SizedBox(
                 height: 20,
               ),
-              NoteView(note: widget.note)
+              NoteView(note: widget.wordData.wordNote)
             ],
           ),
         ),

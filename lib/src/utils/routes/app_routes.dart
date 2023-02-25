@@ -10,10 +10,8 @@ import 'package:langpocket/src/screens/practice/spelling/screen/practice_spellin
 import 'package:langpocket/src/screens/word_edit/screen/edit_mode_word_screen.dart';
 import 'package:langpocket/src/screens/word_previewer/screen/word_previewer_screen.dart';
 import 'package:langpocket/src/screens/word_view/screen/word_view_screen.dart';
+import 'package:langpocket/src/utils/routes/error_nav_screen.dart';
 import 'package:langpocket/src/utils/routes/not_found_screen.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-part 'app_routes.g.dart';
 
 enum AppRoute { home, newWord, wordView, group, word, editMode, spelling }
 
@@ -33,86 +31,80 @@ class WordDataToView {
   });
 }
 
-@Riverpod(keepAlive: true)
-GoRouter goRoute(GoRouteRef ref) {
-  return GoRouter(
-    initialLocation: '/',
-    debugLogDiagnostics: false,
-    routes: [
-      GoRoute(
-          path: '/',
-          name: AppRoute.home.name,
-          builder: (context, state) => const HomeScreen(),
-          routes: [
-            GoRoute(
-                path: 'new-word',
-                name: AppRoute.newWord.name,
-                pageBuilder: (context, state) =>
-                    _navGoUp(const NewWordScreen(), state),
-                routes: [
-                  GoRoute(
-                      path: 'view',
-                      name: AppRoute.wordView.name,
-                      pageBuilder: (context, state) {
-                        final word = state.extra as WordDataToView;
-                        return _navGoRight(
-                            WordPreviewerScreen(
-                              imageList: word.wordImages,
-                              foreignWord: word.foreignWord,
-                              means: word.wordMeans,
-                              examples: word.wordExamples,
-                              note: word.wordNote,
-                            ),
-                            state);
-                      })
-                ]),
-            GoRoute(
-                path: 'group/:id/:name/:date',
-                name: AppRoute.group.name,
-                pageBuilder: (context, state) {
-                  final groupId = state.params['id']!;
-                  final groupName = state.params['name']!;
-                  final groupDate = state.params['date']!;
-
-                  return _navGoRight(
-                      GroupScreen(
-                        groupId: groupId,
-                        groupName: groupName,
-                        date: groupDate,
-                      ),
-                      state);
-                },
-                routes: [
-                  GoRoute(
-                    path: ':wordId',
-                    name: AppRoute.word.name,
+final GoRouter goroute = GoRouter(
+  initialLocation: '/',
+  debugLogDiagnostics: false,
+  routes: [
+    GoRoute(
+        path: '/',
+        name: AppRoute.home.name,
+        builder: (context, state) => const HomeScreen(),
+        routes: [
+          GoRoute(
+              path: 'new-word',
+              name: AppRoute.newWord.name,
+              pageBuilder: (context, state) =>
+                  _navGoUp(const NewWordScreen(), state),
+              routes: [
+                GoRoute(
+                    path: 'view',
+                    name: AppRoute.wordView.name,
                     pageBuilder: (context, state) {
-                      final wordId = state.params['wordId']!;
-                      return _navGoRight(WordViewScreen(wordId: wordId), state);
-                    },
-                    routes: [
-                      GoRoute(
-                        path: 'edit-mode',
-                        pageBuilder: (context, state) {
-                          final word = state.extra as WordData;
+                      final word = state.extra as WordDataToView?;
+
+                      if (word is WordDataToView) {
+                        return _navGoRight(
+                            WordPreviewerScreen(wordData: word), state);
+                      } else {
+                        return _navGoUp(const ErrorNavScreen(), state);
+                      }
+                    })
+              ]),
+          GoRoute(
+              path: 'group',
+              name: AppRoute.group.name,
+              pageBuilder: (context, state) {
+                final groupData = state.extra as GroupData?;
+                if (groupData is GroupData) {
+                  return _navGoRight(GroupScreen(groupData: groupData), state);
+                } else {
+                  return _navGoUp(const ErrorNavScreen(), state);
+                }
+              },
+              routes: [
+                GoRoute(
+                  path: 'word',
+                  name: AppRoute.word.name,
+                  pageBuilder: (context, state) {
+                    final word = state.extra as WordData?;
+                    if (word is WordData) {
+                      return _navGoRight(WordViewScreen(word: word), state);
+                    } else {
+                      return _navGoUp(const ErrorNavScreen(), state);
+                    }
+                  },
+                  routes: [
+                    GoRoute(
+                      path: 'edit-mode',
+                      pageBuilder: (context, state) {
+                        final word = state.extra as WordData?;
+                        if (word is WordData) {
                           return _navGoRight(
                               EditModeWordScreen(
-                                wordId: word.id.toString(),
-                                imageList: word.imagesList(),
-                                foreignWord: word.foreignWord,
-                                means: word.meansList(),
-                                examples: word.examplesList(),
-                                note: word.wordNote,
+                                wordData: word,
                               ),
                               state);
-                        },
-                      ),
-                      GoRoute(
-                        path: 'spelling',
-                        name: AppRoute.spelling.name,
-                        pageBuilder: (context, state) {
-                          final word = state.extra as WordData;
-
+                        } else {
+                          return _navGoUp(const ErrorNavScreen(), state);
+                        }
+                      },
+                    ),
+                    GoRoute(
+                      path: 'spelling',
+                      name: AppRoute.spelling.name,
+                      pageBuilder: (context, state) {
+                        final word = state.extra as WordData?;
+                        if (word != null) {
                           return _navGoUp(
                               PracticeSpellingScreen(
                                   imageList: word.imagesList(),
@@ -120,18 +112,19 @@ GoRouter goRoute(GoRouteRef ref) {
                                   meanList: word.meansList(),
                                   examplesList: word.examplesList()),
                               state);
-                        },
-                      )
-                    ],
-                  )
-                ]),
-          ]),
-    ],
-    errorPageBuilder: (context, state) =>
-        _navGoUp(const NotFoundScreen(), state),
-    errorBuilder: (context, state) => const NotFoundScreen(),
-  );
-}
+                        } else {
+                          return _navGoUp(const ErrorNavScreen(), state);
+                        }
+                      },
+                    )
+                  ],
+                )
+              ]),
+        ]),
+  ],
+  errorPageBuilder: (context, state) => _navGoUp(const NotFoundScreen(), state),
+  errorBuilder: (context, state) => const NotFoundScreen(),
+);
 
 CustomTransitionPage _navGoUp(Widget screen, GoRouterState state) {
   return CustomTransitionPage(
