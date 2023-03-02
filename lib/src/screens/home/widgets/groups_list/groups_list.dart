@@ -38,11 +38,8 @@ class _GroupsListState extends ConsumerState<GroupsList> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
                 child: InkWell(
-                  onTap: () => context.goNamed(AppRoute.group.name, params: {
-                    'id': group.id.toString(),
-                    'name': group.groupName,
-                    'date': '${dataName.day}/${dataName.month}/${dataName.year}'
-                  }),
+                  onTap: () =>
+                      context.goNamed(AppRoute.group.name, extra: group),
                   child: SizedBox(
                     width: double.infinity,
                     height: 100,

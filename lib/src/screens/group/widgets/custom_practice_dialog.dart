@@ -56,12 +56,6 @@ class CustomPracticeDialog extends StatelessWidget {
                             backgroundColor: buttonColor),
                         onPressed: () {
                           context.pushNamed(AppRoute.spelling.name,
-                              params: {
-                                'wordId': wordData.id.toString(),
-                                'id': groupId,
-                                'name': name,
-                                'date': date
-                              },
                               extra: wordData);
                         },
                         child: Padding(

@@ -123,12 +123,8 @@ class _WordsGroupsState extends ConsumerState<WordsGroups> {
                         child: Consumer(
                           builder: (context, ref, child) => InkWell(
                             onTap: () {
-                              context.pushNamed(AppRoute.word.name, params: {
-                                'wordId': word.id.toString(),
-                                'id': widget.groupId.toString(),
-                                'name': widget.groupName,
-                                'date': widget.date
-                              });
+                              context.pushNamed(AppRoute.word.name,
+                                  extra: word);
                             },
                             onLongPress: () {
                               const double padding = 20;

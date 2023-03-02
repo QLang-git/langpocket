@@ -3,6 +3,7 @@ import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:go_router/go_router.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class WordViewAppBar extends StatelessWidget with PreferredSizeWidget {
   final WordData wordData;
@@ -28,10 +29,7 @@ class WordViewAppBar extends StatelessWidget with PreferredSizeWidget {
             padding: const EdgeInsets.only(right: 13, top: 5),
             child: IconButton(
               onPressed: () {
-                context.push(
-                  '${GoRouter.of(context).location}/edit-mode',
-                  extra: wordData,
-                );
+                context.pushNamed(AppRoute.editMode.name, extra: wordData);
               },
               icon: Icon(
                 Icons.edit_document,
