@@ -4,7 +4,7 @@ on:
     branches: [ web-bet-stable ]
 
 jobs:
-  setup:
+  testing:
     runs-on: ubuntu-latest
     steps:
       - name: Get code
@@ -16,7 +16,7 @@ jobs:
       - name: Test app 
         run: flutter test --coverage
       - name: Upload coverage to Codecov 
-        uses: codecov/codecov-action@v1 
+        uses: codecov/codecov-action@v3
         with: 
           token: ${{ secrets.CODECOV_TOKEN }} 
           file: coverage/lcov.info

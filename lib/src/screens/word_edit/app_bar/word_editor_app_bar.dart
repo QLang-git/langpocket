@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -36,12 +38,14 @@ class _WordEditorAppbarState extends State<WordEditorAppbar> {
 
     Future<void> saveNewUpdate(WidgetRef ref) async {
       if (widget.formKey.currentState!.validate()) {
+        final imagesbase64 =
+            states.updatedWordImages.map((img) => base64Encode(img)).toList();
         final newInfo = NewWordInfo(
             1,
             WordCompanion(
               foreignWord: Value(states.updatedforeignWord),
               wordMeans: Value(states.updatedWordMeans.join('-')),
-              wordImages: Value(states.updatedWordImages.join('-')),
+              wordImages: Value(imagesbase64.join('-')),
               wordExamples: Value(states.updatedWordExample.join('-')),
               wordNote: Value(states.updatedWordNote),
             ));
