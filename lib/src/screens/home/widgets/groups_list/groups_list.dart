@@ -57,7 +57,7 @@ class _GroupsListState extends ConsumerState<GroupsList> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              icontDay.dayIcon,
+                              Icon(icontDay.dayIcon, color: Colors.white),
                               Text(
                                 icontDay.dayName,
                                 style: captionStyle(Colors.white),
