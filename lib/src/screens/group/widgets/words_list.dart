@@ -1,9 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
-import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
+import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/screens/group/controller/group_controller.dart';
 import 'package:langpocket/src/screens/group/widgets/custom_practice_dialog.dart';
 import 'package:langpocket/src/screens/group/widgets/word_info.dart';
@@ -27,7 +29,7 @@ class WordsGroups extends ConsumerStatefulWidget {
 }
 
 class _WordsGroupsState extends ConsumerState<WordsGroups> {
-  List<WordData> words = [];
+  List<Word> words = [];
   @override
   void dispose() {
     super.dispose();
@@ -44,7 +46,18 @@ class _WordsGroupsState extends ConsumerState<WordsGroups> {
             return const Center(child: Text('No Word saved in This Group'));
           }
 
-          words = currentWords;
+          final wordDecoding = currentWords
+              .map((word) => Word(
+                    id: word.id,
+                    foreignWord: word.foreignWord,
+                    wordMeans: word.meansList(),
+                    wordImages:
+                        word.imagesList().map((e) => base64Decode(e)).toList(),
+                    wordExamples: word.examplesList(),
+                    wordNote: word.wordNote,
+                  ))
+              .toList();
+          words = wordDecoding;
 
           return SlidableAutoCloseBehavior(
             closeWhenOpened: true,
@@ -82,7 +95,7 @@ class _WordsGroupsState extends ConsumerState<WordsGroups> {
                                   .closed
                                   .then((reason) {
                                 if (reason != SnackBarClosedReason.action) {
-                                  ref.read(deleteWordByIdProvider(word.id));
+                                  ref.read(deleteWordByIdProvider(word.id!));
                                 }
                               });
                             }),
@@ -114,7 +127,8 @@ class _WordsGroupsState extends ConsumerState<WordsGroups> {
                                       .closed
                                       .then((reason) {
                                     if (reason != SnackBarClosedReason.action) {
-                                      ref.read(deleteWordByIdProvider(word.id));
+                                      ref.read(
+                                          deleteWordByIdProvider(word.id!));
                                     }
                                   });
                                 },

@@ -4,22 +4,16 @@ import 'package:langpocket/src/screens/word_edit/widgets/edit_form/fields/edit_e
 import 'package:langpocket/src/screens/word_edit/widgets/edit_form/fields/edit_foreign_word.dart';
 import 'package:langpocket/src/screens/word_edit/widgets/edit_form/fields/mean_word.dart';
 import 'package:langpocket/src/screens/word_edit/widgets/edit_form/fields/notes_word.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class EditWordForm extends ConsumerStatefulWidget {
-  final List<String> imageList;
-  final String foreignWord;
-  final List<String> means;
-  final List<String> examples;
-  final String note;
+  final Word wordDataToView;
   final GlobalKey<FormState> formKey;
-  const EditWordForm(
-      {required this.imageList,
-      required this.foreignWord,
-      required this.means,
-      required this.examples,
-      required this.note,
-      super.key,
-      required this.formKey});
+  const EditWordForm({
+    required this.wordDataToView,
+    required this.formKey,
+    super.key,
+  });
 
   @override
   EditWordFormState createState() {
@@ -39,7 +33,7 @@ class EditWordFormState extends ConsumerState<EditWordForm> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               EditForeignWord(
-                currentForeignWord: widget.foreignWord,
+                currentForeignWord: widget.wordDataToView.foreignWord,
               ),
               const Expanded(
                   flex: 1,
@@ -50,16 +44,16 @@ class EditWordFormState extends ConsumerState<EditWordForm> {
               Expanded(
                 flex: 6,
                 child: EditMeanWord(
-                  curentMeans: widget.means,
+                  curentMeans: widget.wordDataToView.wordMeans,
                 ),
               )
             ],
           ),
           EditExampleWord(
-            currentExamples: widget.examples,
+            currentExamples: widget.wordDataToView.wordExamples,
           ),
           const SizedBox(height: 15),
-          EditNotesWord(currentNote: widget.note)
+          EditNotesWord(currentNote: widget.wordDataToView.wordNote)
         ],
       ),
     );

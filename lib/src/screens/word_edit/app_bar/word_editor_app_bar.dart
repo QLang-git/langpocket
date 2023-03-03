@@ -9,22 +9,15 @@ import 'package:langpocket/src/data/local/repository/drift_group_repository.dart
 import 'package:langpocket/src/screens/word_edit/controller/word_editor_controller.dart';
 import 'package:langpocket/src/screens/word_edit/screen/edit_mode_word_screen.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class WordEditorAppbar extends StatefulWidget with PreferredSizeWidget {
-  final List<String> imageList;
-  final String foreignWord;
-  final List<String> means;
-  final List<String> examples;
-  final String note;
+  final Word wordDataToView;
   final GlobalKey<FormState> formKey;
   const WordEditorAppbar({
     super.key,
-    required this.imageList,
-    required this.foreignWord,
-    required this.means,
-    required this.examples,
-    required this.note,
     required this.formKey,
+    required this.wordDataToView,
   });
 
   @override
@@ -152,16 +145,20 @@ class _WordEditorAppbarState extends State<WordEditorAppbar> {
   bool isWordInfoSimilar(EditModeWordScreenState states,
       List<String> Function(List<String> list) cleanList) {
     return (states.updatedforeignWord.isEmpty ||
-            states.updatedforeignWord.compareTo(widget.foreignWord) == 0) &&
+            states.updatedforeignWord
+                    .compareTo(widget.wordDataToView.foreignWord) ==
+                0) &&
         (listEquals(states.updatedWordMeans, List.filled(6, '')) ||
-            listEquals(cleanList(states.updatedWordMeans), widget.means)) &&
+            listEquals(cleanList(states.updatedWordMeans),
+                widget.wordDataToView.wordMeans)) &&
         (listEquals(states.updatedWordExample, List.filled(6, '')) ||
-            listEquals(
-                cleanList(states.updatedWordExample), widget.examples)) &&
+            listEquals(cleanList(states.updatedWordExample),
+                widget.wordDataToView.wordExamples)) &&
         (listEquals(states.updatedWordImages, ['', '']) ||
             listEquals(
-                cleanList(states.updatedWordImages), widget.imageList)) &&
+                states.updatedWordImages, widget.wordDataToView.wordImages)) &&
         ((states.updatedWordNote.isEmpty ||
-            states.updatedWordNote.compareTo(widget.note) == 0));
+            states.updatedWordNote.compareTo(widget.wordDataToView.wordNote) ==
+                0));
   }
 }

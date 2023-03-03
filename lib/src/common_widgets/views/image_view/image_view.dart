@@ -1,11 +1,11 @@
-import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class ImageView extends StatelessWidget {
-  final List<String> imageList;
+  final List<Uint8List> imageList;
   const ImageView({super.key, required this.imageList});
 
   @override
@@ -15,9 +15,10 @@ class ImageView extends StatelessWidget {
         height: 250,
         child: imageList.isNotEmpty
             ? Swiper(
+                loop: false,
                 itemCount: imageList.length,
                 itemBuilder: (context, index) => Image.memory(
-                  base64Decode(imageList[index]),
+                  imageList[index],
                   fit: BoxFit.fill,
                 ),
                 viewportFraction: 0.8,

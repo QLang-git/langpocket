@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
@@ -10,7 +11,7 @@ import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
 class PracticeSpellingScreen extends StatefulWidget {
-  final List<String> imageList;
+  final List<Uint8List> imageList;
   final String foreignWord;
   final List<String> meanList;
   final List<String> examplesList;

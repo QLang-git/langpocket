@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class CustomPracticeDialog extends StatelessWidget {
-  final WordData wordData;
+  final Word wordData;
   final String groupId;
 
   final String name;

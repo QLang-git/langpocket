@@ -1,14 +1,15 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
-import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/screens/word_edit/app_bar/word_editor_app_bar.dart';
 import 'package:langpocket/src/screens/word_edit/widgets/edit_form/edit_word_form.dart';
 import 'package:langpocket/src/screens/word_edit/widgets/edit_word_image/edit_word_image.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class EditModeWordScreen extends StatefulWidget {
-  final WordData wordData;
+  final Word wordData;
 
   const EditModeWordScreen({super.key, required this.wordData});
 
@@ -19,7 +20,7 @@ class EditModeWordScreen extends StatefulWidget {
 class EditModeWordScreenState extends State<EditModeWordScreen> {
   final formKey = GlobalKey<FormState>();
   List<String> updatedWordMeans = List.filled(6, '');
-  List<String> updatedWordImages = ['', ''];
+  List<Uint8List> updatedWordImages = [];
   List<String> updatedWordExample = List.filled(6, '');
   String updatedWordNote = '';
   String updatedforeignWord = '';
@@ -36,7 +37,7 @@ class EditModeWordScreenState extends State<EditModeWordScreen> {
     });
   }
 
-  void updateWordImages(List<String> images) {
+  void updateWordImages(List<Uint8List> images) {
     setState(() {
       updatedWordImages = images;
     });
@@ -59,11 +60,7 @@ class EditModeWordScreenState extends State<EditModeWordScreen> {
     return ResponsiveCenter(
         child: Scaffold(
             appBar: WordEditorAppbar(
-              imageList: widget.wordData.imagesList(),
-              foreignWord: widget.wordData.foreignWord,
-              means: widget.wordData.meansList(),
-              examples: widget.wordData.examplesList(),
-              note: widget.wordData.wordNote,
+              wordDataToView: widget.wordData,
               formKey: formKey,
             ),
             backgroundColor: backgroundColor,
@@ -76,16 +73,12 @@ class EditModeWordScreenState extends State<EditModeWordScreen> {
                     const SizedBox(
                       height: 15,
                     ),
-                    EditWordImage(currentImages: widget.wordData.imagesList()),
+                    EditWordImage(currentImages: widget.wordData.wordImages),
                     const SizedBox(
                       height: 40,
                     ),
                     EditWordForm(
-                      imageList: widget.wordData.imagesList(),
-                      foreignWord: widget.wordData.foreignWord,
-                      means: widget.wordData.meansList(),
-                      examples: widget.wordData.examplesList(),
-                      note: widget.wordData.wordNote,
+                      wordDataToView: widget.wordData,
                       formKey: formKey,
                     )
                   ],

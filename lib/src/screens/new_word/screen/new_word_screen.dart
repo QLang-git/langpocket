@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,7 +21,7 @@ class NewWordScreen extends StatefulWidget {
 class NewWordScreenState extends State<NewWordScreen> {
   final formKey = GlobalKey<FormState>();
   List<String> wordMeans = List.filled(6, '');
-  List<String> wordImages = [];
+  List<Uint8List> wordImages = [];
   List<String> wordExample = List.filled(6, '');
   String wordNote = '';
   String foreignWord = '';
@@ -35,7 +38,7 @@ class NewWordScreenState extends State<NewWordScreen> {
     });
   }
 
-  void setWordImages(List<String> images) {
+  void setWordImages(List<Uint8List> images) {
     setState(() {
       wordImages = images;
     });
@@ -90,10 +93,12 @@ class NewWordScreenState extends State<NewWordScreen> {
                   //! 1- Validate returns true if the form is valid, or false otherwise.
                   if (formKey.currentState!.validate()) {
                     //! 2-save the word in db
+                    final imagesbase64 =
+                        wordImages.map((img) => base64Encode(img)).toList();
                     ref.read(saveWordControllerProvider.notifier).addNewWord(
                           foreignWord: foreignWord,
                           wordMeans: wordMeans.join('-'),
-                          wordImages: wordImages.join('-'),
+                          wordImages: imagesbase64.join('-'),
                           wordExamples: wordExample.join('-'),
                           wordNote: wordNote,
                         );

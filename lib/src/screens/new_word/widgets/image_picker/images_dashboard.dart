@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +16,7 @@ class ImagesDashboard extends StatefulWidget {
 }
 
 class _ImagePreviewerState extends State<ImagesDashboard> {
-  List<String> images = [];
+  List<Uint8List> images = [];
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +40,7 @@ class _ImagePreviewerState extends State<ImagesDashboard> {
                         margin: const EdgeInsets.all(10.0),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10)),
-                        child: Image.memory(base64Decode(images[index]),
-                            fit: BoxFit.cover),
+                        child: Image.memory(images[index], fit: BoxFit.cover),
                       ),
                       Positioned(
                         top: 0,
@@ -81,9 +80,9 @@ class _ImagePreviewerState extends State<ImagesDashboard> {
                           .pickImage(source: ImageSource.gallery);
                       if (image == null) return;
                       final bytes = await image.readAsBytes();
-                      final base64 = base64Encode(bytes);
+
                       setState(() {
-                        images.add(base64);
+                        images.add(bytes);
                       });
                       states.setWordImages(images);
                     }

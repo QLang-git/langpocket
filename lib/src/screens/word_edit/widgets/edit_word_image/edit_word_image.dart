@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,7 +7,7 @@ import 'package:langpocket/src/screens/word_edit/screen/edit_mode_word_screen.da
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class EditWordImage extends StatefulWidget {
-  final List<String> currentImages;
+  final List<Uint8List> currentImages;
   const EditWordImage({
     Key? key,
     required this.currentImages,
@@ -18,7 +18,7 @@ class EditWordImage extends StatefulWidget {
 }
 
 class _EditWordImageState extends State<EditWordImage> {
-  late List<String> images;
+  late List<Uint8List> images;
   @override
   void initState() {
     images = [...widget.currentImages];
@@ -47,8 +47,7 @@ class _EditWordImageState extends State<EditWordImage> {
                         margin: const EdgeInsets.all(10.0),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10)),
-                        child: Image.memory(base64Decode(images[index]),
-                            fit: BoxFit.cover),
+                        child: Image.memory(images[index], fit: BoxFit.cover),
                       ),
                       Positioned(
                         top: 0,
@@ -88,9 +87,9 @@ class _EditWordImageState extends State<EditWordImage> {
                           .pickImage(source: ImageSource.gallery);
                       if (image == null) return;
                       final bytes = await image.readAsBytes();
-                      final base64 = base64Encode(bytes);
+
                       setState(() {
-                        images.add(base64);
+                        images.add(bytes);
                       });
                       states.updateWordImages(images);
                     }

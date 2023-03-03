@@ -1,8 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
-import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/screens/group/screen/group_screen.dart';
 import 'package:langpocket/src/screens/home/screen/home_screen.dart';
 import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
@@ -15,14 +16,16 @@ import 'package:langpocket/src/utils/routes/not_found_screen.dart';
 
 enum AppRoute { home, newWord, wordView, group, word, editMode, spelling }
 
-class WordDataToView {
+class Word {
+  final int? id;
   final String foreignWord;
   final List<String> wordMeans;
-  final List<String> wordImages;
+  final List<Uint8List> wordImages;
   final List<String> wordExamples;
   final String wordNote;
 
-  WordDataToView({
+  Word({
+    this.id,
     required this.foreignWord,
     required this.wordMeans,
     required this.wordImages,
@@ -50,9 +53,9 @@ final GoRouter goroute = GoRouter(
                     path: 'view',
                     name: AppRoute.wordView.name,
                     pageBuilder: (context, state) {
-                      final word = state.extra as WordDataToView?;
+                      final word = state.extra as Word?;
 
-                      if (word is WordDataToView) {
+                      if (word is Word) {
                         return _navGoRight(
                             WordPreviewerScreen(wordData: word), state);
                       } else {
@@ -76,8 +79,8 @@ final GoRouter goroute = GoRouter(
                   path: 'word',
                   name: AppRoute.word.name,
                   pageBuilder: (context, state) {
-                    final word = state.extra as WordData?;
-                    if (word is WordData) {
+                    final word = state.extra as Word?;
+                    if (word is Word) {
                       return _navGoRight(WordViewScreen(word: word), state);
                     } else {
                       return _navGoUp(const ErrorNavScreen(), state);
@@ -86,9 +89,10 @@ final GoRouter goroute = GoRouter(
                   routes: [
                     GoRoute(
                       path: 'edit-mode',
+                      name: AppRoute.editMode.name,
                       pageBuilder: (context, state) {
-                        final word = state.extra as WordData?;
-                        if (word is WordData) {
+                        final word = state.extra as Word?;
+                        if (word is Word) {
                           return _navGoRight(
                               EditModeWordScreen(
                                 wordData: word,
@@ -103,14 +107,14 @@ final GoRouter goroute = GoRouter(
                       path: 'spelling',
                       name: AppRoute.spelling.name,
                       pageBuilder: (context, state) {
-                        final word = state.extra as WordData?;
+                        final word = state.extra as Word?;
                         if (word != null) {
                           return _navGoUp(
                               PracticeSpellingScreen(
-                                  imageList: word.imagesList(),
+                                  imageList: word.wordImages,
                                   foreignWord: word.foreignWord,
-                                  meanList: word.meansList(),
-                                  examplesList: word.examplesList()),
+                                  meanList: word.wordMeans,
+                                  examplesList: word.wordExamples),
                               state);
                         } else {
                           return _navGoUp(const ErrorNavScreen(), state);

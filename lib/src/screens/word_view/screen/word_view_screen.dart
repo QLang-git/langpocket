@@ -5,13 +5,12 @@ import 'package:langpocket/src/common_widgets/views/examples_view/examples_view.
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
 import 'package:langpocket/src/common_widgets/views/note_view/note_view.dart';
 import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
-import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
-import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/screens/word_view/word_view_appbar/word_view_appbar.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class WordViewScreen extends ConsumerStatefulWidget {
-  final WordData word;
+  final Word word;
   const WordViewScreen({
     super.key,
     required this.word,
@@ -33,18 +32,18 @@ class _WordViewScreenState extends ConsumerState<WordViewScreen> {
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
             child: Column(
               children: [
-                ImageView(imageList: widget.word.imagesList()),
+                ImageView(imageList: widget.word.wordImages),
                 const SizedBox(
                   height: 15,
                 ),
                 WordView(
                   foreignWord: widget.word.foreignWord,
-                  means: widget.word.meansList(),
+                  means: widget.word.wordMeans,
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                ExamplesView(examples: widget.word.examplesList()),
+                ExamplesView(examples: widget.word.wordExamples),
                 const SizedBox(
                   height: 20,
                 ),

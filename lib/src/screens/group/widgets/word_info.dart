@@ -1,18 +1,16 @@
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
-import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class WordInfo extends StatelessWidget {
-  final WordData word;
+  final Word word;
   const WordInfo({super.key, required this.word});
 
   @override
   Widget build(BuildContext context) {
-    final getRandomExample = Random().nextInt(word.examplesList().length);
+    final getRandomExample = Random().nextInt(word.wordExamples.length);
     return Row(
       children: [
         SizedBox(
@@ -20,7 +18,7 @@ class WordInfo extends StatelessWidget {
           width: 90,
           child: word.wordImages.isNotEmpty
               ? Image.memory(
-                  base64Decode(word.imagesList().first),
+                  word.wordImages.first,
                   fit: BoxFit.fill,
                 )
               : Container(
@@ -48,7 +46,7 @@ class WordInfo extends StatelessWidget {
                 children: [
                   Text('Means: ', style: bodyLarge(primaryFontColor)),
                   Text(
-                    word.meansList().join(','),
+                    word.wordMeans.join(','),
                     overflow: TextOverflow.ellipsis,
                     style: bodyLargeBold(secondaryColor),
                   ),
@@ -58,7 +56,7 @@ class WordInfo extends StatelessWidget {
                 children: [
                   Text('Example: ', style: bodyLarge(primaryFontColor)),
                   Text(
-                    word.examplesList()[getRandomExample],
+                    word.wordExamples[getRandomExample],
                     overflow: TextOverflow.ellipsis,
                     style: bodyLargeBold(secondaryColor),
                   ),
