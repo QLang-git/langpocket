@@ -18,8 +18,6 @@ class NewWordForm extends ConsumerStatefulWidget {
 class NewWordFormState extends ConsumerState<NewWordForm> {
   @override
   Widget build(BuildContext context) {
-    // Build a Form widget using the _formKey created above.
-
     return Form(
       key: widget.formKey,
       child: Column(

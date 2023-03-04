@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
+import 'package:langpocket/src/screens/group/app_bar/group_appbar_controller.dart';
 import 'package:langpocket/src/screens/group/controller/group_controller.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
@@ -48,22 +49,6 @@ class _GroupAppBarState extends State<GroupAppBar> {
     controller.dispose();
 
     super.dispose();
-  }
-
-  void updateGroupName(int id, String newName, WidgetRef ref) {
-    if (inputKey.currentState!.validate()) {
-      final newInfo = NewGroupInfo(groupId: id, groupName: newName);
-      var res = ref.read(updateGroupNameProvider(newInfo));
-      if (res.hasError) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Error : try again')));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('The name of the group has been changed')),
-        );
-      }
-    }
   }
 
   @override
@@ -120,8 +105,8 @@ class _GroupAppBarState extends State<GroupAppBar> {
                   ? Consumer(
                       builder: (context, ref, child) {
                         return IconButton(
-                          onPressed: () => updateGroupName(
-                              widget.groupId, controller.text, ref),
+                          onPressed: () => updateGroupName(widget.groupId,
+                              controller.text, ref, inputKey, context),
                           icon: Icon(Icons.save_rounded,
                               size: 25, color: primaryFontColor),
                         );

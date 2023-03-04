@@ -46,18 +46,7 @@ class _WordsGroupsState extends ConsumerState<WordsGroups> {
             return const Center(child: Text('No Word saved in This Group'));
           }
 
-          final wordDecoding = currentWords
-              .map((word) => Word(
-                    id: word.id,
-                    foreignWord: word.foreignWord,
-                    wordMeans: word.meansList(),
-                    wordImages:
-                        word.imagesList().map((e) => base64Decode(e)).toList(),
-                    wordExamples: word.examplesList(),
-                    wordNote: word.wordNote,
-                  ))
-              .toList();
-          words = wordDecoding;
+          words = wordDecoding(currentWords);
 
           return SlidableAutoCloseBehavior(
             closeWhenOpened: true,

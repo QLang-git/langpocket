@@ -19,17 +19,3 @@ extension WordExt on WordData {
         .toList();
   }
 }
-
-extension StringEx on String {
-  List<String> examplesList() {
-    return split('-').where((element) => element.isNotEmpty).toList();
-  }
-
-  List<String> meansList() {
-    return split('-').where((element) => element.isNotEmpty).toList();
-  }
-
-  List<String> imagesList() {
-    return split('-').where((element) => element.isNotEmpty).toList();
-  }
-}
