@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'drift_group_repository.dart';
+import 'package:langpocket/src/data/local/connection/connection.dart' as impl;
 
 abstract class LocalGroupRepository {
   Future<List<GroupData>> fetchGroups();
@@ -20,7 +21,7 @@ abstract class LocalGroupRepository {
 }
 
 final localGroupRepositoryProvider = Provider<LocalGroupRepository>((ref) {
-  final database = DriftGroupRepository();
+  final database = DriftGroupRepository(impl.connect());
   ref.onDispose(database.close);
   return database;
 });

@@ -2,14 +2,14 @@ import 'package:langpocket/src/data/local/entities/word_entity.dart';
 import 'package:langpocket/src/data/local/repository/local_group_repository.dart';
 import 'package:drift/drift.dart';
 import 'package:langpocket/src/data/local/entities/group_entity.dart';
-import 'package:langpocket/src/data/local/connection/connection.dart' as impl;
 part 'drift_group_repository.g.dart';
 
 @DriftDatabase(tables: [Group, Word])
 class DriftGroupRepository extends _$DriftGroupRepository
     implements LocalGroupRepository {
+  final QueryExecutor queryExecutor;
   // we tell the database where to store the data with this constructor
-  DriftGroupRepository() : super(impl.connect());
+  DriftGroupRepository(this.queryExecutor) : super(queryExecutor);
 
   // you should bump this number whenever you change or add a table definition.
   // Migrations are covered later in the documentation.
