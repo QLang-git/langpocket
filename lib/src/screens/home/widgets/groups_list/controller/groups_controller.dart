@@ -10,13 +10,6 @@ final groupsControllerProvider = StreamProvider<List<GroupData>>((ref) {
   return groups;
 });
 
-final featchWordsListbyIdProvider =
-    FutureProvider.family<List<WordData>, int>((ref, groupId) async {
-  final words =
-      await ref.watch(wordsServicesProvider).fetchWordsByGroupId(groupId);
-
-  return words;
-});
 final watchWordsListbyIdProvider =
     StreamProvider.family<List<WordData>, int>((ref, groupId) {
   final words = ref.watch(wordsServicesProvider).watchWordsGroupId(groupId);
@@ -34,24 +27,11 @@ class DayLogo {
   @override
   String toString() =>
       'DayLogo(dayColor: $dayColor, dayIcon: $dayIcon, dayName: $dayName)';
-
-  @override
-  bool operator ==(covariant DayLogo other) {
-    if (identical(this, other)) return true;
-
-    return other.dayColor == dayColor &&
-        other.dayIcon == dayIcon &&
-        other.dayName == dayName;
-  }
-
-  @override
-  int get hashCode => dayColor.hashCode ^ dayIcon.hashCode ^ dayName.hashCode;
 }
 
 //? : should move to db
-DayLogo setDayLogo(DateTime dateTime) {
-  final today = dateTime.weekday;
-  switch (today) {
+DayLogo setDayLogo(int dayNumber) {
+  switch (dayNumber) {
     case 1:
       return DayLogo(Colors.red[400]!, Icons.coffee_rounded, 'Mon');
 

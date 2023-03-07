@@ -30,7 +30,9 @@ class _GroupsListState extends ConsumerState<GroupsList> {
             final dataName = group.creatingTime;
             final wordsInGroup =
                 ref.watch(watchWordsListbyIdProvider(group.id));
-            final icontDay = setDayLogo(dataName);
+            final today = dataName.weekday;
+
+            final icontDay = setDayLogo(today);
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: Card(
