@@ -24,6 +24,7 @@ final deleteWordByIdProvider =
     FutureProvider.family<void, int>((ref, wordId) async {
   await ref.watch(wordsServicesProvider).deleteWordById(wordId);
 });
+
 List<Word> wordDecoding(List<WordData> wordsData) {
   return wordsData
       .map((word) => Word(

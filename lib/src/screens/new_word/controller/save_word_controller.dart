@@ -17,9 +17,10 @@ class SaveWordController extends StateNotifier<AsyncValue<void>> {
     required String wordNote,
   }) async {
     // validations
-    if (foreignWord.isEmpty && wordExamples.isEmpty && wordMeans.isEmpty) {
+    if (foreignWord.isEmpty || wordExamples.isEmpty || wordMeans.isEmpty) {
       state = AsyncValue.error(
           'ONE of the required value not found', StackTrace.current);
+      return;
     }
     // get the group
     final now = DateTime.now();

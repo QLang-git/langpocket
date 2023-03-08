@@ -1,10 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
+import 'package:langpocket/src/data/local/repository/local_group_repository.dart';
 import 'package:langpocket/src/screens/group/controller/group_controller.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
+import 'package:mocktail/mocktail.dart';
+
+class MockDriftGroupRepository extends Mock implements DriftGroupRepository {}
 
 void main() {
   test('decoding wordData object to word decoding', () {
@@ -58,5 +63,28 @@ void main() {
       wordDecoding(codingWord).first.wordImages.first,
       decodingWord.first.wordImages.first,
     );
+  });
+  test('update Group Name Provider', () async {
+    final db = MockDriftGroupRepository();
+    final container = ProviderContainer(
+      overrides: [localGroupRepositoryProvider.overrideWithValue(db)],
+    );
+    expect(
+        container.read(updateGroupNameProvider(
+            NewGroupInfo(groupId: 1, groupName: 'newName'))),
+        const AsyncValue<void>.loading());
+
+    verify(() => db.updateGroupName(1, 'newName')).called(1);
+  });
+
+  test('delete Word By Id Provider', () async {
+    final db = MockDriftGroupRepository();
+    final container = ProviderContainer(
+      overrides: [localGroupRepositoryProvider.overrideWithValue(db)],
+    );
+    expect(container.read(deleteWordByIdProvider(1)),
+        const AsyncValue<void>.loading());
+
+    verify(() => db.deleteWordById(1)).called(1);
   });
 }
