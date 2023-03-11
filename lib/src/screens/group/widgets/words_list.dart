@@ -1,11 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
-import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/screens/group/controller/group_controller.dart';
 import 'package:langpocket/src/screens/group/widgets/custom_practice_dialog.dart';
 import 'package:langpocket/src/screens/group/widgets/word_info.dart';

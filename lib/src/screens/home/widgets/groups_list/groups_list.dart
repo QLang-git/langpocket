@@ -22,7 +22,7 @@ class _GroupsListState extends ConsumerState<GroupsList> {
         value: groupsList,
         data: (groups) {
           if (groups.isEmpty) {
-            return const Text('NOT Found');
+            return const Text('You don\'t have any group yet');
           }
 
           return Column(

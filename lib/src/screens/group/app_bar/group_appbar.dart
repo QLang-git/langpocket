@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/screens/group/app_bar/group_appbar_controller.dart';
-import 'package:langpocket/src/screens/group/controller/group_controller.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class GroupAppBar extends StatefulWidget with PreferredSizeWidget {
