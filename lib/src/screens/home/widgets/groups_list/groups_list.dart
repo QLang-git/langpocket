@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
+import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/screens/home/widgets/groups_list/controller/groups_controller.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
@@ -40,6 +41,7 @@ class _GroupsListState extends ConsumerState<GroupsList> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
                 child: InkWell(
+                  key: Key('group-${group.id}'),
                   onTap: () =>
                       context.goNamed(AppRoute.group.name, extra: group),
                   child: SizedBox(
@@ -85,24 +87,8 @@ class _GroupsListState extends ConsumerState<GroupsList> {
                                   ),
                                   AsyncValueWidget(
                                       value: wordsInGroup,
-                                      data: (words) => Row(
-                                            children: words.map((word) {
-                                              if (words.last == word) {
-                                                return Text(
-                                                  '${word.foreignWord} ',
-                                                  style: bodyLargeBold(
-                                                      primaryColor),
-                                                );
-                                              } else {
-                                                return Text(
-                                                  '${word.foreignWord} , ',
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: bodyLargeBold(
-                                                      primaryColor),
-                                                );
-                                              }
-                                            }).toList(),
+                                      data: (words) => MyWordsInGroup(
+                                            words: words,
                                           ))
                                 ],
                               ),
@@ -121,5 +107,33 @@ class _GroupsListState extends ConsumerState<GroupsList> {
             );
           }).toList());
         });
+  }
+}
+
+class MyWordsInGroup extends StatelessWidget {
+  final List<WordData> words;
+  const MyWordsInGroup({
+    super.key,
+    required this.words,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: words.map((word) {
+        if (words.last == word) {
+          return Text(
+            '${word.foreignWord} ',
+            style: bodyLargeBold(primaryColor),
+          );
+        } else {
+          return Text(
+            '${word.foreignWord} , ',
+            overflow: TextOverflow.ellipsis,
+            style: bodyLargeBold(primaryColor),
+          );
+        }
+      }).toList(),
+    );
   }
 }
