@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/app.dart';
 // ignore:depend_on_referenced_packages
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() async {
   await runZonedGuarded(runAppSafely, errorHandle);
@@ -11,13 +12,14 @@ void main() async {
 
 //! if the app run succesfuly
 Future<void> runAppSafely() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   // turn off the # in the URLs on the web
   //GoRouter.setUrlPathStrategy(UrlPathStrategy.path);
   usePathUrlStrategy();
-
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   // * Entry point of the app
   runApp(const ProviderScope(child: App()));
+  FlutterNativeSplash.remove();
 //* if any uncaught Error happens
   errorScreen();
 }

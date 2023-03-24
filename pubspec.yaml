@@ -31,6 +31,7 @@ dependencies:
   progress_indicators: ^1.0.0
   flutter_speed_dial: ^6.2.0
   flutter_slidable: ^2.0.0
+  flutter_native_splash: ^2.2.19
   
   
 
@@ -44,6 +45,7 @@ dev_dependencies:
   drift_dev: ^2.5.0+1
   build_web_compilers: ^3.2.7
   mocktail: ^0.3.0
+  
 flutter:
   uses-material-design: true
   assets:

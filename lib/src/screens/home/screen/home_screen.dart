@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/screens/home/widgets/groups_list/groups_list.dart';
 import 'package:langpocket/src/screens/home/app_bar/presentation/home_appbar.dart';
-import 'package:langpocket/src/screens/home/widgets/statistics/statistics.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:go_router/go_router.dart';
@@ -13,17 +12,22 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sizeHeight = MediaQuery.of(context).size.height;
+    final colorStyle = Theme.of(context).colorScheme;
+    final textStyle = Theme.of(context).textTheme;
     return ResponsiveCenter(
       child: Scaffold(
-        appBar: const HomeAppBar(),
-        backgroundColor: backgroundColor,
+        appBar: HomeAppBar(
+          screenHeight: sizeHeight,
+          userName: 'Ali',
+        ),
+        backgroundColor: colorStyle.background,
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
             child: Column(
               children: [
-                const Statistics(),
                 const SizedBox(height: 15),
                 Padding(
                   padding:
@@ -32,19 +36,17 @@ class HomeScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Groups',
-                          style: GoogleFonts.robotoFlex(
-                            color: primaryFontColor,
-                            fontSize: 30,
-                            fontWeight: FontWeight.w600,
-                          )),
+                          style: textStyle.headlineLarge
+                              ?.copyWith(color: colorStyle.outline)),
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: buttonColor,
+                            backgroundColor: colorStyle.onPrimary,
                           ),
                           onPressed: () {},
                           child: Text(
                             'Todo',
-                            style: buttonStyle(Colors.white),
+                            style: textStyle.labelMedium
+                                ?.copyWith(color: Colors.white),
                           ))
                     ],
                   ),

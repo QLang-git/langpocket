@@ -18,12 +18,17 @@ class _GroupsListState extends ConsumerState<GroupsList> {
   @override
   Widget build(BuildContext context) {
     final groupsList = ref.watch(groupsControllerProvider);
+    final sizeHeight = MediaQuery.of(context).size.height;
 
     return AsyncValueWidget(
         value: groupsList,
         data: (groups) {
           if (groups.isEmpty) {
-            return const Text('You don\'t have any group yet');
+            return SizedBox(
+                width: double.infinity,
+                height: sizeHeight * 1.5 / 4,
+                child:
+                    const Center(child: Text('You don\'t have any group yet')));
           }
 
           return Column(
