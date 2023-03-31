@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
-import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class ImagesDashboard extends StatefulWidget {
   const ImagesDashboard({
@@ -39,7 +38,7 @@ class _ImagePreviewerState extends State<ImagesDashboard> {
                         height: 140,
                         margin: const EdgeInsets.all(10.0),
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10)),
+                            borderRadius: BorderRadius.circular(20)),
                         child: Image.memory(images[index], fit: BoxFit.cover),
                       ),
                       Positioned(
@@ -68,12 +67,18 @@ class _ImagePreviewerState extends State<ImagesDashboard> {
         Consumer(
           builder: (context, ref, child) {
             return ElevatedButton(
-              style: ButtonStyle(
+              style: ElevatedButton.styleFrom(
+                  disabledBackgroundColor:
+                      Theme.of(context).colorScheme.onBackground,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
                   backgroundColor: images.length < 5
-                      ? MaterialStateProperty.all<Color>(buttonColor)
-                      : null,
-                  textStyle: MaterialStateProperty.all<TextStyle>(
-                      buttonStyle(primaryFontColor))),
+                      ? Theme.of(context).colorScheme.onPrimary
+                      : Theme.of(context).colorScheme.onBackground,
+                  textStyle: Theme.of(context)
+                      .textTheme
+                      .labelMedium
+                      ?.copyWith(color: Colors.white)),
               onPressed: images.length < 5
                   ? () async {
                       final image = await ImagePicker()
@@ -89,12 +94,21 @@ class _ImagePreviewerState extends State<ImagesDashboard> {
                   : null,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Padding(
+                children: [
+                  const Padding(
                     padding: EdgeInsets.all(10.0),
-                    child: Icon(Icons.add_a_photo_outlined),
+                    child: Icon(
+                      Icons.add_a_photo_outlined,
+                      color: Colors.white,
+                    ),
                   ),
-                  Text('Add descriptive image'),
+                  Text(
+                    'Add descriptive image',
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelMedium
+                        ?.copyWith(color: Colors.white),
+                  ),
                 ],
               ),
             );

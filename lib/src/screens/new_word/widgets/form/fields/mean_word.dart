@@ -21,11 +21,12 @@ class _MeanWordState extends State<MeanWord> {
     return Column(children: [
       for (int i = 0; i < meaningControllers.length; i++)
         Padding(
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.only(bottom: 12, top: 2),
           child: TextFormField(
             controller: meaningControllers[i],
             style: headline3(primaryFontColor),
             decoration: InputDecoration(
+              contentPadding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
               suffixIcon: i > 0
                   ? TextButton(
                       onPressed: () {
@@ -37,20 +38,14 @@ class _MeanWordState extends State<MeanWord> {
                           meaningControllers.removeAt(i);
                         });
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        child: Icon(
-                          Icons.close_outlined,
-                          color: primaryColor,
-                        ),
-                      ),
-                    )
-                  : Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 18),
                       child: Icon(
-                        Icons.language_outlined,
+                        Icons.close_outlined,
                         color: primaryColor,
                       ),
+                    )
+                  : Icon(
+                      Icons.language_outlined,
+                      color: primaryColor,
                     ),
               labelStyle: bodyLarge(primaryColor),
               label: const Text('Mean'),
@@ -83,7 +78,7 @@ class _MeanWordState extends State<MeanWord> {
       if (meaningControllers.length < 3)
         TextButton(
           style: TextButton.styleFrom(
-            backgroundColor: buttonColor,
+            backgroundColor: Theme.of(context).colorScheme.onPrimary,
             shape: const CircleBorder(),
           ),
           onPressed: () {
@@ -93,7 +88,7 @@ class _MeanWordState extends State<MeanWord> {
           },
           child: const Icon(
             Icons.add,
-            size: 50,
+            size: 45,
             color: Colors.white,
           ),
         ),

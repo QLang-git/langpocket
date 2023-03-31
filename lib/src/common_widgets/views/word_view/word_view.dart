@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
 class WordView extends StatefulWidget {
@@ -20,82 +19,112 @@ class _WordViewState extends State<WordView> {
   bool _showContent = false;
   @override
   Widget build(BuildContext context) {
+    final colorFount = Theme.of(context).colorScheme.outline;
+    final textStyle = Theme.of(context).textTheme;
     TextToSpeech tts = TextToSpeech();
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      margin: const EdgeInsets.all(10),
-      child: Column(
-        children: [
-          ListTile(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 120,
-                  child: Text(
-                    widget.foreignWord,
-                    style: headline2Bold(primaryFontColor),
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-                if (!widget.noVoice)
-                  TextButton(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      child: Icon(
-                        Icons.volume_up_outlined,
-                        color: primaryColor,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+        child: Column(
+          children: [
+            ListTile(
+              title: InkWell(
+                hoverColor: Colors.transparent,
+                focusColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onTap: () => setState(() {
+                  _showContent = !_showContent;
+                }),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Icon(
+                          !_showContent
+                              ? Icons.arrow_drop_down_circle_outlined
+                              : Icons.arrow_drop_up_outlined,
+                          color: colorFount,
+                          size: 30,
+                        ),
                       ),
+                      onPressed: () {
+                        setState(() {
+                          _showContent = !_showContent;
+                        });
+                      },
                     ),
-                    onPressed: () {
-                      tts.speak(widget.foreignWord);
-                    },
-                  ),
-              ],
-            ),
-            trailing: TextButton(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                child: Icon(
-                  !_showContent
-                      ? Icons.arrow_drop_down_circle_outlined
-                      : Icons.arrow_drop_up_outlined,
-                  color: primaryColor,
+                    Text(
+                      widget.foreignWord,
+                      style:
+                          textStyle.headlineLarge?.copyWith(color: colorFount),
+                      textAlign: TextAlign.right,
+                      softWrap: true,
+                      maxLines: 1,
+                      overflow: TextOverflow.fade,
+                    ),
+                    TextButton(
+                      onPressed: !widget.noVoice
+                          ? () {
+                              tts.speak(widget.foreignWord);
+                            }
+                          : null,
+                      child: !widget.noVoice
+                          ? Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Icon(
+                                Icons.volume_up_outlined,
+                                color: colorFount,
+                                size: 30,
+                              ),
+                            )
+                          : Icon(
+                              Icons.volume_off_outlined,
+                              color: colorFount,
+                            ),
+                    )
+                  ],
                 ),
               ),
-              onPressed: () {
-                setState(() {
-                  _showContent = !_showContent;
-                });
-              },
             ),
-          ),
-          _showContent
-              ? Container(
-                  height: 60,
-                  width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                  child: ListView.builder(
-                      itemCount: widget.means.length,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        if (widget.means[index].isNotEmpty) {
-                          if (widget.means[index] == widget.means.last ||
-                              widget.means[index + 1] == '') {
-                            return Text('${widget.means[index]} ',
-                                style: headline3(primaryFontColor));
+            _showContent
+                ? Container(
+                    height: 60,
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 15),
+                    child: ListView.builder(
+                        itemCount: widget.means.length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          if (widget.means[index].isNotEmpty) {
+                            if (widget.means[index] == widget.means.last ||
+                                widget.means[index + 1] == '') {
+                              return Text('${widget.means[index]} ',
+                                  softWrap: true,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.fade,
+                                  style: textStyle.displayMedium
+                                      ?.copyWith(color: colorFount));
+                            }
+                            return Text('${widget.means[index]} , ',
+                                softWrap: true,
+                                maxLines: 1,
+                                overflow: TextOverflow.fade,
+                                style: textStyle.displayMedium
+                                    ?.copyWith(color: colorFount));
                           }
-                          return Text('${widget.means[index]} , ',
-                              style: headline3(primaryFontColor));
-                        }
-                        return Container();
-                      }))
-              : Container()
-        ],
+                          return Container();
+                        }))
+                : Container()
+          ],
+        ),
       ),
     );
   }

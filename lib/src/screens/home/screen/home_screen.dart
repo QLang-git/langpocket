@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/screens/home/widgets/groups_list/groups_list.dart';
 import 'package:langpocket/src/screens/home/app_bar/presentation/home_appbar.dart';
-import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:go_router/go_router.dart';
 
@@ -58,8 +56,9 @@ class HomeScreen extends StatelessWidget {
         ),
         floatingActionButton: TextButton(
           style: TextButton.styleFrom(
-            backgroundColor: buttonColor,
-            shape: const CircleBorder(),
+            backgroundColor: colorStyle.onPrimary,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0)),
           ),
           child: const Icon(
             Icons.add,

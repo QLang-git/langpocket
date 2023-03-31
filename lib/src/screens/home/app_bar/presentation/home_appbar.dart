@@ -11,7 +11,7 @@ class HomeAppBar extends StatefulWidget with PreferredSizeWidget {
   State<HomeAppBar> createState() => _HomeAppBarState();
   @override
   Size get preferredSize =>
-      Size.fromHeight(screenHeight >= 770 ? screenHeight * 0.28 : 770 * 0.28);
+      Size.fromHeight(screenHeight >= 770 ? screenHeight * 0.28 : 800 * 0.28);
 }
 
 class _HomeAppBarState extends State<HomeAppBar> {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
-import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class NewWordAppBar extends StatefulWidget with PreferredSizeWidget {
@@ -13,48 +12,52 @@ class NewWordAppBar extends StatefulWidget with PreferredSizeWidget {
   @override
   State<NewWordAppBar> createState() => _NewWordAppBarState();
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(75);
 }
 
 class _NewWordAppBarState extends State<NewWordAppBar> {
   @override
   Widget build(BuildContext context) {
     final states = context.findAncestorStateOfType<NewWordScreenState>()!;
+
     return ResponsiveCenter(
       child: AppBar(
-        elevation: 0,
-        toolbarHeight: 75,
+        iconTheme: const IconThemeData(color: Colors.white, size: 37),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(38),
+                bottomRight: Radius.circular(38))),
         actions: [
           Padding(
-              padding: const EdgeInsets.only(right: 20, left: 15),
-              child: IconButton(
-                  onPressed: () {
-                    if (widget.formKey.currentState!.validate()) {
-                      context.goNamed(
-                        AppRoute.wordView.name,
-                        extra: Word(
-                            foreignWord: states.foreignWord,
-                            wordMeans: states.wordMeans,
-                            wordImages: states.wordImages,
-                            wordExamples: states.wordExample,
-                            wordNote: states.wordNote),
-                      );
-                    }
-                  },
-                  icon: Icon(
-                    Icons.preview_outlined,
-                    size: 35,
-                    color: primaryFontColor,
-                  )))
+            padding: const EdgeInsets.only(right: 6.5),
+            child: IconButton(
+                onPressed: () {
+                  if (widget.formKey.currentState!.validate()) {
+                    context.goNamed(
+                      AppRoute.wordView.name,
+                      extra: Word(
+                          foreignWord: states.foreignWord,
+                          wordMeans: states.wordMeans,
+                          wordImages: states.wordImages,
+                          wordExamples: states.wordExample,
+                          wordNote: states.wordNote),
+                    );
+                  }
+                },
+                icon: const Icon(
+                  Icons.preview_outlined,
+                )),
+          )
         ],
-        foregroundColor: Colors.black87,
-        backgroundColor: Colors.transparent,
-        title: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            'List Name',
-            style: headline1Bold(primaryFontColor),
-          ),
+        centerTitle: true,
+        title: Text(
+          'New word',
+          style: Theme.of(context)
+              .textTheme
+              .headlineLarge
+              ?.copyWith(color: Colors.white),
         ),
       ),
     );

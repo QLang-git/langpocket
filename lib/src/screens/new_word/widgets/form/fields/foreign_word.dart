@@ -21,52 +21,47 @@ class _ForeignWordState extends State<ForeignWord> {
   @override
   Widget build(BuildContext context) {
     final states = context.findAncestorStateOfType<NewWordScreenState>()!;
-    return Expanded(
-      flex: 6,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: Consumer(builder: (context, ref, child) {
-          return TextFormField(
-            controller: inputController,
-            onChanged: (value) => inputText = value,
-            style: headline3(primaryFontColor),
-            decoration: InputDecoration(
-              labelStyle: bodyLarge(primaryColor),
-              label: const Text('Word'),
-              suffixIcon: TextButton(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  child: Icon(
-                    Icons.volume_up_outlined,
-                    color: primaryColor,
-                  ),
-                ),
-                onPressed: () {
-                  if (inputText != null) {
-                    tts.speak(inputText!);
-                  }
-                },
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 2),
+      child: Consumer(builder: (context, ref, child) {
+        return TextFormField(
+          controller: inputController,
+          onChanged: (value) => inputText = value,
+          style: headline3(primaryFontColor),
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+            labelStyle: bodyLarge(primaryColor),
+            label: const Text('Word'),
+            suffixIcon: TextButton(
+              child: Icon(
+                Icons.volume_up_outlined,
+                color: primaryColor,
               ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(width: 2, color: secondaryColor),
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
+              onPressed: () {
+                if (inputText != null) {
+                  tts.speak(inputText!);
+                }
+              },
             ),
-            // The validator receives the text that the user has entered.
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter the word';
-              } else {
-                states.setForeignWord(value);
-                return null;
-              }
-            },
-          );
-        }),
-      ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(width: 2, color: secondaryColor),
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+          ),
+          // The validator receives the text that the user has entered.
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter the word';
+            } else {
+              states.setForeignWord(value);
+              return null;
+            }
+          },
+        );
+      }),
     );
   }
 }

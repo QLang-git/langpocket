@@ -23,8 +23,8 @@ class _ExampleWordState extends State<ExampleWord> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 7),
           child: Text(
-            '+ Add examples',
-            style: headline2Bold(primaryFontColor),
+            'Add examples',
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
         ),
       ),
@@ -35,6 +35,7 @@ class _ExampleWordState extends State<ExampleWord> {
             controller: exampleControllers[i],
             style: headline3(primaryFontColor),
             decoration: InputDecoration(
+              contentPadding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
               suffixIcon: i > 1
                   ? TextButton(
                       onPressed: () {
@@ -46,20 +47,14 @@ class _ExampleWordState extends State<ExampleWord> {
                           exampleControllers.remove(exampleControllers[i]);
                         });
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        child: Icon(
-                          Icons.close_outlined,
-                          color: primaryColor,
-                        ),
-                      ),
-                    )
-                  : Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 18),
                       child: Icon(
-                        Icons.language_outlined,
+                        Icons.close_outlined,
                         color: primaryColor,
                       ),
+                    )
+                  : Icon(
+                      Icons.language_outlined,
+                      color: primaryColor,
                     ),
               labelStyle: bodyLarge(primaryColor),
               label: Text('example ${i + 1}'),
@@ -92,7 +87,7 @@ class _ExampleWordState extends State<ExampleWord> {
       if (exampleControllers.length < 5)
         TextButton(
           style: TextButton.styleFrom(
-            backgroundColor: buttonColor,
+            backgroundColor: Theme.of(context).colorScheme.onPrimary,
             shape: const CircleBorder(),
           ),
           onPressed: () {
@@ -102,7 +97,7 @@ class _ExampleWordState extends State<ExampleWord> {
           },
           child: const Icon(
             Icons.add,
-            size: 50,
+            size: 45,
             color: Colors.white,
           ),
         ),

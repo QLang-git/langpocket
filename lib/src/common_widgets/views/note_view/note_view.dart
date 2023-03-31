@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class NoteView extends StatefulWidget {
   final String note;
@@ -12,37 +11,46 @@ class NoteView extends StatefulWidget {
 class _NoteViewState extends State<NoteView> {
   @override
   Widget build(BuildContext context) {
+    final colorFount = Theme.of(context).colorScheme.outline;
+    final textStyle = Theme.of(context).textTheme;
     return widget.note.isNotEmpty
-        ? Card(
-            elevation: 5,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            margin: const EdgeInsets.all(10),
-            child: Column(
-              children: [
-                ListTile(
-                  title: Text('Note', style: headline3Bold(primaryFontColor)),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                  child: Row(children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Text(
-                          widget.note,
-                          maxLines: 15,
-                          style: bodyLarge(primaryFontColor),
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
+        ? Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Card(
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25.0),
+              ),
+              margin: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text('Note',
+                        style: textStyle.displayLarge?.copyWith(
+                            color: colorFount,
+                            decoration: TextDecoration.underline)),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                    child: Row(children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            widget.note,
+                            maxLines: 15,
+                            style: textStyle.bodyMedium
+                                ?.copyWith(color: colorFount),
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
-                    ),
-                  ]),
-                )
-              ],
+                    ]),
+                  )
+                ],
+              ),
             ),
           )
         : Container();

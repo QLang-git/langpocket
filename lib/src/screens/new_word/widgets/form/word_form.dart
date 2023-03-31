@@ -21,27 +21,16 @@ class NewWordFormState extends ConsumerState<NewWordForm> {
     return Form(
       key: widget.formKey,
       child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              ForeignWord(),
-              Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    child: Icon(Icons.compare_arrows_outlined),
-                  )),
-              Expanded(
-                flex: 6,
-                child: MeanWord(),
-              )
-            ],
+        children: const [
+          ForeignWord(),
+          RotatedBox(
+            quarterTurns: 5,
+            child: Icon(Icons.compare_arrows_outlined),
           ),
-          const ExampleWord(),
-          const SizedBox(height: 15),
-          const NotesWord()
+          MeanWord(),
+          ExampleWord(),
+          SizedBox(height: 15),
+          NotesWord()
         ],
       ),
     );

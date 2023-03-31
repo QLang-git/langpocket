@@ -9,7 +9,6 @@ import 'package:langpocket/src/screens/new_word/controller/save_word_controller.
 import 'package:langpocket/src/screens/new_word/widgets/form/word_form.dart';
 import 'package:langpocket/src/screens/new_word/app_bar/new_word_appbar.dart';
 import 'package:langpocket/src/screens/new_word/widgets/image_picker/images_dashboard.dart';
-import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class NewWordScreen extends StatefulWidget {
   const NewWordScreen({super.key});
@@ -58,21 +57,19 @@ class NewWordScreenState extends State<NewWordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorStyle = Theme.of(context).colorScheme;
     return ResponsiveCenter(
         child: Scaffold(
-            backgroundColor: backgroundColor,
+            backgroundColor: colorStyle.background,
             appBar: NewWordAppBar(
               formKey: formKey,
             ),
             body: SingleChildScrollView(
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 19.5),
                 child: Column(
                   children: [
-                    const SizedBox(
-                      height: 15,
-                    ),
                     const ImagesDashboard(),
                     const SizedBox(
                       height: 40,
@@ -85,8 +82,7 @@ class NewWordScreenState extends State<NewWordScreen> {
             floatingActionButton: Consumer(
               builder: (context, ref, child) => ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonColor,
-                    textStyle: buttonStyle(buttonColor),
+                    backgroundColor: Theme.of(context).colorScheme.onPrimary,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(40))),
                 onPressed: () {
@@ -142,13 +138,22 @@ class NewWordScreenState extends State<NewWordScreen> {
                 },
                 child: SizedBox(
                   width: 90,
-                  height: 70,
+                  height: 45,
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(Icons.save_alt_outlined),
-                        SizedBox(width: 5),
-                        Text('Save'),
+                      children: [
+                        const Icon(
+                          Icons.save_alt_outlined,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          'Save',
+                          style: Theme.of(context)
+                              .textTheme
+                              .displayMedium
+                              ?.copyWith(color: Colors.white),
+                        ),
                       ]),
                 ),
               ),
