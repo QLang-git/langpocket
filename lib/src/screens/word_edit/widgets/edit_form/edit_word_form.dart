@@ -28,26 +28,15 @@ class EditWordFormState extends ConsumerState<EditWordForm> {
       key: widget.formKey,
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              EditForeignWord(
-                currentForeignWord: widget.wordDataToView.foreignWord,
-              ),
-              const Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    child: Icon(Icons.compare_arrows_outlined),
-                  )),
-              Expanded(
-                flex: 6,
-                child: EditMeanWord(
-                  curentMeans: widget.wordDataToView.wordMeans,
-                ),
-              )
-            ],
+          EditForeignWord(
+            currentForeignWord: widget.wordDataToView.foreignWord,
+          ),
+          const RotatedBox(
+            quarterTurns: 5,
+            child: Icon(Icons.compare_arrows_outlined),
+          ),
+          EditMeanWord(
+            curentMeans: widget.wordDataToView.wordMeans,
           ),
           EditExampleWord(
             currentExamples: widget.wordDataToView.wordExamples,

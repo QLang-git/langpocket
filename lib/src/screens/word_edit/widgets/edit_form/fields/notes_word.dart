@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/screens/word_edit/screen/edit_mode_word_screen.dart';
-import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class EditNotesWord extends StatefulWidget {
   final String currentNote;
@@ -13,6 +12,7 @@ class EditNotesWord extends StatefulWidget {
 
 class _EditNotesWordState extends State<EditNotesWord> {
   late TextEditingController inputController;
+
   @override
   void initState() {
     inputController = TextEditingController(text: widget.currentNote);
@@ -21,6 +21,8 @@ class _EditNotesWordState extends State<EditNotesWord> {
 
   @override
   Widget build(BuildContext context) {
+    final colorStyle = Theme.of(context).colorScheme;
+    final textStyle = Theme.of(context).textTheme;
     final states = context.findAncestorStateOfType<EditModeWordScreenState>()!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
@@ -31,13 +33,14 @@ class _EditNotesWordState extends State<EditNotesWord> {
             onChanged: (value) {
               states.updateNote(value);
             },
-            style: headline3(primaryFontColor),
+            style: textStyle.displayMedium?.copyWith(color: colorStyle.outline),
             maxLines: 5,
             decoration: InputDecoration(
-              labelStyle: bodyLarge(primaryColor),
+              labelStyle:
+                  textStyle.bodyLarge?.copyWith(color: colorStyle.outline),
               hintText: 'write some notes for your new words optional',
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(width: 2, color: secondaryColor),
+                borderSide: BorderSide(width: 2, color: colorStyle.onSurface),
                 borderRadius: BorderRadius.circular(20.0),
               ),
               border: OutlineInputBorder(

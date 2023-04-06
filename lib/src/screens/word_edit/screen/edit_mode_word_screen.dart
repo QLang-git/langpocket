@@ -1,11 +1,9 @@
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/screens/word_edit/app_bar/word_editor_app_bar.dart';
 import 'package:langpocket/src/screens/word_edit/widgets/edit_form/edit_word_form.dart';
 import 'package:langpocket/src/screens/word_edit/widgets/edit_word_image/edit_word_image.dart';
-import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class EditModeWordScreen extends StatefulWidget {
@@ -19,60 +17,74 @@ class EditModeWordScreen extends StatefulWidget {
 
 class EditModeWordScreenState extends State<EditModeWordScreen> {
   final formKey = GlobalKey<FormState>();
-  List<String> updatedWordMeans = List.filled(6, '');
-  List<Uint8List> updatedWordImages = [];
-  List<String> updatedWordExample = List.filled(6, '');
-  String updatedWordNote = '';
-  String updatedforeignWord = '';
+  late String newforeignWord;
+  late List<String> newMeans;
+  late List<Uint8List> newImages;
+  late List<String> newExample;
+  late String newNote;
+  @override
+  void initState() {
+    newforeignWord = widget.wordData.foreignWord;
+    newMeans = [
+      ...widget.wordData.wordMeans,
+      ...List.filled(6 - widget.wordData.wordMeans.length, '')
+    ];
+    newImages = widget.wordData.wordImages;
+    newExample = [
+      ...widget.wordData.wordExamples,
+      ...List.filled(6 - widget.wordData.wordExamples.length, '')
+    ];
+    newNote = widget.wordData.wordNote;
+    super.initState();
+  }
 
   void updateWordMeans(String means, int targetIndex) {
     setState(() {
-      updatedWordMeans[targetIndex] = means;
+      newMeans[targetIndex] = means;
     });
   }
 
   void updateWordExample(String example, int targetIndex) {
     setState(() {
-      updatedWordExample[targetIndex] = example;
+      newExample[targetIndex] = example;
     });
   }
 
   void updateWordImages(List<Uint8List> images) {
     setState(() {
-      updatedWordImages = images;
+      newImages = images;
     });
   }
 
   void updateForeignWord(String word) {
     setState(() {
-      updatedforeignWord = word;
+      newforeignWord = word;
     });
   }
 
   void updateNote(String note) {
     setState(() {
-      updatedWordNote = note;
+      newNote = note;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorStyle = Theme.of(context).colorScheme;
+
     return ResponsiveCenter(
         child: Scaffold(
             appBar: WordEditorAppbar(
-              wordDataToView: widget.wordData,
+              wordData: widget.wordData,
               formKey: formKey,
             ),
-            backgroundColor: backgroundColor,
+            backgroundColor: colorStyle.background,
             body: SingleChildScrollView(
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 19.5),
                 child: Column(
                   children: [
-                    const SizedBox(
-                      height: 15,
-                    ),
                     EditWordImage(currentImages: widget.wordData.wordImages),
                     const SizedBox(
                       height: 40,

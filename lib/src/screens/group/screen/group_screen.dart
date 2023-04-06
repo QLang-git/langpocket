@@ -29,10 +29,13 @@ class _GroupScreenState extends State<GroupScreen> {
           groupDate: dateFormat,
           groupId: widget.groupData.id,
         ),
-        body: WordsGroups(
-          groupId: widget.groupData.id,
-          groupName: widget.groupData.groupName,
-          date: dateFormat,
+        body: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 12),
+          child: WordsGroups(
+            groupId: widget.groupData.id,
+            groupName: widget.groupData.groupName,
+            date: dateFormat,
+          ),
         ),
         floatingActionButton: SpeedDial(
           animatedIcon: AnimatedIcons.menu_close,

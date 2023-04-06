@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/screens/group/controller/group_controller.dart';
 import 'package:langpocket/src/screens/group/widgets/custom_practice_dialog.dart';
 import 'package:langpocket/src/screens/group/widgets/word_info.dart';
 import 'package:langpocket/src/screens/home/widgets/groups_list/controller/groups_controller.dart';
-import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
@@ -26,16 +24,9 @@ class WordsGroups extends ConsumerStatefulWidget {
 }
 
 class _WordsGroupsState extends ConsumerState<WordsGroups> {
-  List<Word> words = [];
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final wordsList = ref.watch(watchWordsListbyIdProvider(widget.groupId));
-    final tts = TextToSpeech();
     return AsyncValueWidget(
         value: wordsList,
         data: (currentWords) {
@@ -43,137 +34,154 @@ class _WordsGroupsState extends ConsumerState<WordsGroups> {
             return const Center(child: Text('No Word saved in This Group'));
           }
 
-          words = wordDecoding(currentWords);
+          return _MyWordList(
+              words: wordDecoding(currentWords),
+              groupName: widget.groupName,
+              date: widget.date,
+              groupId: widget.groupId);
+        });
+  }
+}
 
-          return SlidableAutoCloseBehavior(
-            closeWhenOpened: true,
-            child: ListView.builder(
-                itemCount: words.length,
-                itemBuilder: (context, index) {
-                  final word = words[index];
-                  return Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Card(
-                      shape: const RoundedRectangleBorder(),
-                      child: Slidable(
-                        key: Key(word.id.toString()),
-                        endActionPane: ActionPane(
-                            motion: const StretchMotion(),
-                            dismissible: DismissiblePane(onDismissed: () {
-                              final wordTarget = word;
-                              setState(() {
-                                words.remove(wordTarget);
-                              });
+class _MyWordList extends StatefulWidget {
+  final List<Word> words;
+  final String groupName;
+  final String date;
+  final int groupId;
+  const _MyWordList(
+      {super.key,
+      required this.words,
+      required this.groupName,
+      required this.date,
+      required this.groupId});
 
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                      content: const Text(
-                                          "The word has been deleted"),
-                                      duration: const Duration(seconds: 10),
-                                      action: SnackBarAction(
-                                          label: "Undo",
-                                          textColor: Colors.yellow,
-                                          onPressed: () {
-                                            setState(() {
-                                              words.insert(index, wordTarget);
-                                            });
-                                          })))
-                                  .closed
-                                  .then((reason) {
-                                if (reason != SnackBarClosedReason.action) {
-                                  ref.read(deleteWordByIdProvider(word.id!));
-                                }
-                              });
-                            }),
-                            children: [
-                              SlidableAction(
-                                backgroundColor: Colors.red,
-                                icon: Icons.delete_rounded,
-                                label: 'Delete',
-                                onPressed: (context) {
-                                  final wordTarget = word;
-                                  setState(() {
-                                    words.remove(wordTarget);
-                                  });
+  @override
+  State<_MyWordList> createState() => __MyWordListState();
+}
 
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(SnackBar(
-                                          content: const Text(
-                                              "The word has been deleted"),
-                                          duration: const Duration(seconds: 10),
-                                          action: SnackBarAction(
-                                              label: "Undo",
-                                              textColor: Colors.yellow,
-                                              onPressed: () {
-                                                setState(() {
-                                                  words.insert(
-                                                      index, wordTarget);
-                                                });
-                                              })))
-                                      .closed
-                                      .then((reason) {
-                                    if (reason != SnackBarClosedReason.action) {
-                                      ref.read(
-                                          deleteWordByIdProvider(word.id!));
-                                    }
-                                  });
-                                },
-                              )
-                            ]),
-                        child: Consumer(
-                          builder: (context, ref, child) => InkWell(
-                            onTap: () {
-                              context.pushNamed(AppRoute.word.name,
-                                  extra: word);
-                            },
-                            onLongPress: () {
-                              const double padding = 20;
-                              const double avatarRadius = 45;
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext buildContext) =>
-                                      CustomPracticeDialog(
-                                        wordData: word,
-                                        padding: padding,
-                                        avatarRadius: avatarRadius,
-                                        date: widget.date,
-                                        name: widget.groupName,
-                                        groupId: widget.groupId.toString(),
-                                      ));
+class __MyWordListState extends State<_MyWordList> {
+  late List<Word> myWords;
 
-                              // title: Text(
-                              //     'study word ${word.foreignWord}'),
-                              // content: ));
-                            },
-                            child: SizedBox(
-                              width: double.infinity,
-                              height: 100,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  WordInfo(word: word),
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 10),
-                                    child: IconButton(
-                                        onPressed: () {
-                                          tts.speak(word.foreignWord);
-                                        },
-                                        icon: Icon(
-                                          Icons.volume_up_outlined,
-                                          color: primaryColor,
-                                          size: 25,
-                                        )),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
+  final tts = TextToSpeech();
+  @override
+  void initState() {
+    myWords = widget.words;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        itemCount: myWords.length,
+        itemBuilder: (context, index) {
+          final word = myWords[index];
+          return Consumer(
+            builder: (context, ref, child) => Dismissible(
+              direction: DismissDirection.endToStart,
+              key: ValueKey(word.id),
+              background: Container(
+                color: Colors.red,
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.delete,
+                          color: Colors.white,
                         ),
-                      ),
+                        Text(
+                          'Delete',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelLarge
+                              ?.copyWith(color: Colors.white),
+                        )
+                      ],
                     ),
-                  );
-                }),
+                  ),
+                ),
+              ),
+              onDismissed: (direction) {
+                final wordTarget = word;
+                setState(() {
+                  myWords.removeAt(index);
+                });
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(
+                        content: const Text("The word has been deleted"),
+                        duration: const Duration(seconds: 10),
+                        action: SnackBarAction(
+                            label: "Undo",
+                            textColor: Colors.yellow,
+                            onPressed: () {
+                              setState(() {
+                                myWords.insert(index, wordTarget);
+                              });
+                            })))
+                    .closed
+                    .then((reason) {
+                  if (reason != SnackBarClosedReason.action) {
+                    //todo
+                    //ref.read(deleteWordByIdProvider(word.id!));
+                    print('ddd');
+                  }
+                });
+              },
+              child: Card(
+                elevation: 7,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25.0),
+                ),
+                child: InkWell(
+                  hoverColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  onTap: () {
+                    context.pushNamed(AppRoute.word.name, extra: word);
+                  },
+                  onLongPress: () {
+                    const double padding = 20;
+                    const double avatarRadius = 45;
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext buildContext) =>
+                            CustomPracticeDialog(
+                              wordData: word,
+                              padding: padding,
+                              avatarRadius: avatarRadius,
+                              date: widget.date,
+                              name: widget.groupName,
+                              groupId: widget.groupId.toString(),
+                            ));
+                  },
+                  child: Container(
+                    color: Colors.white,
+                    width: double.infinity,
+                    height: 100,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        WordInfo(word: word),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: IconButton(
+                              onPressed: () {
+                                tts.speak(word.foreignWord);
+                              },
+                              icon: Icon(
+                                Icons.volume_up_outlined,
+                                color: Theme.of(context).colorScheme.outline,
+                                size: 25,
+                              )),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
           );
         });
   }

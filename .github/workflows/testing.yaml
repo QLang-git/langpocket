@@ -1,7 +1,7 @@
 name: Web App Testing beta
 on: 
   push:
-    branches: [ web-bet-stable ]
+    branches: [ master ]
 
 jobs:
   testing:

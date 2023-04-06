@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/screens/group/app_bar/group_appbar_controller.dart';
-import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class GroupAppBar extends StatefulWidget with PreferredSizeWidget {
   final String groupName;
@@ -17,26 +16,26 @@ class GroupAppBar extends StatefulWidget with PreferredSizeWidget {
   @override
   State<GroupAppBar> createState() => _GroupAppBarState();
   @override
-  Size get preferredSize => const Size.fromHeight(70);
+  Size get preferredSize => const Size.fromHeight(80);
 }
 
 class _GroupAppBarState extends State<GroupAppBar> {
   final inputKey = GlobalKey<FormState>();
-  bool activateTextField = false;
+  late String originalText;
   String input = '';
-  bool state = false;
+  bool editModeActivate = false;
   final focus = FocusNode();
   final controller = TextEditingController();
 
   @override
   void initState() {
     focus.addListener(() {
-      if (!focus.hasFocus && activateTextField) {
+      if (!focus.hasFocus && editModeActivate) {
         focus.requestFocus();
-        activateTextField = false;
       }
     });
     controller.text = widget.groupName;
+    originalText = widget.groupName;
     controller.selection =
         TextSelection.collapsed(offset: (widget.groupName.length / 2).round());
     super.initState();
@@ -52,66 +51,100 @@ class _GroupAppBarState extends State<GroupAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    final sizeWith = MediaQuery.of(context).size.width;
+
     return ResponsiveCenter(
       child: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white, size: 37),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(38),
+                bottomRight: Radius.circular(38))),
         centerTitle: true,
         elevation: 0,
         toolbarHeight: 70,
-        flexibleSpace: Column(
+        title: Column(
           children: [
-            GestureDetector(
-              onLongPress: () => setState(() {
-                state = true;
-                activateTextField = true;
-              }),
-              child: Form(
-                key: inputKey,
+            Form(
+              key: inputKey,
+              child: SizedBox(
+                width: sizeWith * 0.5,
                 child: TextFormField(
-                  decoration: const InputDecoration(border: InputBorder.none),
+                  readOnly: !editModeActivate,
+                  cursorColor: Colors.white,
+                  maxLength: 20,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    counterText: '',
+                  ),
                   textAlign: TextAlign.center,
                   onChanged: (value) => setState(() {
                     input = value;
                   }),
-                  autofocus: state,
+                  autofocus: editModeActivate,
                   focusNode: focus,
-                  enabled: state,
+                  enabled: editModeActivate,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'This Field is required ';
-                    } else if (value.startsWith('0')) {
-                      return 'Group name should not start with 0';
+                      return 'This Field is required';
+                    } else if (value.length > 20) {
+                      return 'The name is too long';
                     } else {
                       return null;
                     }
                   },
                   controller: controller,
-                  style: headline2Bold(primaryFontColor),
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineLarge
+                      ?.copyWith(color: Colors.white),
                 ),
               ),
             ),
             Text(
               widget.groupDate,
-              style: bodySmallBold(primaryColor),
+              style: Theme.of(context)
+                  .textTheme
+                  .labelSmall
+                  ?.copyWith(color: Colors.white),
             )
           ],
         ),
-        backgroundColor: Colors.transparent,
-        foregroundColor: primaryFontColor,
         actions: [
           Padding(
               padding: const EdgeInsets.all(8.0),
-              child: widget.groupName != controller.text
+              child: editModeActivate
                   ? Consumer(
                       builder: (context, ref, child) {
                         return IconButton(
-                          onPressed: () => updateGroupName(widget.groupId,
-                              controller.text, ref, inputKey, context),
-                          icon: Icon(Icons.save_rounded,
-                              size: 25, color: primaryFontColor),
+                          onPressed: () {
+                            if (originalText != controller.text) {
+                              updateGroupName(widget.groupId, controller.text,
+                                  ref, inputKey, context);
+                              setState(() {
+                                editModeActivate = false;
+                                originalText = controller.text;
+                              });
+                            } else {
+                              setState(() {
+                                editModeActivate = false;
+                              });
+                            }
+                          },
+                          icon: const Icon(Icons.save_rounded,
+                              size: 25, color: Colors.white),
                         );
                       },
                     )
-                  : null)
+                  : IconButton(
+                      onPressed: () => setState(() {
+                        editModeActivate = true;
+                      }),
+                      icon:
+                          const Icon(Icons.edit, size: 25, color: Colors.white),
+                    ))
         ],
       ),
     );

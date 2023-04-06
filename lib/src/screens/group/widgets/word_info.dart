@@ -17,17 +17,24 @@ class WordInfo extends StatelessWidget {
           height: double.infinity,
           width: 90,
           child: word.wordImages.isNotEmpty
-              ? Image.memory(
-                  word.wordImages.first,
-                  fit: BoxFit.fill,
+              ? Container(
+                  decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(25))),
+                  child: Image.memory(
+                    word.wordImages.first,
+                    fit: BoxFit.fill,
+                  ),
                 )
               : Container(
-                  color: Colors.grey[400],
-                  child: Center(
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.onBackground,
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(25))),
+                  child: const Center(
                     child: Icon(
                       Icons.image_not_supported_outlined,
                       size: 50,
-                      color: primaryFontColor,
+                      color: Colors.white,
                     ),
                   ),
                 ),

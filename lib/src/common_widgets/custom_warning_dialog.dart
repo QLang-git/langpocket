@@ -20,7 +20,15 @@ class CustomWarningDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: title,
+      titleTextStyle: Theme.of(context)
+          .textTheme
+          .headlineLarge
+          ?.copyWith(color: Theme.of(context).colorScheme.outline),
       content: message,
+      contentTextStyle: Theme.of(context)
+          .textTheme
+          .displaySmall
+          ?.copyWith(color: Theme.of(context).colorScheme.outline),
       actions: <Widget>[
         TextButton(
           style: TextButton.styleFrom(

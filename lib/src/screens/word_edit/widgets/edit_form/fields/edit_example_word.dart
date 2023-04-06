@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/screens/word_edit/screen/edit_mode_word_screen.dart';
-import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class EditExampleWord extends StatefulWidget {
   final List<String> currentExamples;
@@ -24,6 +23,8 @@ class _EditExampleWordState extends State<EditExampleWord> {
 
   @override
   Widget build(BuildContext context) {
+    final colorStyle = Theme.of(context).colorScheme;
+    final textStyle = Theme.of(context).textTheme;
     final states = context.findAncestorStateOfType<EditModeWordScreenState>()!;
 
     return Column(children: [
@@ -32,8 +33,8 @@ class _EditExampleWordState extends State<EditExampleWord> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 7),
           child: Text(
-            '+ Add examples',
-            style: headline2Bold(primaryFontColor),
+            'Add examples',
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
         ),
       ),
@@ -45,8 +46,9 @@ class _EditExampleWordState extends State<EditExampleWord> {
               states.updateWordExample(value, i);
             },
             controller: exampleControllers[i],
-            style: headline3(primaryFontColor),
+            style: textStyle.displayMedium?.copyWith(color: colorStyle.outline),
             decoration: InputDecoration(
+              contentPadding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
               suffixIcon: i > 1
                   ? TextButton(
                       onPressed: () {
@@ -56,25 +58,20 @@ class _EditExampleWordState extends State<EditExampleWord> {
                           exampleControllers.removeAt(i);
                         });
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        child: Icon(
-                          Icons.close_outlined,
-                          color: primaryColor,
-                        ),
+                      child: Icon(
+                        Icons.close_outlined,
+                        color: colorStyle.outline,
                       ),
                     )
-                  : Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      child: Icon(
-                        Icons.language_outlined,
-                        color: primaryColor,
-                      ),
+                  : Icon(
+                      Icons.language_outlined,
+                      color: colorStyle.outline,
                     ),
-              labelStyle: bodyLarge(primaryColor),
+              labelStyle:
+                  textStyle.bodyLarge?.copyWith(color: colorStyle.outline),
               label: Text('example ${i + 1}'),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(width: 2, color: secondaryColor),
+                borderSide: BorderSide(width: 2, color: colorStyle.onSurface),
                 borderRadius: BorderRadius.circular(20.0),
               ),
               border: OutlineInputBorder(
@@ -102,7 +99,7 @@ class _EditExampleWordState extends State<EditExampleWord> {
       if (exampleControllers.length < 5)
         TextButton(
           style: TextButton.styleFrom(
-            backgroundColor: buttonColor,
+            backgroundColor: Theme.of(context).colorScheme.onPrimary,
             shape: const CircleBorder(),
           ),
           onPressed: () {
@@ -112,7 +109,7 @@ class _EditExampleWordState extends State<EditExampleWord> {
           },
           child: const Icon(
             Icons.add,
-            size: 50,
+            size: 45,
             color: Colors.white,
           ),
         ),

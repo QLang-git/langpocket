@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/screens/word_edit/screen/edit_mode_word_screen.dart';
-import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class EditMeanWord extends StatefulWidget {
   final List<String> curentMeans;
@@ -28,17 +27,18 @@ class _EditMeanWordState extends State<EditMeanWord> {
   @override
   Widget build(BuildContext context) {
     final states = context.findAncestorStateOfType<EditModeWordScreenState>()!;
-
+    final colorStyle = Theme.of(context).colorScheme;
+    final textStyle = Theme.of(context).textTheme;
     return Column(children: [
       for (int i = 0; i < meaningControllers.length; i++)
         Padding(
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.only(bottom: 12, top: 2),
           child: TextFormField(
             controller: meaningControllers[i],
             onChanged: (value) {
               states.updateWordMeans(value, i);
             },
-            style: headline3(primaryFontColor),
+            style: textStyle.displayMedium?.copyWith(color: colorStyle.outline),
             decoration: InputDecoration(
               suffixIcon: i > 0
                   ? TextButton(
@@ -49,25 +49,20 @@ class _EditMeanWordState extends State<EditMeanWord> {
                           meaningControllers.removeAt(i);
                         });
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        child: Icon(
-                          Icons.close_outlined,
-                          color: primaryColor,
-                        ),
+                      child: Icon(
+                        Icons.close_outlined,
+                        color: colorStyle.outline,
                       ),
                     )
-                  : Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      child: Icon(
-                        Icons.language_outlined,
-                        color: primaryColor,
-                      ),
+                  : Icon(
+                      Icons.language_outlined,
+                      color: colorStyle.outline,
                     ),
-              labelStyle: bodyLarge(primaryColor),
+              labelStyle:
+                  textStyle.bodyLarge?.copyWith(color: colorStyle.outline),
               label: const Text('Mean'),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(width: 2, color: secondaryColor),
+                borderSide: BorderSide(width: 2, color: colorStyle.onSurface),
                 borderRadius: BorderRadius.circular(20.0),
               ),
               border: OutlineInputBorder(
@@ -95,7 +90,7 @@ class _EditMeanWordState extends State<EditMeanWord> {
       if (meaningControllers.length < 3)
         TextButton(
           style: TextButton.styleFrom(
-            backgroundColor: buttonColor,
+            backgroundColor: Theme.of(context).colorScheme.onPrimary,
             shape: const CircleBorder(),
           ),
           onPressed: () {
