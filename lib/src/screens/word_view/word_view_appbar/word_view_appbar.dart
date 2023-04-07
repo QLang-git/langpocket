@@ -29,7 +29,8 @@ class WordViewAppBar extends StatelessWidget with PreferredSizeWidget {
             padding: const EdgeInsets.only(right: 6.5),
             child: IconButton(
               onPressed: () {
-                context.pushNamed(AppRoute.editMode.name, extra: wordData);
+                context.pushNamed(AppRoute.editMode.name,
+                    extra: wordData, params: {'id': wordData.id.toString()});
               },
               icon: const Icon(
                 Icons.edit_document,

@@ -88,12 +88,13 @@ final appScreens = [
             },
             routes: [
               GoRoute(
-                path: 'word',
+                path: 'word/:id',
                 name: AppRoute.word.name,
                 pageBuilder: (context, state) {
-                  final word = state.extra as Word?;
-                  if (word is Word) {
-                    return _navGoRight(WordViewScreen(word: word), state);
+                  final wordId = state.params['id'];
+                  if (wordId != null) {
+                    return _navGoRight(
+                        WordViewScreen(wordId: int.parse(wordId)), state);
                   } else {
                     return _navGoUp(const ErrorNavScreen(), state);
                   }

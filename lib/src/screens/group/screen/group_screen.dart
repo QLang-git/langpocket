@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/screens/group/app_bar/group_appbar.dart';
 import 'package:langpocket/src/screens/group/widgets/words_list.dart';
-import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
-class GroupScreen extends StatefulWidget {
+class GroupScreen extends ConsumerStatefulWidget {
   final GroupData groupData;
   const GroupScreen({
     super.key,
@@ -14,10 +14,10 @@ class GroupScreen extends StatefulWidget {
   });
 
   @override
-  State<GroupScreen> createState() => _GroupScreenState();
+  ConsumerState<GroupScreen> createState() => _GroupScreenState();
 }
 
-class _GroupScreenState extends State<GroupScreen> {
+class _GroupScreenState extends ConsumerState<GroupScreen> {
   @override
   Widget build(BuildContext context) {
     final groupDate = widget.groupData.creatingTime;
@@ -39,7 +39,7 @@ class _GroupScreenState extends State<GroupScreen> {
         ),
         floatingActionButton: SpeedDial(
           animatedIcon: AnimatedIcons.menu_close,
-          backgroundColor: buttonColor,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           buttonSize: const Size(70.0, 70.0),
           children: [
             SpeedDialChild(
