@@ -86,12 +86,12 @@ class WordServices {
     }
   }
 
-  Future<void> deleteWordById(int wordId) async {
+  Future<void> deleteWordById(int wordId, int groupId) async {
     final states = _initialStates();
     if (user) {
       await states.remoteGroupRepository.deleteWordById(wordId);
     } else {
-      await states.localGroupRepository.deleteWordById(wordId);
+      await states.localGroupRepository.deleteWordById(wordId, groupId);
     }
   }
 

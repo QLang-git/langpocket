@@ -89,7 +89,7 @@ void main() {
 
     await database.createGroup(group);
     await database.addNewWordInGroup(word);
-    await database.deleteWordById(1);
+    await database.deleteWordById(1, 1);
 
     expect(() async => await database.fetchWordbyId(1), throwsStateError);
   });

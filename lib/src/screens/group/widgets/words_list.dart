@@ -35,24 +35,30 @@ class _WordsGroupsState extends ConsumerState<WordsGroups> {
           }
 
           return _MyWordList(
-              words: wordDecoding(currentWords),
-              groupName: widget.groupName,
-              date: widget.date,
-              groupId: widget.groupId);
+            words: wordDecoding(currentWords),
+            groupName: widget.groupName,
+            date: widget.date,
+            groupId: widget.groupId,
+            context: context,
+          );
         });
   }
 }
 
 class _MyWordList extends ConsumerStatefulWidget {
+  final BuildContext context;
+
   final List<Word> words;
   final String groupName;
   final String date;
   final int groupId;
-  const _MyWordList(
-      {required this.words,
-      required this.groupName,
-      required this.date,
-      required this.groupId});
+  const _MyWordList({
+    required this.words,
+    required this.groupName,
+    required this.date,
+    required this.groupId,
+    required this.context,
+  });
 
   @override
   ConsumerState<_MyWordList> createState() => __MyWordListState();
@@ -66,6 +72,32 @@ class __MyWordListState extends ConsumerState<_MyWordList> {
   void initState() {
     myWords = widget.words;
     super.initState();
+  }
+
+  void _onDismissed(int index, Word word) async {
+    final wordTarget = word;
+    setState(() {
+      myWords.removeAt(index);
+    });
+    ScaffoldMessenger.of(widget.context)
+        .showSnackBar(SnackBar(
+            content: const Text("The word has been deleted"),
+            duration: const Duration(seconds: 5),
+            action: SnackBarAction(
+                label: "Undo",
+                textColor: Colors.yellow,
+                onPressed: () {
+                  setState(() {
+                    myWords.insert(index, wordTarget);
+                  });
+                })))
+        .closed
+        .then((reason) async {
+      if (reason != SnackBarClosedReason.action) {
+        deleteWord(word.id!, widget.groupId);
+        // update this line
+      }
+    });
   }
 
   @override
@@ -105,30 +137,7 @@ class __MyWordListState extends ConsumerState<_MyWordList> {
                 ),
               ),
             ),
-            onDismissed: (direction) {
-              final wordTarget = word;
-              setState(() {
-                myWords.removeAt(index);
-              });
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(
-                      content: const Text("The word has been deleted"),
-                      duration: const Duration(seconds: 5),
-                      action: SnackBarAction(
-                          label: "Undo",
-                          textColor: Colors.yellow,
-                          onPressed: () {
-                            setState(() {
-                              myWords.insert(index, wordTarget);
-                            });
-                          })))
-                  .closed
-                  .then((reason) {
-                if (reason != SnackBarClosedReason.action) {
-                  ref.read(deleteWordByIdProvider(word.id!));
-                }
-              });
-            },
+            onDismissed: (_) => _onDismissed(index, word),
             child: Card(
               elevation: 7,
               shape: RoundedRectangleBorder(

@@ -15,13 +15,14 @@ abstract class LocalGroupRepository {
   Stream<List<WordData>> watchWordsByGroupId(int groupId);
   Future<List<WordData>> fetchWordsByGroupId(int groupId);
   Future<void> updateGroupName(int groupId, String newName);
-  Future<void> deleteWordById(int wordId);
+  Future<void> deleteWordById(int wordId, int groupId);
   Stream<WordData> watchWordById(int wordId);
   Future<void> upadateWordInf(int wordId, WordCompanion wordCompanion);
 }
 
+// ignore: non_constant_identifier_names
+final safe_acess_local_db = DriftGroupRepository(impl.connect());
 final localGroupRepositoryProvider = Provider<LocalGroupRepository>((ref) {
-  final database = DriftGroupRepository(impl.connect());
-  ref.onDispose(database.close);
-  return database;
+  ref.onDispose(safe_acess_local_db.close);
+  return safe_acess_local_db;
 });

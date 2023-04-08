@@ -76,15 +76,4 @@ void main() {
 
     verify(() => db.updateGroupName(1, 'newName')).called(1);
   });
-
-  test('delete Word By Id Provider', () async {
-    final db = MockDriftGroupRepository();
-    final container = ProviderContainer(
-      overrides: [localGroupRepositoryProvider.overrideWithValue(db)],
-    );
-    expect(container.read(deleteWordByIdProvider(1)),
-        const AsyncValue<void>.loading());
-
-    verify(() => db.deleteWordById(1)).called(1);
-  });
 }

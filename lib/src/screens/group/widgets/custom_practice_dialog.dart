@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class CustomPracticeDialog extends StatelessWidget {
@@ -23,6 +22,8 @@ class CustomPracticeDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorStyle = Theme.of(context).colorScheme;
+    final textStyle = Theme.of(context).textTheme;
     return ResponsiveCenter(
       child: Dialog(
           shape: RoundedRectangleBorder(
@@ -52,54 +53,61 @@ class CustomPracticeDialog extends StatelessWidget {
                   children: [
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: buttonColor),
+                            backgroundColor: colorStyle.onPrimary),
                         onPressed: () {
                           context.pushNamed(AppRoute.spelling.name,
-                              extra: wordData);
+                              extra: wordData,
+                              params: {'id': wordData.id.toString()});
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
+                            children: [
                               Text(
-                                'Practice Spelling for this word ',
+                                'Practice Spelling',
+                                style: textStyle.labelMedium
+                                    ?.copyWith(color: Colors.white),
                               ),
-                              Icon(Icons.spellcheck_rounded)
+                              const Icon(Icons.spellcheck_rounded)
                             ],
                           ),
                         )),
                     const Divider(),
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: buttonColor),
+                            backgroundColor: colorStyle.onPrimary),
                         onPressed: () {},
                         child: Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
+                            children: [
                               Text(
-                                'Practice Pronounciation for this word ',
+                                'Practice Pronounciation',
+                                style: textStyle.labelMedium
+                                    ?.copyWith(color: Colors.white),
                               ),
-                              Icon(Icons.speaker)
+                              const Icon(Icons.speaker)
                             ],
                           ),
                         )),
                     const Divider(),
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: buttonColor),
+                            backgroundColor: colorStyle.onPrimary),
                         onPressed: () {},
                         child: Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
+                            children: [
                               Text(
-                                'Practice Listening for this word ',
+                                'Practice Listening',
+                                style: textStyle.labelMedium
+                                    ?.copyWith(color: Colors.white),
                               ),
-                              Icon(Icons.audiotrack)
+                              const Icon(Icons.audiotrack)
                             ],
                           ),
                         )),

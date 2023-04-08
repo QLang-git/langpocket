@@ -81,8 +81,12 @@ class DriftGroupRepository extends _$DriftGroupRepository
   }
 
   @override
-  Future<void> deleteWordById(int wordId) async {
+  Future<void> deleteWordById(int wordId, int groupId) async {
     await (delete(word)..where((tbl) => tbl.id.equals(wordId))).go();
+    final otherWords = await fetchWordsByGroupId(groupId);
+    if (otherWords.isEmpty) {
+      await (delete(group)..where((tbl) => tbl.id.equals(groupId))).go();
+    }
   }
 
   @override
