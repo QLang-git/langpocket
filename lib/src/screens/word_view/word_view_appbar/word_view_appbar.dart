@@ -3,7 +3,7 @@ import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
-class WordViewAppBar extends StatelessWidget with PreferredSizeWidget {
+class WordViewAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Word wordData;
   const WordViewAppBar({
     super.key,
@@ -30,7 +30,8 @@ class WordViewAppBar extends StatelessWidget with PreferredSizeWidget {
             child: IconButton(
               onPressed: () {
                 context.pushNamed(AppRoute.editMode.name,
-                    extra: wordData, params: {'id': wordData.id.toString()});
+                    extra: wordData,
+                    pathParameters: {'id': wordData.id.toString()});
               },
               icon: const Icon(
                 Icons.edit_document,

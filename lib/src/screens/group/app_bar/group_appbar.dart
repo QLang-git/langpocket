@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/screens/group/app_bar/group_appbar_controller.dart';
 
-class GroupAppBar extends StatefulWidget with PreferredSizeWidget {
+//PreferredSizeWidget
+class GroupAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String groupName;
   final String groupDate;
   final int groupId;

@@ -91,7 +91,7 @@ final appScreens = [
                 path: 'word/:id',
                 name: AppRoute.word.name,
                 pageBuilder: (context, state) {
-                  final wordId = state.params['id'];
+                  final wordId = state.pathParameters['id'];
                   if (wordId != null) {
                     return _navGoRight(
                         WordViewScreen(wordId: int.parse(wordId)), state);

@@ -148,7 +148,7 @@ class __MyWordListState extends ConsumerState<_MyWordList> {
                 highlightColor: Colors.transparent,
                 onTap: () {
                   context.pushNamed(AppRoute.word.name,
-                      params: {'id': word.id.toString()});
+                      pathParameters: {'id': word.id.toString()});
                 },
                 onLongPress: () {
                   const double padding = 20;

@@ -7,7 +7,7 @@ import 'package:langpocket/src/screens/word_edit/controller/word_editor_controll
 import 'package:langpocket/src/screens/word_edit/screen/edit_mode_word_screen.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
-class WordEditorAppbar extends StatefulWidget with PreferredSizeWidget {
+class WordEditorAppbar extends StatefulWidget implements PreferredSizeWidget {
   final Word wordData;
   final GlobalKey<FormState> formKey;
   const WordEditorAppbar({

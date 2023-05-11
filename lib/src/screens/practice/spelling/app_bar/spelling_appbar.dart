@@ -3,7 +3,7 @@ import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/screens/practice/spelling/screen/practice_spelling_screen.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
-class SpellingAppBar extends StatefulWidget with PreferredSizeWidget {
+class SpellingAppBar extends StatefulWidget implements PreferredSizeWidget {
   const SpellingAppBar({super.key});
 
   @override

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 
-class HomeAppBar extends StatefulWidget with PreferredSizeWidget {
+class HomeAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double screenHeight;
   final String userName;
   const HomeAppBar(

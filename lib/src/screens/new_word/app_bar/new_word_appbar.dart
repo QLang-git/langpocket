@@ -4,7 +4,7 @@ import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
-class NewWordAppBar extends StatefulWidget with PreferredSizeWidget {
+class NewWordAppBar extends StatefulWidget implements PreferredSizeWidget {
   final GlobalKey<FormState> formKey;
 
   const NewWordAppBar({super.key, required this.formKey});

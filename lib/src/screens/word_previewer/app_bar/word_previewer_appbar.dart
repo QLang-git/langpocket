@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 
-class WordPreviewerAppBar extends StatelessWidget with PreferredSizeWidget {
+class WordPreviewerAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
   const WordPreviewerAppBar({super.key});
   @override
   Size get preferredSize => const Size.fromHeight(75);
