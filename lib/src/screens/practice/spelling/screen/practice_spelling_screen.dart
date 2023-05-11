@@ -9,6 +9,7 @@ import 'package:langpocket/src/screens/practice/spelling/app_bar/spelling_appbar
 import 'package:langpocket/src/screens/practice/spelling/widgets/custom_dialog_spelling.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:text_to_speech/text_to_speech.dart';
+import 'package:ionicons/ionicons.dart';
 
 class PracticeSpellingScreen extends StatefulWidget {
   final List<Uint8List> imageList;
@@ -30,7 +31,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
   String? inputText;
   late int countSpelling;
   late bool correct;
-  late List<bool> courectExample;
+  late List<bool> correctExample;
   late List<int> exampleSpellingCount;
   late int pointer;
   late bool example;
@@ -40,7 +41,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
     countSpelling = 5;
     pointer = 0;
     exampleSpellingCount = List.filled(widget.examplesList.length, 3);
-    courectExample = List.filled(widget.examplesList.length, false);
+    correctExample = List.filled(widget.examplesList.length, false);
     correct = false;
     example = false;
 
@@ -53,7 +54,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
       correct = false;
       example = false;
       exampleSpellingCount = List.filled(widget.examplesList.length, 3);
-      courectExample = List.filled(widget.examplesList.length, false);
+      correctExample = List.filled(widget.examplesList.length, false);
       pointer = 0;
     });
   }
@@ -69,7 +70,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
       example = true;
       pointer = 0;
       exampleSpellingCount = List.filled(widget.examplesList.length, 3);
-      courectExample = List.filled(widget.examplesList.length, false);
+      correctExample = List.filled(widget.examplesList.length, false);
     });
   }
 
@@ -79,7 +80,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
     final inputController = TextEditingController();
     final exampleInputController = TextEditingController();
     if (correct) inputController.text = widget.foreignWord;
-    if (courectExample[pointer]) {
+    if (correctExample[pointer]) {
       exampleInputController.text = widget.examplesList[pointer];
     }
     if (exampleSpellingCount[pointer] == 0 &&
@@ -91,7 +92,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
       inputController.text = widget.foreignWord;
       correct = true;
     }
-    if (exampleSpellingCount[pointer] == 0 && courectExample[pointer] == true) {
+    if (exampleSpellingCount[pointer] == 0 && correctExample[pointer] == true) {
       exampleInputController.text = widget.examplesList[pointer];
     }
 
@@ -111,7 +112,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                   ? WordView(
                       foreignWord: widget.foreignWord,
                       means: widget.meanList,
-                      noVoice: true,
+                      noVoiceIcon: true,
                     )
                   : Card(
                       elevation: 3,
@@ -124,7 +125,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 10),
                             child: Icon(
-                              Icons.swap_horizontal_circle_rounded,
+                              Ionicons.eye_off,
                               size: 40,
                             ),
                           )),
@@ -233,7 +234,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                                   child: Padding(
                                     padding: EdgeInsets.symmetric(vertical: 10),
                                     child: Icon(
-                                      Icons.swap_horizontal_circle_rounded,
+                                      Ionicons.eye_off,
                                       size: 40,
                                     ),
                                   )),
@@ -272,7 +273,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                                 child: TextField(
                                   enableSuggestions: false,
                                   autocorrect: false,
-                                  readOnly: courectExample[pointer],
+                                  readOnly: correctExample[pointer],
                                   controller: exampleInputController,
                                   onChanged: (value) => {
                                     if (value
@@ -283,12 +284,12 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                                         exampleSpellingCount[pointer] > 0)
                                       {
                                         setState(() {
-                                          courectExample[pointer] = true;
+                                          correctExample[pointer] = true;
                                         }),
                                         tts.speak(value),
                                         Timer(const Duration(seconds: 2), () {
                                           setState(() {
-                                            courectExample[
+                                            correctExample[
                                                 pointer] = (pointer ==
                                                     widget.examplesList.length -
                                                         1 &&
@@ -327,7 +328,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                                   style: headline3(primaryFontColor),
                                   decoration: InputDecoration(
                                     filled: true,
-                                    fillColor: courectExample[pointer]
+                                    fillColor: correctExample[pointer]
                                         ? const Color.fromARGB(
                                             255, 104, 198, 107)
                                         : null,

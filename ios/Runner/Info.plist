@@ -49,5 +49,9 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>NSSpeechRecognitionUsageDescription</key>
+        <string>recognize speech</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Microphone speech</string>
 	</dict>
 </plist>

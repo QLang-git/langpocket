@@ -59,18 +59,33 @@ class CustomPracticeDialog extends StatelessWidget {
                               extra: wordData,
                               pathParameters: {'id': wordData.id.toString()});
                         },
-                        child: Padding(
+                        child: Container(
+                          width: double.infinity,
                           padding: const EdgeInsets.all(10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Practice Spelling',
-                                style: textStyle.labelMedium
-                                    ?.copyWith(color: Colors.white),
-                              ),
-                              const Icon(Icons.spellcheck_rounded)
-                            ],
+                          child: Text(
+                            'Practice Spelling',
+                            textAlign: TextAlign.center,
+                            style: textStyle.labelMedium
+                                ?.copyWith(color: Colors.white),
+                          ),
+                        )),
+                    const Divider(),
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: colorStyle.onPrimary),
+                        onPressed: () {
+                          context.pushNamed(AppRoute.pronunciation.name,
+                              extra: wordData,
+                              pathParameters: {'id': wordData.id.toString()});
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            'Practice Pronunciation',
+                            textAlign: TextAlign.center,
+                            style: textStyle.labelMedium
+                                ?.copyWith(color: Colors.white),
                           ),
                         )),
                     const Divider(),
@@ -78,37 +93,14 @@ class CustomPracticeDialog extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: colorStyle.onPrimary),
                         onPressed: () {},
-                        child: Padding(
+                        child: Container(
+                          width: double.infinity,
                           padding: const EdgeInsets.all(10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Practice Pronounciation',
-                                style: textStyle.labelMedium
-                                    ?.copyWith(color: Colors.white),
-                              ),
-                              const Icon(Icons.speaker)
-                            ],
-                          ),
-                        )),
-                    const Divider(),
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: colorStyle.onPrimary),
-                        onPressed: () {},
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Practice Listening',
-                                style: textStyle.labelMedium
-                                    ?.copyWith(color: Colors.white),
-                              ),
-                              const Icon(Icons.audiotrack)
-                            ],
+                          child: Text(
+                            'Practice Listening',
+                            textAlign: TextAlign.center,
+                            style: textStyle.labelMedium
+                                ?.copyWith(color: Colors.white),
                           ),
                         )),
                   ],

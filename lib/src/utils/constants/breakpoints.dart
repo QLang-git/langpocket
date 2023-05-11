@@ -15,11 +15,11 @@ Color secondaryColor = const Color(0xff1C4B82);
 
 Color buttonColor = const Color(0xffDD6B4D);
 
-TextStyle headline1Bold(Color color) => GoogleFonts.robotoFlex(
-    color: color,
-    fontSize: 35,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 0.25);
+// TextStyle headline1Bold(Color color) => GoogleFonts.robotoFlex(
+//     color: color,
+//     fontSize: 35,
+//     fontWeight: FontWeight.w700,
+//     letterSpacing: 0.25);
 TextStyle headline1(Color color) => GoogleFonts.robotoFlex(
     color: color,
     fontSize: 35,

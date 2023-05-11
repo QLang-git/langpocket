@@ -4,12 +4,12 @@ import 'package:text_to_speech/text_to_speech.dart';
 class WordView extends StatefulWidget {
   final String foreignWord;
   final List<String> means;
-  final bool noVoice;
+  final bool noVoiceIcon;
   const WordView(
       {super.key,
       required this.foreignWord,
       required this.means,
-      this.noVoice = false});
+      this.noVoiceIcon = false});
 
   @override
   State<WordView> createState() => _WordViewState();
@@ -70,12 +70,12 @@ class _WordViewState extends State<WordView> {
                       overflow: TextOverflow.fade,
                     ),
                     TextButton(
-                      onPressed: !widget.noVoice
+                      onPressed: !widget.noVoiceIcon
                           ? () {
                               tts.speak(widget.foreignWord);
                             }
                           : null,
-                      child: !widget.noVoice
+                      child: !widget.noVoiceIcon
                           ? Padding(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               child: Icon(
@@ -84,10 +84,7 @@ class _WordViewState extends State<WordView> {
                                 size: 30,
                               ),
                             )
-                          : Icon(
-                              Icons.volume_off_outlined,
-                              color: colorFount,
-                            ),
+                          : Container(),
                     )
                   ],
                 ),

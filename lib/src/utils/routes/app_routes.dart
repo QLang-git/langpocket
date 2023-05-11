@@ -9,6 +9,7 @@ import 'package:langpocket/src/data/local/repository/drift_group_repository.dart
 import 'package:langpocket/src/screens/group/screen/group_screen.dart';
 import 'package:langpocket/src/screens/home/screen/home_screen.dart';
 import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
+import 'package:langpocket/src/screens/practice/pronunciation/screen/practice_pron_screen.dart';
 import 'package:langpocket/src/screens/practice/spelling/screen/practice_spelling_screen.dart';
 import 'package:langpocket/src/screens/word_edit/screen/edit_mode_word_screen.dart';
 import 'package:langpocket/src/screens/word_previewer/screen/word_previewer_screen.dart';
@@ -16,7 +17,16 @@ import 'package:langpocket/src/screens/word_view/screen/word_view_screen.dart';
 import 'package:langpocket/src/utils/routes/error_nav_screen.dart';
 import 'package:langpocket/src/utils/routes/not_found_screen.dart';
 
-enum AppRoute { home, newWord, wordView, group, word, editMode, spelling }
+enum AppRoute {
+  home,
+  newWord,
+  wordView,
+  group,
+  word,
+  editMode,
+  spelling,
+  pronunciation
+}
 
 class Word {
   final int? id;
@@ -124,6 +134,24 @@ final appScreens = [
                       if (word != null) {
                         return _navGoUp(
                             PracticeSpellingScreen(
+                                imageList: word.wordImages,
+                                foreignWord: word.foreignWord,
+                                meanList: word.wordMeans,
+                                examplesList: word.wordExamples),
+                            state);
+                      } else {
+                        return _navGoUp(const ErrorNavScreen(), state);
+                      }
+                    },
+                  ),
+                  GoRoute(
+                    path: 'pronunciation',
+                    name: AppRoute.pronunciation.name,
+                    pageBuilder: (context, state) {
+                      final word = state.extra as Word?;
+                      if (word != null) {
+                        return _navGoUp(
+                            PracticePronScreen(
                                 imageList: word.wordImages,
                                 foreignWord: word.foreignWord,
                                 meanList: word.wordMeans,
