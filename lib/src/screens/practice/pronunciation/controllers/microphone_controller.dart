@@ -8,7 +8,6 @@ class MicrophoneController {
   final ValueChanged<String> onListeningMessages;
   final ValueChanged<int> onListeningCount;
   bool isRerecording = false;
-  String recognizedWords = '';
   int foreignWordCount = 4;
   MicrophoneController({
     required this.onListeningMessages,
@@ -35,13 +34,15 @@ class MicrophoneController {
   void stopRecording() async {
     if (speechToText.isListening) {
       await speechToText.stop();
-      _setAlterUserMessage(RecordingStatus.stop.name);
     }
   }
 
   void resultListener(SpeechRecognitionResult result) {
-    recognizedWords = result.recognizedWords;
-    _comparingWords(RecordingStatus.analyze.name, recognizedWords);
+    if (result.finalResult) {
+      _comparingWords(RecordingStatus.analyze.name, result.recognizedWords);
+    } else {
+      _setAlterUserMessage(RecordingStatus.analyze.name);
+    }
   }
 
   void _comparingWords(String status, String recognizedWords) {

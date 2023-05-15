@@ -71,7 +71,7 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
                   const SizedBox(
                     height: 15,
                   ),
-                  countPron > 4
+                  countPron > 2
                       ? WordView(
                           foreignWord: widget.foreignWord,
                           means: widget.meanList,
