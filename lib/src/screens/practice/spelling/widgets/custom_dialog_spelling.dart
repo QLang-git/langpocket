@@ -90,11 +90,11 @@ class CustomDialogSpelling extends StatelessWidget {
                       reload();
                       context.pop();
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
+                    child: const Padding(
+                      padding: EdgeInsets.all(10.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Text(
                             'Try spell it again ',
                           ),
@@ -110,11 +110,11 @@ class CustomDialogSpelling extends StatelessWidget {
                       context.pop();
                       context.pop();
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
+                    child: const Padding(
+                      padding: EdgeInsets.all(10.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Text(
                             'Exit ',
                           ),

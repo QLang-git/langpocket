@@ -152,6 +152,8 @@ final appScreens = [
                       if (word != null) {
                         return _navGoUp(
                             PracticePronScreen(
+                                key: ValueKey(
+                                    DateTime.now().millisecondsSinceEpoch),
                                 imageList: word.wordImages,
                                 foreignWord: word.foreignWord,
                                 meanList: word.wordMeans,

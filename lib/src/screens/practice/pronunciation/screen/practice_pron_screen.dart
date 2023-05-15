@@ -9,9 +9,8 @@ import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/app_bar/pron_appbar.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/controllers/microphone_controller.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/widgets/microphone_button.dart';
-import 'package:text_to_speech/text_to_speech.dart';
 
-class PracticePronScreen extends StatefulWidget {
+class PracticePronScreen extends ConsumerStatefulWidget {
   final List<Uint8List> imageList;
   final String foreignWord;
   final List<String> meanList;
@@ -24,51 +23,41 @@ class PracticePronScreen extends StatefulWidget {
       required this.examplesList});
 
   @override
-  State<PracticePronScreen> createState() => _PracticePronScreenState();
+  ConsumerState<PracticePronScreen> createState() => _PracticePronScreenState();
 }
 
-class _PracticePronScreenState extends State<PracticePronScreen> {
+class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
   late int countPron;
   late bool correct;
   late List<bool> correctExample;
   late List<int> examplePronCount;
   late int pointer;
   late bool example;
-  late TextToSpeech tts;
+  late MicrophoneController microphoneController;
   String message = "Hold to Start Recording ...";
 
   @override
   void initState() {
-    tts = TextToSpeech();
-    countPron = 3;
-    pointer = 0;
-    examplePronCount = List.filled(widget.examplesList.length, 3);
-    correctExample = List.filled(widget.examplesList.length, false);
-    correct = false;
-    example = false;
+    countPron = 4;
+    microphoneController = MicrophoneController(
+        onListeningMessages: setMessage,
+        onListeningCount: setCounter,
+        foreignWord: widget.foreignWord,
+        examplesList: widget.examplesList);
     super.initState();
+    microphoneController.initializeSpeechToText();
   }
 
-  void setUserMessage(String status) {
-    if (status == "notListening") {
-      setState(() {
-        message = "Unable to detect your voice";
+  void setMessage(String currentMessage) => setState(() {
+        message = currentMessage;
       });
-    } else if (status == "listening") {
-      setState(() {
-        message = "Analyzing your pronunciation...";
+  void setCounter(int count) => setState(() {
+        countPron = count;
       });
-    } else {
-      setState(() {
-        message = "Hold to Restart Recording ...";
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
-
     return ResponsiveCenter(
         child: Scaffold(
       appBar: const PronAppBar(),
@@ -82,7 +71,7 @@ class _PracticePronScreenState extends State<PracticePronScreen> {
                   const SizedBox(
                     height: 15,
                   ),
-                  countPron > 2
+                  countPron > 4
                       ? WordView(
                           foreignWord: widget.foreignWord,
                           means: widget.meanList,
@@ -138,21 +127,8 @@ class _PracticePronScreenState extends State<PracticePronScreen> {
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Consumer(
-                    builder: (context, ref, child) => MicrophoneButton(
-                      controller: MicrophoneController(
-                          ref: ref,
-                          onRecordStart: () {
-                            print('starting ....');
-                          },
-                          onRecordStop: () {
-                            print('stopping....');
-                          },
-                          onListening: (status) {
-                            print('listening....$status');
-                            setUserMessage(status);
-                          }),
-                    ),
-                  ),
+                      builder: (context, ref, child) => MicrophoneButton(
+                          microphoneController: microphoneController)),
                 ),
                 Align(
                   alignment: Alignment.bottomRight,
@@ -164,7 +140,7 @@ class _PracticePronScreenState extends State<PracticePronScreen> {
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Text(
-                        '3',
+                        countPron.toString(),
                         style: textStyle.displayLarge
                             ?.copyWith(color: Colors.white),
                       ),

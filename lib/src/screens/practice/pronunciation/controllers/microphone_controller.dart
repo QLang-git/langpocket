@@ -1,66 +1,111 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 class MicrophoneController {
-  final VoidCallback onRecordStart;
-  final VoidCallback onRecordStop;
-  final ValueChanged<String> onListening;
-  final WidgetRef ref;
-  final SpeechToText _speech = SpeechToText();
-
-  MicrophoneController(
-      {required this.ref,
-      required this.onRecordStart,
-      required this.onRecordStop,
-      required this.onListening});
+  final String foreignWord;
+  final List<String> examplesList;
+  final ValueChanged<String> onListeningMessages;
+  final ValueChanged<int> onListeningCount;
+  bool isRerecording = false;
+  String recognizedWords = '';
+  int foreignWordCount = 4;
+  MicrophoneController({
+    required this.onListeningMessages,
+    required this.onListeningCount,
+    required this.foreignWord,
+    required this.examplesList,
+  });
+  final speechToText = SpeechToText();
 
   void initializeSpeechToText() async {
-    bool available = await _speech.initialize(
-      onStatus: statusListener,
-      onError: errorListener,
-    );
-
+    bool available = await speechToText.initialize();
     if (!available) {
-      print("The user has denied the use of speech recognition.");
+      _setAlterUserMessage(RecordingStatus.available.name);
     }
   }
 
   void startRecording() async {
-    if (!ref.watch(recordingProvider)) {
-      onRecordStart();
-      await _speech.listen(onResult: resultListener);
-      ref.read(recordingProvider.notifier).state = true;
+    if (speechToText.isNotListening) {
+      _setAlterUserMessage(RecordingStatus.start.name);
+      await speechToText.listen(onResult: resultListener);
     }
   }
 
   void stopRecording() async {
-    if (ref.watch(recordingProvider)) {
-      onRecordStop();
-      await _speech.stop();
-      ref.read(recordingProvider.notifier).state = false;
+    if (speechToText.isListening) {
+      await speechToText.stop();
+      _setAlterUserMessage(RecordingStatus.stop.name);
     }
   }
 
-  void statusListener(String status) {
-    onListening(status);
-    // You can handle status updates here
-  }
-
-  void errorListener(SpeechRecognitionError error) {
-    print('Speech recognition error: $error');
-    // You can handle error events here
-  }
-
   void resultListener(SpeechRecognitionResult result) {
-    String recognizedWords = result.recognizedWords;
-    print('Recognized words: $recognizedWords');
-    // Compare recognized words with the given ones here
+    recognizedWords = result.recognizedWords;
+    _comparingWords(RecordingStatus.analyze.name, recognizedWords);
+  }
+
+  void _comparingWords(String status, String recognizedWords) {
+    if (status == RecordingStatus.analyze.name && foreignWordCount > 0) {
+      if (recognizedWords.toLowerCase() == foreignWord.toLowerCase()) {
+        foreignWordCount--;
+        onListeningCount(foreignWordCount);
+        _setAlterUserMessage(RecordingStatus.correct.name);
+      } else {
+        recognizedWords.isNotEmpty
+            ? _setAlterUserMessage(RecordingStatus.incorrect.name,
+                currentWord: recognizedWords)
+            : _setAlterUserMessage(RecordingStatus.noVoice.name);
+      }
+    } else {
+      _setAlterUserMessage(RecordingStatus.stop.name);
+    }
+  }
+
+  void _setAlterUserMessage(String status, {String currentWord = ''}) {
+    String message = '';
+    if (RecordingStatus.start.name == status) {
+      message = "listening...";
+    } else if (status == RecordingStatus.stop.name) {
+      message = "Hold to Restart Recording ...";
+    } else if (status == RecordingStatus.correct.name) {
+      message = "Great job! You got it right.";
+    } else if (status == RecordingStatus.incorrect.name) {
+      message = "Oops! The word \"$currentWord\" doesn't match. Try again.";
+    } else if (status == RecordingStatus.noVoice.name) {
+      message = "No voice detected. Please try again.";
+    } else if (status == RecordingStatus.available.name) {
+      message = "permission denied. Please enable microphone access.";
+    } else {
+      message = "Analyzing your pronunciation...";
+    }
+    onListeningMessages(message);
   }
 }
 
-final recordingProvider = StateProvider<bool>((ref) {
-  return false;
-});
+enum RecordingStatus {
+  start,
+  correct,
+  incorrect,
+  stop,
+  analyze,
+  noVoice,
+  available
+}
+
+// // in case i found solution for statusListener
+//   String _setUserMessage(String status, {String currentWord = ''}) {
+//     if (status == "listening") {
+
+//       return "listening...";
+//     } else if (status == 'noWordHear') {
+//       return "No voice detected. Please try again.";
+//     } else if (status == 'correct') {
+//       return "Great job! You got it right.";
+//     } else if (status == 'incorrect') {
+//       return "Oops! The word \"$currentWord\" doesn't match. Try again.";
+//     } else if (status == 'notListening') {
+//       return "Analyzing your pronunciation...";
+//     } else {
+//       return "Hold to Restart Recording ...";
+//     }
+//   }

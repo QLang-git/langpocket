@@ -20,8 +20,8 @@ class NewWordFormState extends ConsumerState<NewWordForm> {
   Widget build(BuildContext context) {
     return Form(
       key: widget.formKey,
-      child: Column(
-        children: const [
+      child: const Column(
+        children: [
           ForeignWord(),
           RotatedBox(
             quarterTurns: 5,
