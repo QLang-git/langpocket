@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -7,7 +8,6 @@ class MicrophoneController {
   final List<String> examplesList;
   final ValueChanged<String> onListeningMessages;
   final ValueChanged<int> onListeningCount;
-  bool isRerecording = false;
   int foreignWordCount = 4;
   MicrophoneController({
     required this.onListeningMessages,
@@ -16,6 +16,7 @@ class MicrophoneController {
     required this.examplesList,
   });
   final speechToText = SpeechToText();
+  RecordingStatus currentStatus = RecordingStatus.noVoice;
 
   void initializeSpeechToText() async {
     bool available = await speechToText.initialize();
@@ -34,10 +35,12 @@ class MicrophoneController {
   void stopRecording() async {
     if (speechToText.isListening) {
       await speechToText.stop();
+      _setAlterUserMessage(RecordingStatus.stop.name);
     }
   }
 
   void resultListener(SpeechRecognitionResult result) {
+    print(result.recognizedWords);
     if (result.finalResult) {
       _comparingWords(RecordingStatus.analyze.name, result.recognizedWords);
     } else {
@@ -65,18 +68,25 @@ class MicrophoneController {
   void _setAlterUserMessage(String status, {String currentWord = ''}) {
     String message = '';
     if (RecordingStatus.start.name == status) {
+      currentStatus = RecordingStatus.start;
       message = "listening...";
     } else if (status == RecordingStatus.stop.name) {
+      currentStatus = RecordingStatus.stop;
       message = "Hold to Restart Recording ...";
     } else if (status == RecordingStatus.correct.name) {
+      currentStatus = RecordingStatus.correct;
       message = "Great job! You got it right.";
     } else if (status == RecordingStatus.incorrect.name) {
-      message = "Oops! The word \"$currentWord\" doesn't match. Try again.";
+      currentStatus = RecordingStatus.incorrect;
+      message = "Oops! \"$currentWord\" doesn't match. Try again.";
     } else if (status == RecordingStatus.noVoice.name) {
+      currentStatus = RecordingStatus.noVoice;
       message = "No voice detected. Please try again.";
     } else if (status == RecordingStatus.available.name) {
+      currentStatus = RecordingStatus.available;
       message = "permission denied. Please enable microphone access.";
     } else {
+      currentStatus = RecordingStatus.analyze;
       message = "Analyzing your pronunciation...";
     }
     onListeningMessages(message);
@@ -92,21 +102,3 @@ enum RecordingStatus {
   noVoice,
   available
 }
-
-// // in case i found solution for statusListener
-//   String _setUserMessage(String status, {String currentWord = ''}) {
-//     if (status == "listening") {
-
-//       return "listening...";
-//     } else if (status == 'noWordHear') {
-//       return "No voice detected. Please try again.";
-//     } else if (status == 'correct') {
-//       return "Great job! You got it right.";
-//     } else if (status == 'incorrect') {
-//       return "Oops! The word \"$currentWord\" doesn't match. Try again.";
-//     } else if (status == 'notListening') {
-//       return "Analyzing your pronunciation...";
-//     } else {
-//       return "Hold to Restart Recording ...";
-//     }
-//   }

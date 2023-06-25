@@ -2,18 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
+import 'package:langpocket/src/utils/constants/messages.dart';
 
-class CustomDialogSpelling extends StatelessWidget {
-  final String message;
-  final Function reload;
-  final Function enableExamples;
-  final String withExampleButton;
-  const CustomDialogSpelling(
-      {super.key,
-      required this.reload,
-      required this.message,
-      required this.enableExamples,
-      required this.withExampleButton});
+class CustomDialogPractice extends StatelessWidget {
+  final PracticeWordMessages messages;
+  const CustomDialogPractice({super.key, required this.messages});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +20,7 @@ class CustomDialogSpelling extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
             width: double.infinity,
-            height: 350,
+            height: 380,
             decoration: BoxDecoration(
               shape: BoxShape.rectangle,
               color: Colors.white,
@@ -53,7 +46,7 @@ class CustomDialogSpelling extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: Text(
-                    message,
+                    messages.titleMessage,
                     softWrap: true,
                     style: headline3(primaryFontColor),
                   ),
@@ -66,7 +59,7 @@ class CustomDialogSpelling extends StatelessWidget {
                       backgroundColor: Colors.green[400],
                     ),
                     onPressed: () {
-                      enableExamples();
+                      messages.enableExamples();
                       context.pop();
                     },
                     child: Padding(
@@ -75,9 +68,10 @@ class CustomDialogSpelling extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            withExampleButton,
+                            messages.withSentences,
+                            style: const TextStyle(color: Colors.white),
                           ),
-                          const Icon(Icons.near_me)
+                          const Icon(Icons.near_me, color: Colors.white)
                         ],
                       ),
                     )),
@@ -87,25 +81,29 @@ class CustomDialogSpelling extends StatelessWidget {
                       backgroundColor: Colors.amber[700],
                     ),
                     onPressed: () {
-                      reload();
+                      messages.reload();
                       context.pop();
                     },
-                    child: const Padding(
-                      padding: EdgeInsets.all(10.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Try spell it again ',
+                            messages.tryAgain,
+                            style: const TextStyle(color: Colors.white),
                           ),
-                          Icon(Icons.refresh)
+                          const Icon(
+                            Icons.refresh,
+                            color: Colors.white,
+                          )
                         ],
                       ),
                     )),
                 const SizedBox(height: 15),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red[200]),
+                        backgroundColor: Colors.red[400]),
                     onPressed: () {
                       context.pop();
                       context.pop();
@@ -117,8 +115,12 @@ class CustomDialogSpelling extends StatelessWidget {
                         children: [
                           Text(
                             'Exit ',
+                            style: TextStyle(color: Colors.white),
                           ),
-                          Icon(Icons.exit_to_app_rounded)
+                          Icon(
+                            Icons.exit_to_app_rounded,
+                            color: Colors.white,
+                          )
                         ],
                       ),
                     )),

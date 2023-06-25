@@ -9,6 +9,8 @@ import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/app_bar/pron_appbar.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/controllers/microphone_controller.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/widgets/microphone_button.dart';
+import 'package:langpocket/src/common_widgets/custom_dialog_practice.dart';
+import 'package:langpocket/src/utils/constants/messages.dart';
 
 class PracticePronScreen extends ConsumerStatefulWidget {
   final List<Uint8List> imageList;
@@ -57,101 +59,125 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final myMessage = MyMessages();
     final textStyle = Theme.of(context).textTheme;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (countPron == 0) {
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return CustomDialogPractice(
+                messages: myMessage.getPracticeMessage(
+                    MessagesType.practicePronunciation,
+                    widget.foreignWord,
+                    () {},
+                    () {}),
+              );
+            });
+      }
+    });
+
     return ResponsiveCenter(
-        child: Scaffold(
-      appBar: const PronAppBar(),
-      body: SingleChildScrollView(
-        child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
-            child: Stack(children: [
-              Column(
-                children: [
-                  ImageView(imageList: widget.imageList),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  countPron > 2
-                      ? WordView(
-                          foreignWord: widget.foreignWord,
-                          means: widget.meanList,
-                        )
-                      : Card(
-                          elevation: 3,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
+      child: Scaffold(
+        appBar: const PronAppBar(),
+        body: SingleChildScrollView(
+          child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+              child: Stack(children: [
+                Column(
+                  children: [
+                    ImageView(imageList: widget.imageList),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    countPron > 2
+                        ? WordView(
+                            foreignWord: widget.foreignWord,
+                            means: widget.meanList,
+                          )
+                        : Card(
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            margin: const EdgeInsets.all(10),
+                            child: const SizedBox(
+                                width: double.infinity,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 10),
+                                  child: Icon(
+                                    Ionicons.eye_off,
+                                    size: 40,
+                                  ),
+                                )),
                           ),
-                          margin: const EdgeInsets.all(10),
-                          child: const SizedBox(
-                              width: double.infinity,
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 10),
-                                child: Icon(
-                                  Ionicons.eye_off,
-                                  size: 40,
-                                ),
-                              )),
-                        ),
-                ],
-              ),
-            ])),
-      ),
-      floatingActionButton: Align(
-        alignment: Alignment.bottomCenter,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 15),
-              child: Container(
-                padding: const EdgeInsets.all(7),
-                margin: const EdgeInsets.symmetric(vertical: 5),
-                decoration: BoxDecoration(
-                  color: Colors.blueGrey,
-                  borderRadius: BorderRadius.circular(10),
+                  ],
                 ),
-                child: Text(
-                  message,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
+              ])),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: SizedBox(
+          height: 230,
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  padding: const EdgeInsets.all(7),
+                  margin: const EdgeInsets.symmetric(vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.blueGrey,
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                ),
-              ),
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const SizedBox(width: 100),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Consumer(
-                      builder: (context, ref, child) => MicrophoneButton(
-                          microphoneController: microphoneController)),
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Card(
-                    elevation: 5,
-                    margin: const EdgeInsets.all(10),
-                    shape: const CircleBorder(),
-                    color: Colors.indigo[400],
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Text(
-                        countPron.toString(),
-                        style: textStyle.displayLarge
-                            ?.copyWith(color: Colors.white),
-                      ),
+                  child: Text(
+                    message,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
                     ),
                   ),
                 ),
-              ],
-            ),
-          ],
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 70),
+                      child: MicrophoneButton(
+                        microphoneController: microphoneController,
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Card(
+                      elevation: 5,
+                      margin: const EdgeInsets.all(10),
+                      shape: const CircleBorder(),
+                      color: Colors.indigo[400],
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Text(
+                          countPron.toString(),
+                          style: textStyle.displayLarge
+                              ?.copyWith(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 }

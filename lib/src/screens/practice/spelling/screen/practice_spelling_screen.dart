@@ -6,8 +6,9 @@ import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
 import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
 import 'package:langpocket/src/screens/practice/spelling/app_bar/spelling_appbar.dart';
-import 'package:langpocket/src/screens/practice/spelling/widgets/custom_dialog_spelling.dart';
+import 'package:langpocket/src/common_widgets/custom_dialog_practice.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
+import 'package:langpocket/src/utils/constants/messages.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 import 'package:ionicons/ionicons.dart';
 
@@ -76,6 +77,8 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final myMessage = MyMessages();
+
     TextToSpeech tts = TextToSpeech();
     final inputController = TextEditingController();
     final exampleInputController = TextEditingController();
@@ -172,13 +175,12 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                                     context: context,
                                     barrierDismissible: false,
                                     builder: (BuildContext context) {
-                                      return CustomDialogSpelling(
-                                        enableExamples: activateExamples,
-                                        reload: reloadPage,
-                                        message:
-                                            'You wrote " $value " 5 times correctly.\nKeep practicing  spelling several times for better results.',
-                                        withExampleButton:
-                                            'Spell this word with sentences ',
+                                      return CustomDialogPractice(
+                                        messages: myMessage.getPracticeMessage(
+                                            MessagesType.practiceSpelling,
+                                            widget.foreignWord,
+                                            reloadPage,
+                                            activateExamples),
                                       );
                                     })
                               }
@@ -313,14 +315,14 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                                             context: context,
                                             barrierDismissible: false,
                                             builder: (BuildContext context) {
-                                              return CustomDialogSpelling(
-                                                enableExamples:
-                                                    reactivateExamples,
-                                                reload: reloadPage,
-                                                message:
-                                                    'You\'ve completed your spelling practice for the word examples also .\nKeep going...',
-                                                withExampleButton:
-                                                    'Spell with sentences again ',
+                                              return CustomDialogPractice(
+                                                messages: myMessage
+                                                    .getPracticeMessage(
+                                                        MessagesType
+                                                            .practiceSpellingExampleComplete,
+                                                        value,
+                                                        reloadPage,
+                                                        reactivateExamples),
                                               );
                                             })
                                       }
