@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -8,13 +7,18 @@ class MicrophoneController {
   final List<String> examplesList;
   final ValueChanged<String> onListeningMessages;
   final ValueChanged<int> onListeningCount;
-  int foreignWordCount = 4;
-  MicrophoneController({
-    required this.onListeningMessages,
-    required this.onListeningCount,
-    required this.foreignWord,
-    required this.examplesList,
-  });
+  final ValueChanged<bool> onExampleSateListening;
+  final ValueChanged<int> onPointerListening;
+  int countPron = 4;
+  bool activateExample = false;
+  int pointer = 0;
+  MicrophoneController(
+      {required this.onListeningMessages,
+      required this.onListeningCount,
+      required this.foreignWord,
+      required this.examplesList,
+      required this.onExampleSateListening,
+      required this.onPointerListening});
   final speechToText = SpeechToText();
   RecordingStatus currentStatus = RecordingStatus.noVoice;
 
@@ -42,22 +46,62 @@ class MicrophoneController {
   void resultListener(SpeechRecognitionResult result) {
     print(result.recognizedWords);
     if (result.finalResult) {
-      _comparingWords(RecordingStatus.analyze.name, result.recognizedWords);
+      if (activateExample) {
+        _comparingWords(RecordingStatus.analyze.name, result.recognizedWords,
+            examplesList[pointer]);
+      } else {
+        _comparingWords(
+            RecordingStatus.analyze.name, result.recognizedWords, foreignWord);
+      }
     } else {
       _setAlterUserMessage(RecordingStatus.analyze.name);
     }
   }
 
-  void _comparingWords(String status, String recognizedWords) {
-    if (status == RecordingStatus.analyze.name && foreignWordCount > 0) {
-      if (recognizedWords.toLowerCase() == foreignWord.toLowerCase()) {
-        foreignWordCount--;
-        onListeningCount(foreignWordCount);
+  void resetting() {
+    countPron = 4;
+    activateExample = false;
+    pointer = 0;
+    onListeningCount(countPron);
+    onExampleSateListening(activateExample);
+    onPointerListening(pointer);
+    _setAlterUserMessage(RecordingStatus.initial.name);
+  }
+
+  void examplesActivation() {
+    activateExample = true;
+    countPron = 3;
+    onExampleSateListening(activateExample);
+    onListeningCount(countPron);
+    _setAlterUserMessage(RecordingStatus.exampleActivation.name);
+  }
+
+  void reactivateExample() {
+    countPron = 3;
+    pointer = 0;
+    onPointerListening(pointer);
+    onListeningCount(countPron);
+    _setAlterUserMessage(RecordingStatus.exampleActivation.name);
+  }
+
+  void moveToNextExamples() {
+    pointer += 1;
+    countPron = 3;
+    onListeningCount(countPron);
+    onPointerListening(pointer);
+  }
+
+  void _comparingWords(
+      String status, String recognizedText, String originText) {
+    if (status == RecordingStatus.analyze.name && countPron > 0) {
+      if (recognizedText.toLowerCase() == originText.toLowerCase()) {
+        countPron--;
+        onListeningCount(countPron);
         _setAlterUserMessage(RecordingStatus.correct.name);
       } else {
-        recognizedWords.isNotEmpty
+        recognizedText.isNotEmpty
             ? _setAlterUserMessage(RecordingStatus.incorrect.name,
-                currentWord: recognizedWords)
+                currentWord: recognizedText)
             : _setAlterUserMessage(RecordingStatus.noVoice.name);
       }
     } else {
@@ -84,7 +128,11 @@ class MicrophoneController {
       message = "No voice detected. Please try again.";
     } else if (status == RecordingStatus.available.name) {
       currentStatus = RecordingStatus.available;
-      message = "permission denied. Please enable microphone access.";
+      message = " Permission denied. Please enable microphone access.";
+    } else if (status == RecordingStatus.exampleActivation.name) {
+      message = "Try to Pronounce the following sentence ";
+    } else if (status == RecordingStatus.initial.name) {
+      message = "Hold to Start Recording ...";
     } else {
       currentStatus = RecordingStatus.analyze;
       message = "Analyzing your pronunciation...";
@@ -94,11 +142,13 @@ class MicrophoneController {
 }
 
 enum RecordingStatus {
+  initial,
   start,
   correct,
   incorrect,
   stop,
   analyze,
   noVoice,
-  available
+  available,
+  exampleActivation
 }

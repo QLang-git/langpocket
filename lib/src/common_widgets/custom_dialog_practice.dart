@@ -6,7 +6,13 @@ import 'package:langpocket/src/utils/constants/messages.dart';
 
 class CustomDialogPractice extends StatelessWidget {
   final PracticeWordMessages messages;
-  const CustomDialogPractice({super.key, required this.messages});
+  final Function activateExamples;
+  final Function reload;
+  const CustomDialogPractice(
+      {super.key,
+      required this.messages,
+      required this.activateExamples,
+      required this.reload});
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +65,7 @@ class CustomDialogPractice extends StatelessWidget {
                       backgroundColor: Colors.green[400],
                     ),
                     onPressed: () {
-                      messages.enableExamples();
+                      activateExamples();
                       context.pop();
                     },
                     child: Padding(
@@ -81,7 +87,7 @@ class CustomDialogPractice extends StatelessWidget {
                       backgroundColor: Colors.amber[700],
                     ),
                     onPressed: () {
-                      messages.reload();
+                      reload();
                       context.pop();
                     },
                     child: Padding(

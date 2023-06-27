@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
+import 'package:langpocket/src/common_widgets/views/examples_view/example_view.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
 import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/app_bar/pron_appbar.dart';
@@ -41,11 +42,15 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
   @override
   void initState() {
     countPron = 4;
+    example = false;
+    pointer = 0;
     microphoneController = MicrophoneController(
         onListeningMessages: setMessage,
         onListeningCount: setCounter,
         foreignWord: widget.foreignWord,
-        examplesList: widget.examplesList);
+        examplesList: widget.examplesList,
+        onExampleSateListening: setExamplesState,
+        onPointerListening: setNewPointer);
     super.initState();
     microphoneController.initializeSpeechToText();
   }
@@ -56,25 +61,51 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
   void setCounter(int count) => setState(() {
         countPron = count;
       });
+  void setNewPointer(int state) => setState(() {
+        pointer = state;
+      });
+
+  void setExamplesState(bool state) => setState(() {
+        example = state;
+      });
 
   @override
   Widget build(BuildContext context) {
     final myMessage = MyMessages();
     final textStyle = Theme.of(context).textTheme;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (countPron == 0) {
+      if (countPron == 0 && !example) {
         showDialog(
             context: context,
             barrierDismissible: false,
             builder: (BuildContext context) {
               return CustomDialogPractice(
                 messages: myMessage.getPracticeMessage(
-                    MessagesType.practicePronunciation,
-                    widget.foreignWord,
-                    () {},
-                    () {}),
+                  MessagesType.practicePronunciation,
+                  widget.foreignWord,
+                ),
+                reload: microphoneController.resetting,
+                activateExamples: microphoneController.examplesActivation,
               );
             });
+      } else if (countPron == 0 && example) {
+        if (pointer < widget.examplesList.length - 1) {
+          microphoneController.moveToNextExamples();
+        } else {
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return CustomDialogPractice(
+                  messages: myMessage.getPracticeMessage(
+                    MessagesType.practicePronExampleComplete,
+                    widget.foreignWord,
+                  ),
+                  reload: microphoneController.resetting,
+                  activateExamples: microphoneController.reactivateExample,
+                );
+              });
+        }
       }
     });
 
@@ -91,7 +122,7 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
                     const SizedBox(
                       height: 15,
                     ),
-                    countPron > 2
+                    countPron > 2 || example
                         ? WordView(
                             foreignWord: widget.foreignWord,
                             means: widget.meanList,
@@ -112,6 +143,23 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
                                   ),
                                 )),
                           ),
+                    example
+                        ? Column(
+                            children: [
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 20, horizontal: 25),
+                                child: Divider(
+                                  height: 20,
+                                ),
+                              ),
+                              ExampleView(example: widget.examplesList[pointer])
+                            ],
+                          )
+                        : Container()
                   ],
                 ),
               ])),

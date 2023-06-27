@@ -178,9 +178,9 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                                       return CustomDialogPractice(
                                         messages: myMessage.getPracticeMessage(
                                             MessagesType.practiceSpelling,
-                                            widget.foreignWord,
-                                            reloadPage,
-                                            activateExamples),
+                                            widget.foreignWord),
+                                        reload: reloadPage,
+                                        activateExamples: activateExamples,
                                       );
                                     })
                               }
@@ -318,11 +318,13 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                                               return CustomDialogPractice(
                                                 messages: myMessage
                                                     .getPracticeMessage(
-                                                        MessagesType
-                                                            .practiceSpellingExampleComplete,
-                                                        value,
-                                                        reloadPage,
-                                                        reactivateExamples),
+                                                  MessagesType
+                                                      .practiceSpellingExampleComplete,
+                                                  value,
+                                                ),
+                                                activateExamples:
+                                                    activateExamples,
+                                                reload: reloadPage,
                                               );
                                             })
                                       }
