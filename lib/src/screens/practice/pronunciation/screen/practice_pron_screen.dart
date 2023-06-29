@@ -37,13 +37,10 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
   late int pointer;
   late bool example;
   late MicrophoneController microphoneController;
-  String message = "Hold to Start Recording ...";
+  late String message;
 
   @override
   void initState() {
-    countPron = 4;
-    example = false;
-    pointer = 0;
     microphoneController = MicrophoneController(
         onListeningMessages: setMessage,
         onListeningCount: setCounter,
@@ -51,6 +48,11 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
         examplesList: widget.examplesList,
         onExampleSateListening: setExamplesState,
         onPointerListening: setNewPointer);
+    final initial = microphoneController.initializeControllerValues();
+    countPron = initial.countPron;
+    example = initial.activateExample;
+    pointer = initial.pointer;
+    message = initial.initialMessage;
     super.initState();
     microphoneController.initializeSpeechToText();
   }
@@ -74,39 +76,7 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
     final myMessage = MyMessages();
     final textStyle = Theme.of(context).textTheme;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (countPron == 0 && !example) {
-        showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (BuildContext context) {
-              return CustomDialogPractice(
-                messages: myMessage.getPracticeMessage(
-                  MessagesType.practicePronunciation,
-                  widget.foreignWord,
-                ),
-                reload: microphoneController.resetting,
-                activateExamples: microphoneController.examplesActivation,
-              );
-            });
-      } else if (countPron == 0 && example) {
-        if (pointer < widget.examplesList.length - 1) {
-          microphoneController.moveToNextExamples();
-        } else {
-          showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (BuildContext context) {
-                return CustomDialogPractice(
-                  messages: myMessage.getPracticeMessage(
-                    MessagesType.practicePronExampleComplete,
-                    widget.foreignWord,
-                  ),
-                  reload: microphoneController.resetting,
-                  activateExamples: microphoneController.reactivateExample,
-                );
-              });
-        }
-      }
+      popUpDialog(context, myMessage);
     });
 
     return ResponsiveCenter(
@@ -122,7 +92,7 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
                     const SizedBox(
                       height: 15,
                     ),
-                    countPron > 2 || example
+                    countPron > microphoneController.stopPeaking || example
                         ? WordView(
                             foreignWord: widget.foreignWord,
                             means: widget.meanList,
@@ -227,5 +197,41 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
         ),
       ),
     );
+  }
+
+  void popUpDialog(BuildContext context, MyMessages myMessage) {
+    if (countPron == 0 && !example) {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return CustomDialogPractice(
+              messages: myMessage.getPracticeMessage(
+                PracticeMessagesType.practicePronunciation,
+                widget.foreignWord,
+              ),
+              reload: microphoneController.resetting,
+              activateExamples: microphoneController.examplesActivation,
+            );
+          });
+    } else if (countPron == 0 && example) {
+      if (pointer < widget.examplesList.length - 1) {
+        microphoneController.moveToNextExamples();
+      } else {
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return CustomDialogPractice(
+                messages: myMessage.getPracticeMessage(
+                  PracticeMessagesType.practicePronExampleComplete,
+                  widget.foreignWord,
+                ),
+                reload: microphoneController.resetting,
+                activateExamples: microphoneController.reactivateExample,
+              );
+            });
+      }
+    }
   }
 }

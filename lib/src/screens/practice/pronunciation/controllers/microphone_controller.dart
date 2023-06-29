@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
+const int _countWordPron = 4;
+const int _countExamplePron = 3;
+const bool _activateExampleState = false;
+const int _pointer = 0;
+const int _stopPeaking = 2;
+const String _initialMessage = "Hold to Start Recording ...";
+
 class MicrophoneController {
   final String foreignWord;
   final List<String> examplesList;
@@ -9,9 +16,10 @@ class MicrophoneController {
   final ValueChanged<int> onListeningCount;
   final ValueChanged<bool> onExampleSateListening;
   final ValueChanged<int> onPointerListening;
-  int countPron = 4;
-  bool activateExample = false;
-  int pointer = 0;
+  final int stopPeaking = _stopPeaking;
+  int countPron = _countWordPron;
+  bool activateExample = _activateExampleState;
+  int pointer = _pointer;
   MicrophoneController(
       {required this.onListeningMessages,
       required this.onListeningCount,
@@ -27,6 +35,22 @@ class MicrophoneController {
     if (!available) {
       _setAlterUserMessage(RecordingStatus.available.name);
     }
+  }
+
+  ({
+    int countPron,
+    int countExamplePron,
+    bool activateExample,
+    int pointer,
+    String initialMessage
+  }) initializeControllerValues() {
+    return (
+      countPron: _countWordPron,
+      countExamplePron: _countExamplePron,
+      activateExample: _activateExampleState,
+      pointer: _pointer,
+      initialMessage: _initialMessage
+    );
   }
 
   void startRecording() async {
@@ -59,9 +83,9 @@ class MicrophoneController {
   }
 
   void resetting() {
-    countPron = 4;
-    activateExample = false;
-    pointer = 0;
+    countPron = _countWordPron;
+    activateExample = _activateExampleState;
+    pointer = _pointer;
     onListeningCount(countPron);
     onExampleSateListening(activateExample);
     onPointerListening(pointer);
@@ -70,15 +94,15 @@ class MicrophoneController {
 
   void examplesActivation() {
     activateExample = true;
-    countPron = 3;
+    countPron = _countExamplePron;
     onExampleSateListening(activateExample);
     onListeningCount(countPron);
     _setAlterUserMessage(RecordingStatus.exampleActivation.name);
   }
 
   void reactivateExample() {
-    countPron = 3;
-    pointer = 0;
+    countPron = _countExamplePron;
+    pointer = _pointer;
     onPointerListening(pointer);
     onListeningCount(countPron);
     _setAlterUserMessage(RecordingStatus.exampleActivation.name);
@@ -86,7 +110,7 @@ class MicrophoneController {
 
   void moveToNextExamples() {
     pointer += 1;
-    countPron = 3;
+    countPron = _countExamplePron;
     onListeningCount(countPron);
     onPointerListening(pointer);
   }

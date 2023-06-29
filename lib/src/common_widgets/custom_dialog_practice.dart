@@ -5,7 +5,7 @@ import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:langpocket/src/utils/constants/messages.dart';
 
 class CustomDialogPractice extends StatelessWidget {
-  final PracticeWordMessages messages;
+  final PracticeMessage messages;
   final Function activateExamples;
   final Function reload;
   const CustomDialogPractice(
