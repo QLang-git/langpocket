@@ -7,7 +7,7 @@ import 'package:langpocket/src/screens/word_edit/widgets/edit_word_image/edit_wo
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class EditModeWordScreen extends StatefulWidget {
-  final Word wordData;
+  final WordRecord wordData;
 
   const EditModeWordScreen({super.key, required this.wordData});
 

@@ -48,7 +48,7 @@ class _WordsGroupsState extends ConsumerState<WordsGroups> {
 class _MyWordList extends ConsumerStatefulWidget {
   final BuildContext context;
 
-  final List<Word> words;
+  final List<WordRecord> words;
   final String groupName;
   final String date;
   final int groupId;
@@ -65,7 +65,7 @@ class _MyWordList extends ConsumerStatefulWidget {
 }
 
 class __MyWordListState extends ConsumerState<_MyWordList> {
-  late List<Word> myWords;
+  late List<WordRecord> myWords;
 
   final tts = TextToSpeech();
   @override
@@ -74,7 +74,7 @@ class __MyWordListState extends ConsumerState<_MyWordList> {
     super.initState();
   }
 
-  void _onDismissed(int index, Word word) async {
+  void _onDismissed(int index, WordRecord word) async {
     final wordTarget = word;
     setState(() {
       myWords.removeAt(index);

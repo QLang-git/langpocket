@@ -9,7 +9,7 @@ import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class WordPreviewerScreen extends StatefulWidget {
-  final Word wordData;
+  final WordRecord wordData;
   const WordPreviewerScreen({
     required this.wordData,
     super.key,

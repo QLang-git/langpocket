@@ -7,7 +7,7 @@ import 'package:langpocket/src/screens/word_edit/widgets/edit_form/fields/notes_
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class EditWordForm extends ConsumerStatefulWidget {
-  final Word wordDataToView;
+  final WordRecord wordDataToView;
   final GlobalKey<FormState> formKey;
   const EditWordForm({
     required this.wordDataToView,

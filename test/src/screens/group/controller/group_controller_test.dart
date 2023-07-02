@@ -28,7 +28,7 @@ void main() {
           wordDate: DateTime.now())
     ];
     final decodingWord = [
-      Word(
+      WordRecord(
         id: 1,
         foreignWord: 'test',
         wordMeans: ['test1', 'test2'],

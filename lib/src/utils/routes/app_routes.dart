@@ -9,6 +9,7 @@ import 'package:langpocket/src/data/local/repository/drift_group_repository.dart
 import 'package:langpocket/src/screens/group/screen/group_screen.dart';
 import 'package:langpocket/src/screens/home/screen/home_screen.dart';
 import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
+import 'package:langpocket/src/screens/practice/interactive/screen/practice_interactive_screen.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/screen/practice_pron_screen.dart';
 import 'package:langpocket/src/screens/practice/spelling/screen/practice_spelling_screen.dart';
 import 'package:langpocket/src/screens/word_edit/screen/edit_mode_word_screen.dart';
@@ -25,19 +26,20 @@ enum AppRoute {
   word,
   editMode,
   spelling,
-  pronunciation
+  pronunciation,
+  interactive
 }
 
-class Word {
-  final int? id;
+class WordRecord {
+  final int id;
   final String foreignWord;
   final List<String> wordMeans;
   final List<Uint8List> wordImages;
   final List<String> wordExamples;
   final String wordNote;
 
-  Word({
-    this.id,
+  WordRecord({
+    required this.id,
     required this.foreignWord,
     required this.wordMeans,
     required this.wordImages,
@@ -75,9 +77,9 @@ final appScreens = [
                   path: 'view',
                   name: AppRoute.wordView.name,
                   pageBuilder: (context, state) {
-                    final word = state.extra as Word?;
+                    final word = state.extra as WordRecord?;
 
-                    if (word is Word) {
+                    if (word is WordRecord) {
                       return _navGoRight(
                           WordPreviewerScreen(wordData: word), state);
                     } else {
@@ -114,8 +116,8 @@ final appScreens = [
                     path: 'edit-mode',
                     name: AppRoute.editMode.name,
                     pageBuilder: (context, state) {
-                      final word = state.extra as Word?;
-                      if (word is Word) {
+                      final word = state.extra as WordRecord?;
+                      if (word is WordRecord) {
                         return _navGoRight(
                             EditModeWordScreen(
                               wordData: word,
@@ -130,7 +132,7 @@ final appScreens = [
                     path: 'spelling',
                     name: AppRoute.spelling.name,
                     pageBuilder: (context, state) {
-                      final word = state.extra as Word?;
+                      final word = state.extra as WordRecord?;
                       if (word != null) {
                         return _navGoUp(
                             PracticeSpellingScreen(
@@ -148,7 +150,7 @@ final appScreens = [
                     path: 'pronunciation',
                     name: AppRoute.pronunciation.name,
                     pageBuilder: (context, state) {
-                      final word = state.extra as Word?;
+                      final word = state.extra as WordRecord?;
                       if (word != null) {
                         return _navGoUp(
                             PracticePronScreen(
@@ -158,6 +160,24 @@ final appScreens = [
                                 foreignWord: word.foreignWord,
                                 meanList: word.wordMeans,
                                 examplesList: word.wordExamples),
+                            state);
+                      } else {
+                        return _navGoUp(const ErrorNavScreen(), state);
+                      }
+                    },
+                  ),
+                  GoRoute(
+                    path: 'interactively',
+                    name: AppRoute.interactive.name,
+                    pageBuilder: (context, state) {
+                      final word = state.extra as WordRecord?;
+                      if (word != null) {
+                        return _navGoUp(
+                            PracticeInteractiveScreen(
+                              key: ValueKey(
+                                  DateTime.now().millisecondsSinceEpoch),
+                              wordRecord: word,
+                            ),
                             state);
                       } else {
                         return _navGoUp(const ErrorNavScreen(), state);

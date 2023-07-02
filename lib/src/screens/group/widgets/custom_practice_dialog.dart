@@ -4,7 +4,7 @@ import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class CustomPracticeDialog extends StatelessWidget {
-  final Word wordData;
+  final WordRecord wordData;
   final String groupId;
 
   final String name;
@@ -92,12 +92,15 @@ class CustomPracticeDialog extends StatelessWidget {
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             backgroundColor: colorStyle.onPrimary),
-                        onPressed: () {},
+                        onPressed: () => context.pushNamed(
+                            AppRoute.interactive.name,
+                            extra: wordData,
+                            pathParameters: {'id': wordData.id.toString()}),
                         child: Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(10.0),
                           child: Text(
-                            'Practice Listening',
+                            'Practice Interactively',
                             textAlign: TextAlign.center,
                             style: textStyle.labelMedium
                                 ?.copyWith(color: Colors.white),

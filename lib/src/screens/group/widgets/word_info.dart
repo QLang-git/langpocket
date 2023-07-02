@@ -5,7 +5,7 @@ import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class WordInfo extends StatelessWidget {
-  final Word word;
+  final WordRecord word;
   const WordInfo({super.key, required this.word});
 
   @override

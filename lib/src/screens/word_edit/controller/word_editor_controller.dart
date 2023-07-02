@@ -61,7 +61,7 @@ List<String> _cleanList(List<String> list) {
 }
 
 bool isWordInfoSimilar(
-    {required EditModeWordScreenState states, required Word wordData}) {
+    {required EditModeWordScreenState states, required WordRecord wordData}) {
   final isUpdatedforeignWord = states.newforeignWord == wordData.foreignWord;
   final isUpdatedMeans =
       listEquals(_cleanList(states.newMeans), _cleanList(wordData.wordMeans));

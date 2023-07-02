@@ -24,9 +24,9 @@ void deleteWord(int wordId, int groupId) {
   safe_acess_local_db.deleteWordById(wordId, groupId);
 }
 
-List<Word> wordDecoding(List<WordData> wordsData) {
+List<WordRecord> wordDecoding(List<WordData> wordsData) {
   return wordsData
-      .map((word) => Word(
+      .map((word) => WordRecord(
             id: word.id,
             foreignWord: word.foreignWord,
             wordMeans: word.meansList(),

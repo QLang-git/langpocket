@@ -37,7 +37,7 @@ class _NewWordAppBarState extends State<NewWordAppBar> {
                   if (widget.formKey.currentState!.validate()) {
                     context.goNamed(
                       AppRoute.wordView.name,
-                      extra: Word(
+                      extra: WordRecord(
                           foreignWord: states.foreignWord,
                           wordMeans: states.wordMeans,
                           wordImages: states.wordImages,

@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class WordViewAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final Word wordData;
+  final WordRecord wordData;
   const WordViewAppBar({
     super.key,
     required this.wordData,
