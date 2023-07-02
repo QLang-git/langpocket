@@ -31,7 +31,7 @@ enum AppRoute {
 }
 
 class WordRecord {
-  final int id;
+  final int? id;
   final String foreignWord;
   final List<String> wordMeans;
   final List<Uint8List> wordImages;
@@ -39,7 +39,7 @@ class WordRecord {
   final String wordNote;
 
   WordRecord({
-    required this.id,
+    this.id,
     required this.foreignWord,
     required this.wordMeans,
     required this.wordImages,
