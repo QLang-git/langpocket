@@ -40,41 +40,39 @@ class _PracticeStepperState extends State<PracticeStepper> {
 
   @override
   Widget build(BuildContext context) {
-    final colorscheme = Theme.of(context).colorScheme;
+    final ThemeData(:colorScheme) = Theme.of(context);
 
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       double lineLength = constraints.maxWidth * 0.3;
-      return Column(
-        children: [
-          IconStepper(
-            lineLength: lineLength,
-            stepPadding: 0,
-            enableNextPreviousButtons: false,
-            enableStepTapping: false,
-            stepReachedAnimationEffect: Curves.bounceInOut,
-            activeStepBorderColor: colorscheme.outline,
-            lineColor: colorscheme.outline,
-            activeStepColor: colorscheme.primary,
-            icons: const [
-              Icon(
-                Ionicons.ear_outline,
-                color: Colors.white,
-              ),
-              Icon(
-                Icons.record_voice_over_outlined,
-                color: Colors.white,
-              ),
-              Icon(
-                Ionicons.pencil_outline,
-                color: Colors.white,
-              )
-            ],
-            // activeStep property set to activeStep variable defined above.
-            activeStep: activeStep,
-          ),
-          widget.steps[activeStep]
-        ],
+      return Theme(
+        data: Theme.of(context)
+            .copyWith(iconTheme: const IconThemeData(color: Colors.white)),
+        child: Column(
+          children: [
+            IconStepper(
+              lineLength: lineLength,
+              stepPadding: 0,
+              enableNextPreviousButtons: false,
+              enableStepTapping: false,
+              stepReachedAnimationEffect: Curves.bounceInOut,
+              activeStepBorderColor: colorScheme.outline,
+              lineColor: colorScheme.outline,
+              activeStepColor: colorScheme.primary,
+              icons: const [
+                Icon(Ionicons.ear_outline),
+                Icon(Icons.record_voice_over_outlined),
+                Icon(Ionicons.pencil_outline)
+              ],
+              // activeStep property set to activeStep variable defined above.
+              activeStep: activeStep,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+              child: widget.steps[activeStep],
+            )
+          ],
+        ),
       ); // Adjust the multiplier as needed
     });
   }

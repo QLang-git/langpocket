@@ -24,8 +24,7 @@ class ImageView extends StatelessWidget {
                 scale: 0.9,
               )
             : Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 19.5),
+                padding: const EdgeInsets.symmetric(vertical: 15),
                 child: Container(
                   color: Theme.of(context).colorScheme.onBackground,
                   child: const Center(

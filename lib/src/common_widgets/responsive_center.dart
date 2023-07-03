@@ -27,7 +27,7 @@ class ResponsiveCenter extends StatelessWidget {
         width: maxContentWidth,
         child: Padding(
           padding: padding,
-          child: SafeArea(child: child),
+          child: child,
         ),
       ),
     );

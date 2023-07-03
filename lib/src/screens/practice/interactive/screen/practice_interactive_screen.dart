@@ -33,12 +33,15 @@ class _PracticePronScreenState extends State<PracticeInteractiveScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData(:colorScheme) = Theme.of(context);
+
     return ResponsiveCenter(
       child: Scaffold(
         appBar: const PracticeInteractiveAppBar(),
+        backgroundColor: colorScheme.background,
         body: SingleChildScrollView(
             child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 4),
           child: PracticeStepper(steps: steps),
         )),
       ),
