@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:langpocket/src/screens/practice/pronunciation/controllers/microphone_controller.dart';
+import 'package:langpocket/src/common_controller/microphone_controller.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class MicrophoneButton extends StatefulWidget {

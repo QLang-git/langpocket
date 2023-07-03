@@ -3,12 +3,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:langpocket/src/common_controller/microphone_usage.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/common_widgets/views/examples_view/example_view.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
 import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/app_bar/pron_appbar.dart';
-import 'package:langpocket/src/screens/practice/pronunciation/controllers/microphone_controller.dart';
+import 'package:langpocket/src/common_controller/microphone_controller.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/widgets/microphone_button.dart';
 import 'package:langpocket/src/common_widgets/custom_dialog_practice.dart';
 import 'package:langpocket/src/utils/constants/messages.dart';
@@ -41,7 +42,7 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
 
   @override
   void initState() {
-    microphoneController = MicrophoneController(
+    microphoneController = MicrophoneController(ConstPronMicrophone(),
         onListeningMessages: setMessage,
         onListeningCount: setCounter,
         foreignWord: widget.foreignWord,
