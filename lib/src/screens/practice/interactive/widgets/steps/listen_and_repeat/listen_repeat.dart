@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_controller/microphone_controller.dart';
 import 'package:langpocket/src/common_controller/microphone_usage.dart';
@@ -17,21 +15,31 @@ class ListenRepeat extends StatefulWidget {
   State<ListenRepeat> createState() => _ListenRepeatState();
 }
 
+// Known data points
+Map<double, double> knownData = {
+  500: 0,
+  600: 15,
+  700: 30,
+  800: 62,
+  900: 72,
+  1000: 82,
+  1840: 83
+};
+
 class _ListenRepeatState extends State<ListenRepeat>
     with AutomaticKeepAliveClientMixin {
   late ListenRepeatController listenRepeatController;
-  late List<Uint8List> images;
   late MicrophoneController microphoneController;
 
   late String message;
   late int countPron;
   late int pointer;
   late bool example;
+  int step = 1;
 
   @override
   void initState() {
-    final WordRecord(:wordImages, :foreignWord, :wordExamples) =
-        widget.wordRecord;
+    final WordRecord(:foreignWord, :wordExamples) = widget.wordRecord;
     microphoneController = MicrophoneController(ConstIterMicrophone(),
         onListeningMessages: setMessage,
         onListeningCount: setCounter,
@@ -39,9 +47,11 @@ class _ListenRepeatState extends State<ListenRepeat>
         examplesList: wordExamples,
         onExampleSateListening: setExamplesState,
         onPointerListening: setNewPointer);
-    images = wordImages;
     listenRepeatController = ListenRepeatController(
-        foreignWord: foreignWord, setMicActivation: setMicActivation);
+      moveToNextStep: moveToNextStep,
+      microphoneController: microphoneController,
+      setMicActivation: setMicActivation,
+    );
     listenRepeatController.listen();
     final initial = microphoneController.initializeControllerValues();
     countPron = initial.countPron;
@@ -59,7 +69,7 @@ class _ListenRepeatState extends State<ListenRepeat>
       });
   void setCounter(int count) => setState(() {
         countPron = count;
-        if (count == 0) setMicActivation(false);
+        if (count == 0) listenRepeatController.setMicState(false);
       });
   void setNewPointer(int state) => setState(() {
         pointer = state;
@@ -72,11 +82,23 @@ class _ListenRepeatState extends State<ListenRepeat>
         micActivation = state;
       });
 
+  void moveToNextStep(int value) => setState(() {
+        step = value;
+      });
+
   @override
   Widget build(BuildContext context) {
+    final WordRecord(:wordImages) = widget.wordRecord;
+
     final ThemeData(:colorScheme, :textTheme) = Theme.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
 
     super.build(context);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      listenRepeatController.stepsMapper(step);
+    });
+
     return Theme(
       data: Theme.of(context).copyWith(
         iconTheme: IconThemeData(size: 40, color: colorScheme.primary),
@@ -87,7 +109,7 @@ class _ListenRepeatState extends State<ListenRepeat>
             children: [
               const StepMessage(message: 'Echo Mastery: Listen and Repeat'),
               const SizedBox(height: 50),
-              ImageView(imageList: images),
+              ImageView(imageList: wordImages),
               const SizedBox(height: 80),
               Container(
                   alignment: Alignment.bottomLeft,
@@ -118,40 +140,69 @@ class _ListenRepeatState extends State<ListenRepeat>
                   )),
             ],
           ),
-          micActivation
-              ? Positioned(
-                  top: 0,
-                  bottom: 54.5,
-                  left: 0,
-                  right: 0,
+          Positioned(
+            top: 0,
+            bottom: 54.5,
+            left: _adjustMessageLocation(
+                screenWidth), // Adjust the value as needed
+            right: 0,
+            child: AnimatedOpacity(
+              opacity: micActivation ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 200),
+              child: Container(
+                alignment: Alignment.bottomLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 82, right: 5),
                   child: Container(
-                      alignment: Alignment.bottomLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 82, right: 5),
-                        child: Container(
-                          padding: const EdgeInsets.all(10.0),
-                          decoration: BoxDecoration(
-                            color: colorScheme.onSurface,
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(20.0),
-                              topRight: Radius.circular(20.0),
-                              bottomRight: Radius.circular(20.0),
-                            ),
-                          ),
-                          child: Text(
-                            message,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: textTheme.labelLarge?.fontSize,
-                            ),
-                          ),
-                        ),
-                      )),
-                )
-              : Container(),
+                    padding: const EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      color: colorScheme.onSurface,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20.0),
+                        topRight: Radius.circular(20.0),
+                        bottomRight: Radius.circular(20.0),
+                      ),
+                    ),
+                    child: Text(
+                      message,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: textTheme.labelLarge?.fontSize,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  double _adjustMessageLocation(double screenWidth) {
+    // Find the two nearest known data points
+    double lowerScreenSize = 0;
+    double upperScreenSize = 1840;
+
+    knownData.forEach((screenSize, position) {
+      if (screenSize <= screenWidth && screenSize > lowerScreenSize) {
+        lowerScreenSize = screenSize;
+      }
+      if (screenSize >= screenWidth && screenSize < upperScreenSize) {
+        upperScreenSize = screenSize;
+      }
+    });
+    if (lowerScreenSize != upperScreenSize) {
+      final lowerPosition = knownData[lowerScreenSize]!;
+      final upperPosition = knownData[upperScreenSize]!;
+
+      final factor =
+          (screenWidth - lowerScreenSize) / (upperScreenSize - lowerScreenSize);
+      return lowerPosition + (upperPosition - lowerPosition) * factor;
+    } else {
+      return knownData[lowerScreenSize]!;
+    }
   }
 
   @override
