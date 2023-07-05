@@ -41,8 +41,6 @@ class ListenRepeatController {
 
     //* step 2
     if (step == 2 && !mic) {
-      print('welcome to step 2');
-
       await _speakWithDelay(examplesList[pointer], 1, rate: 1);
       await _speakWithDelay(examplesList[pointer], perfectDelay, rate: 0.2);
       microphoneController.examplesActivation();

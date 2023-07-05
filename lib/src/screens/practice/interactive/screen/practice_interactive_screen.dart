@@ -52,7 +52,7 @@ class PracticePronScreenState extends State<PracticeInteractiveScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData(:colorScheme) = Theme.of(context);
+    final ThemeData(:colorScheme, :textTheme) = Theme.of(context);
 
     return ResponsiveCenter(
       child: Scaffold(
@@ -89,11 +89,11 @@ class PracticePronScreenState extends State<PracticeInteractiveScreen> {
                           bottomLeft: Radius.circular(20.0),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Awesome! Level up and move to the next step!',
                         style: TextStyle(
                           color: Colors.white,
-                          //fontSize: textTheme.labelLarge?.fontSize,
+                          fontSize: textTheme.labelLarge?.fontSize,
                         ),
                       ),
                     ),

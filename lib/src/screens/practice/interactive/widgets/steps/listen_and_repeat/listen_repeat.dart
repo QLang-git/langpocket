@@ -45,7 +45,7 @@ class _ListenRepeatState extends State<ListenRepeat>
     final globuleStates =
         context.findAncestorStateOfType<PracticePronScreenState>()!;
     final WordRecord(:foreignWord, :wordExamples) = widget.wordRecord;
-    microphoneController = MicrophoneController(ConstIterMicrophone(),
+    microphoneController = MicrophoneController(ConstListenRepeatMicrophone(),
         onListeningMessages: setMessage,
         onListeningCount: setCounter,
         foreignWord: foreignWord,
@@ -84,9 +84,13 @@ class _ListenRepeatState extends State<ListenRepeat>
   void setExamplesState(bool state) => setState(() {
         example = state;
       });
-  void setMicActivation(bool state) => setState(() {
+  void setMicActivation(bool state) {
+    if (mounted) {
+      setState(() {
         micActivation = state;
       });
+    }
+  }
 
   void moveToNextStep(int value) => setState(() {
         step = value;
