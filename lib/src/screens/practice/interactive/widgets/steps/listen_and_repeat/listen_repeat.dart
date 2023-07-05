@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_controller/microphone_controller.dart';
 import 'package:langpocket/src/common_controller/microphone_usage.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
+import 'package:langpocket/src/screens/practice/interactive/screen/practice_interactive_screen.dart';
+import 'package:langpocket/src/screens/practice/interactive/widgets/practice_stepper/animated_sound_icon.dart';
 import 'package:langpocket/src/screens/practice/interactive/widgets/practice_stepper/step_message.dart';
 import 'package:langpocket/src/screens/practice/interactive/widgets/practice_stepper/steps_microphone_button.dart';
 import 'package:langpocket/src/screens/practice/interactive/widgets/steps/listen_and_repeat/listen_repeat_controller.dart';
@@ -25,6 +27,7 @@ Map<double, double> knownData = {
   1000: 82,
   1840: 83
 };
+const _listStep = 4;
 
 class _ListenRepeatState extends State<ListenRepeat>
     with AutomaticKeepAliveClientMixin {
@@ -39,6 +42,8 @@ class _ListenRepeatState extends State<ListenRepeat>
 
   @override
   void initState() {
+    final globuleStates =
+        context.findAncestorStateOfType<PracticePronScreenState>()!;
     final WordRecord(:foreignWord, :wordExamples) = widget.wordRecord;
     microphoneController = MicrophoneController(ConstIterMicrophone(),
         onListeningMessages: setMessage,
@@ -48,6 +53,7 @@ class _ListenRepeatState extends State<ListenRepeat>
         onExampleSateListening: setExamplesState,
         onPointerListening: setNewPointer);
     listenRepeatController = ListenRepeatController(
+      globuleSates: globuleStates,
       moveToNextStep: moveToNextStep,
       microphoneController: microphoneController,
       setMicActivation: setMicActivation,
@@ -110,7 +116,8 @@ class _ListenRepeatState extends State<ListenRepeat>
               const StepMessage(message: 'Echo Mastery: Listen and Repeat'),
               const SizedBox(height: 50),
               ImageView(imageList: wordImages),
-              const SizedBox(height: 80),
+              AnimatedSoundIcon(micActivation: micActivation),
+              const SizedBox(height: 50),
               Container(
                   alignment: Alignment.bottomLeft,
                   height: 60,
@@ -134,8 +141,30 @@ class _ListenRepeatState extends State<ListenRepeat>
                         microphoneController: microphoneController,
                         activation: micActivation,
                       ),
-                      const Icon(Icons.play_arrow),
-                      const Icon(Icons.repeat_outlined)
+                      GestureDetector(
+                          child: FloatingActionButton(
+                        onPressed: step != _listStep
+                            ? null
+                            : () => listenRepeatController
+                                .playNormal(), // Disabled regular tap
+                        backgroundColor: step == _listStep
+                            ? Colors.indigo[500]
+                            : Colors.grey,
+                        elevation: 0,
+                        child: const Icon(Icons.play_arrow),
+                      )),
+                      GestureDetector(
+                        child: FloatingActionButton(
+                            onPressed: step != _listStep
+                                ? null
+                                : () => listenRepeatController
+                                    .reset(), // Disabled regular tap
+                            backgroundColor: step == _listStep
+                                ? Colors.indigo[500]
+                                : Colors.grey,
+                            elevation: 0,
+                            child: const Icon(Icons.repeat_outlined)),
+                      )
                     ],
                   )),
             ],

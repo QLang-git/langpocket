@@ -1,41 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:im_stepper/stepper.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:langpocket/src/screens/practice/interactive/widgets/practice_stepper/practice_stepper_controller.dart';
 
 class PracticeStepper extends StatefulWidget {
   final List<Widget> steps;
+  final int currentStep;
 
-  const PracticeStepper({super.key, required this.steps});
+  const PracticeStepper(
+      {super.key, required this.steps, required this.currentStep});
 
   @override
   State<PracticeStepper> createState() => _PracticeStepperState();
 }
 
 class _PracticeStepperState extends State<PracticeStepper> {
-  late int activeStep;
-  late PracticeStepperController practiceStepperController;
   @override
   void initState() {
-    practiceStepperController = PracticeStepperController(
-        moveToNext: moveToNext,
-        moveToPrevious: moveToPrevious,
-        steps: widget.steps);
-    final PracticeStepperController(:initialStep) = practiceStepperController;
-    activeStep = initialStep();
     super.initState();
-  }
-
-  void moveToNext(int step) {
-    setState(() {
-      activeStep = step;
-    });
-  }
-
-  void moveToPrevious(int step) {
-    setState(() {
-      activeStep = step;
-    });
   }
 
   @override
@@ -65,11 +46,11 @@ class _PracticeStepperState extends State<PracticeStepper> {
                 Icon(Ionicons.pencil_outline)
               ],
               // activeStep property set to activeStep variable defined above.
-              activeStep: activeStep,
+              activeStep: widget.currentStep,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-              child: widget.steps[activeStep],
+              child: widget.steps[widget.currentStep],
             )
           ],
         ),

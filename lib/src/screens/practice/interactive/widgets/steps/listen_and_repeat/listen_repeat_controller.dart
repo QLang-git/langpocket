@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_controller/microphone_controller.dart';
+import 'package:langpocket/src/screens/practice/interactive/screen/practice_interactive_screen.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
 class ListenRepeatController {
+  final PracticePronScreenState globuleSates;
   final MicrophoneController microphoneController;
   final ValueChanged<int> moveToNextStep;
   final ValueChanged<bool> setMicActivation;
@@ -10,6 +12,7 @@ class ListenRepeatController {
   bool mic = false;
 
   ListenRepeatController({
+    required this.globuleSates,
     required this.moveToNextStep,
     required this.microphoneController,
     required this.setMicActivation,
@@ -29,10 +32,14 @@ class ListenRepeatController {
   void stepsMapper(int step) async {
     final MicrophoneController(:countPron, :examplesList, :pointer) =
         microphoneController;
-    final perfectDelay = (examplesList[pointer].split(' ').length * 0.4).ceil();
+    final perfectDelay = (examplesList[pointer].split(' ').length * 0.5).ceil();
+
+    //* step 1
     if (countPron == 0 && step == 1) {
       moveToNextStep(2);
     }
+
+    //* step 2
     if (step == 2 && !mic) {
       print('welcome to step 2');
 
@@ -42,18 +49,32 @@ class ListenRepeatController {
 
       moveToNextStep(3);
     }
+    //* step 3
     if (countPron > 0 && step == 3 && !mic) {
       await Future.delayed(Duration(seconds: perfectDelay));
       setMicState(true);
     }
+
     if (countPron == 0 && step == 3) {
+      await Future.delayed(Duration(seconds: perfectDelay));
       if (pointer < examplesList.length - 1) {
         microphoneController.moveToNextExamples();
         moveToNextStep(2);
         setMicState(false);
+      } else {
+        // finished
+        globuleSates.updateNextStepAvailability(false);
+        moveToNextStep(4);
       }
-      print('thank you you finished this stage ');
     }
+  }
+
+  void reset() {
+    moveToNextStep(1);
+    microphoneController.resetting();
+
+    globuleSates.updateNextStepAvailability(false);
+    listen();
   }
 
   void activateExamples() {
@@ -79,5 +100,14 @@ class ListenRepeatController {
       await tts.setRate(rate);
       await tts.speak(text);
     });
+  }
+
+  void playNormal() async {
+    final MicrophoneController(:foreignWord, :examplesList) =
+        microphoneController;
+    await _speakWithDelay(foreignWord, 0, rate: 1);
+    for (var example in examplesList) {
+      await _speakWithDelay(example, 2, rate: 1);
+    }
   }
 }

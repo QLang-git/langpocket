@@ -3,13 +3,9 @@ import 'package:flutter/material.dart';
 class PracticeStepperController {
   final List<Widget> steps;
   final ValueChanged<int> moveToNext;
-  final ValueChanged<int> moveToPrevious;
   int _currentStep = 0;
 
-  PracticeStepperController(
-      {required this.moveToNext,
-      required this.moveToPrevious,
-      required this.steps});
+  PracticeStepperController({required this.moveToNext, required this.steps});
 
   int initialStep() => _currentStep;
 
