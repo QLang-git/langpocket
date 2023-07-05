@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class PracticeStepperController {
   final List<Widget> steps;
   final ValueChanged<int> moveToNext;
-  int _currentStep = 1;
+  int _currentStep = 0;
 
   PracticeStepperController({required this.moveToNext, required this.steps});
 
