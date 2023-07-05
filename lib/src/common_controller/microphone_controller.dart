@@ -155,7 +155,7 @@ class MicrophoneController {
       currentStatus = RecordingStatus.available;
       message = " Permission denied. Please enable microphone access.";
     } else if (status == RecordingStatus.exampleActivation.name) {
-      message = "Try to Pronounce the following sentence ";
+      message = microphoneConst.exampleActivationMessage;
     } else if (status == RecordingStatus.initial.name) {
       message = "Hold to Start Recording ...";
     } else {
