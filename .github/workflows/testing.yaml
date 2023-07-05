@@ -1,0 +1,24 @@
+name: Web App Testing beta
+on: 
+  push:
+    branches: [ master ]
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Install Flutter 
+        uses: subosito/flutter-action@v2
+      - name: Install dependencies 
+        run: flutter pub get
+      - name: Test app 
+        run: flutter test --coverage
+      - name: Upload coverage to Codecov 
+        uses: codecov/codecov-action@v3
+        with: 
+          token: ${{ secrets.CODECOV_TOKEN }} 
+          file: coverage/lcov.info
+
+      

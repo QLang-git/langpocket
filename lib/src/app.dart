@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/styles/light_mode.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 
-class App extends ConsumerStatefulWidget {
+class App extends ConsumerWidget {
   const App({super.key});
 
   @override
-  ConsumerState<App> createState() => _AppState();
-}
-
-class _AppState extends ConsumerState<App> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       restorationScopeId: 'Lang Pocket',
-      home: const Text('home'),
+      routerConfig: goroute,
       onGenerateTitle: (BuildContext context) => 'Lang Pocket',
       // darkTheme: darkMode,
-      // theme: lightMode,
-      // themeMode: ref.watch(themeApp),
+      theme: lightMode,
+      themeMode: ThemeMode.light,
     );
   }
 }
