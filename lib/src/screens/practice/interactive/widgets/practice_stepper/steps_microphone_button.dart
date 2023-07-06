@@ -57,16 +57,12 @@ class _StepsMicrophoneButtonState extends State<StepsMicrophoneButton>
       },
       child: FloatingActionButton(
         onPressed: null, // Disabled regular tap
-        backgroundColor: wordAnalyze
-            ? Colors.transparent
-            : widget.activation
-                ? Colors.indigo[500]
-                : Colors.grey,
+        backgroundColor: !widget.activation ? Colors.grey : Colors.indigo[500],
         elevation: 0,
         child: wordAnalyze && widget.activation
             ? Container(
                 child: LoadingAnimationWidget.bouncingBall(
-                    color: const Color(0xFF3F51B5), size: 40))
+                    color: Colors.white, size: 40))
             : widget.activation
                 ? Stack(
                     alignment: Alignment.center,

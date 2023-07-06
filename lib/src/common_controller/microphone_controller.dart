@@ -119,7 +119,8 @@ class MicrophoneController {
   void _comparingWords(
       String status, String recognizedText, String originText) {
     if (status == RecordingStatus.analyze.name && countPron > 0) {
-      if (recognizedText.toLowerCase() == originText.toLowerCase()) {
+      if (recognizedText.toLowerCase().trim() ==
+          originText.toLowerCase().trim()) {
         countPron--;
         onListeningCount(countPron);
         _setAlterUserMessage(RecordingStatus.correct.name);
