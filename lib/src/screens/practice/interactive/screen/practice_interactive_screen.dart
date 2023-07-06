@@ -66,61 +66,64 @@ class PracticePronScreenState extends State<PracticeInteractiveScreen> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-        floatingActionButton: SizedBox(
-          width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              AnimatedOpacity(
-                opacity: isNextStepAvailable ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 200),
-                child: Container(
-                  alignment: Alignment.bottomRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 33),
-                    child: Container(
-                      padding: const EdgeInsets.all(10.0),
-                      decoration: BoxDecoration(
-                        color: colorScheme.onSurface,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(20.0),
-                          topRight: Radius.circular(20.0),
-                          bottomLeft: Radius.circular(20.0),
-                        ),
-                      ),
-                      child: Text(
-                        'Awesome! Level up and move to the next step!',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: textTheme.labelLarge?.fontSize,
+        floatingActionButton: activeStep == _steps.length - 1
+            ? null
+            : SizedBox(
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    AnimatedOpacity(
+                      opacity: isNextStepAvailable ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Container(
+                        alignment: Alignment.bottomRight,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 33),
+                          child: Container(
+                            padding: const EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                              color: colorScheme.onSurface,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(20.0),
+                                topRight: Radius.circular(20.0),
+                                bottomLeft: Radius.circular(20.0),
+                              ),
+                            ),
+                            child: Text(
+                              'Awesome! Level up and move to the next step!',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: textTheme.labelLarge?.fontSize,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                    SizedBox(
+                      width: 70,
+                      height: 70,
+                      child: FloatingActionButton(
+                        backgroundColor: isNextStepAvailable
+                            ? colorScheme.primary
+                            : Colors.grey,
+                        onPressed: isNextStepAvailable
+                            ? () {
+                                practiceStepperController.goToNext();
+                                updateNextStepAvailability(false);
+                              }
+                            : null,
+                        child: const Icon(
+                          Icons.skip_next_outlined,
+                          size: 50,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(
-                width: 70,
-                height: 70,
-                child: FloatingActionButton(
-                  backgroundColor:
-                      isNextStepAvailable ? colorScheme.primary : Colors.grey,
-                  onPressed: isNextStepAvailable
-                      ? () {
-                          practiceStepperController.goToNext();
-                          updateNextStepAvailability(false);
-                        }
-                      : null,
-                  child: const Icon(
-                    Icons.skip_next_outlined,
-                    size: 50,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

@@ -6,12 +6,12 @@ import 'package:langpocket/src/utils/constants/messages.dart';
 
 class CustomDialogPractice extends StatelessWidget {
   final PracticeMessage messages;
-  final Function activateExamples;
+  final Function? activateExamples;
   final Function reload;
   const CustomDialogPractice(
       {super.key,
       required this.messages,
-      required this.activateExamples,
+      this.activateExamples,
       required this.reload});
 
   @override
@@ -59,28 +59,32 @@ class CustomDialogPractice extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 const Divider(),
-                const SizedBox(height: 5),
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[400],
-                    ),
-                    onPressed: () {
-                      activateExamples();
-                      context.pop();
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            messages.withSentences,
-                            style: const TextStyle(color: Colors.white),
+                messages.withSentences != ''
+                    ? const SizedBox(height: 5)
+                    : const SizedBox(height: 0),
+                messages.withSentences != ''
+                    ? ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green[400],
+                        ),
+                        onPressed: () {
+                          activateExamples!();
+                          context.pop();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                messages.withSentences,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              const Icon(Icons.near_me, color: Colors.white)
+                            ],
                           ),
-                          const Icon(Icons.near_me, color: Colors.white)
-                        ],
-                      ),
-                    )),
+                        ))
+                    : Container(),
                 const SizedBox(height: 15),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(

@@ -10,14 +10,16 @@ const int _stopWordPeaking = 3;
 const int _stopExamplesPeaking = 3;
 
 class SpellingController {
+  final int countWordSpelling;
+  final int countExampleSpelling;
   final String foreignWord;
   final List<String> examplesList;
   final ValueChanged<int> onListeningCount;
   final ValueChanged<bool> onExampleSateListening;
   final ValueChanged<int> onPointerListening;
   final ValueChanged<bool> onCorrectness;
-  final ValueChanged<bool> readOnlyWord;
-  final ValueChanged<bool> readOnlyExample;
+  final ValueChanged<bool>? readOnlyWord;
+  final ValueChanged<bool>? readOnlyExample;
   final timeAfterCorrectSpell = _timeAfterCorrectSpell;
   final stopWordPeaking = _stopWordPeaking;
   final stopExamplesPeaking = _stopExamplesPeaking;
@@ -26,14 +28,16 @@ class SpellingController {
   int pointer = _pointer;
 
   SpellingController(
-      {required this.foreignWord,
+      {this.countWordSpelling = _countWordSpelling,
+      this.countExampleSpelling = _countExampleSpelling,
+      required this.foreignWord,
       required this.examplesList,
       required this.onListeningCount,
       required this.onExampleSateListening,
       required this.onPointerListening,
       required this.onCorrectness,
-      required this.readOnlyWord,
-      required this.readOnlyExample});
+      this.readOnlyWord,
+      this.readOnlyExample});
 
   ({
     int countSpelling,
@@ -41,34 +45,36 @@ class SpellingController {
     int pointer,
     int countExampleSpelling
   }) initializeControllerValues() {
+    countSpelling = countWordSpelling;
     return (
-      countSpelling: _countWordSpelling,
+      countSpelling: countWordSpelling,
       activateExample: _activateExampleState,
       pointer: _pointer,
-      countExampleSpelling: _countExampleSpelling
+      countExampleSpelling: countExampleSpelling
     );
   }
 
   void resetting() {
-    countSpelling = _countWordSpelling;
+    countSpelling = countWordSpelling;
     activateExample = _activateExampleState;
     pointer = _pointer;
     onListeningCount(countSpelling);
-    readOnlyWord(false);
-    readOnlyExample(false);
+    _readOnly(_ReadOnlyTypes.both, false);
+
     onExampleSateListening(activateExample);
     onPointerListening(pointer);
   }
 
   void examplesActivation() {
+    print('get activation $countExampleSpelling');
     activateExample = true;
-    countSpelling = _countExampleSpelling;
+    countSpelling = countExampleSpelling;
     onExampleSateListening(activateExample);
     onListeningCount(countSpelling);
   }
 
   void reactivateExample() {
-    countSpelling = _countExampleSpelling;
+    countSpelling = countExampleSpelling;
     pointer = _pointer;
     onPointerListening(pointer);
     onListeningCount(countSpelling);
@@ -91,17 +97,17 @@ class SpellingController {
 
   void moveToNextExamples() {
     pointer += 1;
-    countSpelling = _countExampleSpelling;
+    countSpelling = countExampleSpelling;
     onListeningCount(countSpelling);
     onPointerListening(pointer);
   }
 
   void resetTextFieldsAfterDelay() {
     if (activateExample) {
-      readOnlyExample(false);
+      _readOnly(_ReadOnlyTypes.example, false);
       onCorrectness(false);
     } else {
-      readOnlyWord(false);
+      _readOnly(_ReadOnlyTypes.word, false);
       onCorrectness(false);
     }
   }
@@ -110,10 +116,10 @@ class SpellingController {
     bool correctness,
   ) {
     if (correctness || activateExample) {
-      readOnlyWord(true);
+      _readOnly(_ReadOnlyTypes.word, true);
     }
     if (correctness && activateExample) {
-      readOnlyExample(true);
+      _readOnly(_ReadOnlyTypes.example, true);
     }
   }
 
@@ -139,4 +145,19 @@ class SpellingController {
       return false;
     }
   }
+
+  void _readOnly(_ReadOnlyTypes type, bool state) {
+    if (readOnlyExample != null && readOnlyWord != null) {
+      if (type == _ReadOnlyTypes.example) {
+        readOnlyExample!(state);
+      } else if (type == _ReadOnlyTypes.word) {
+        readOnlyWord!(state);
+      } else if (type == _ReadOnlyTypes.both) {
+        readOnlyWord!(state);
+        readOnlyExample!(state);
+      }
+    }
+  }
 }
+
+enum _ReadOnlyTypes { example, word, both }

@@ -3,6 +3,7 @@ enum PracticeMessagesType {
   practicePronunciation,
   practiceSpellingExampleComplete,
   practicePronExampleComplete,
+  practiceInteractively
 }
 
 class MyMessages {
@@ -39,6 +40,12 @@ class MyMessages {
               'You\'ve completed your pronunciation task for this word .\nKeep going...',
           withSentences: 'Pronounce with sentences again ',
           tryAgain: 'Start over');
+    }
+    if (messages == PracticeMessagesType.practiceInteractively) {
+      return PracticeMessage(
+          titleMessage:
+              'Congratulations on completing your practice session for the word "$word"! \nYou\'ve done a great job! Keep up the momentum and continue to enhance your language skills!',
+          tryAgain: 'Start over');
     } else {
       return PracticeMessage(
         titleMessage: 'default massage',
@@ -56,7 +63,7 @@ class PracticeMessage {
 
   PracticeMessage({
     required this.titleMessage,
-    required this.withSentences,
+    this.withSentences = '',
     required this.tryAgain,
   });
 }

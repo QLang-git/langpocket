@@ -61,7 +61,7 @@ class ListenRepeatController {
         setMicState(false);
       } else {
         // finished
-        globuleSates.updateNextStepAvailability(false);
+        globuleSates.updateNextStepAvailability(true);
         moveToNextStep(4);
       }
     }

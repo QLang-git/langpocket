@@ -102,8 +102,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
   @override
   Widget build(BuildContext context) {
     final myMessage = MyMessages();
-    final textStyle = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
+    final ThemeData(:textTheme, :colorScheme) = Theme.of(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       popUpDialog(context, myMessage);
     });
@@ -167,14 +166,14 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                           onChanged: (value) {
                             spellingController.comparingTexts(value);
                           },
-                          style: textStyle.headlineMedium
+                          style: textTheme.headlineMedium
                               ?.copyWith(color: colorScheme.outline),
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: correctness || activateExample
                                 ? const Color.fromARGB(255, 104, 198, 107)
                                 : null,
-                            labelStyle: textStyle.bodyLarge
+                            labelStyle: textTheme.bodyLarge
                                 ?.copyWith(color: colorScheme.outline),
                             label: const Text('Write it down'),
                             focusedBorder: OutlineInputBorder(
@@ -198,12 +197,12 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                           child: !activateExample
                               ? Text(
                                   countSpelling.toString(),
-                                  style: textStyle.labelLarge
+                                  style: textTheme.labelLarge
                                       ?.copyWith(color: Colors.white),
                                 )
                               : Text(
                                   0.toString(),
-                                  style: textStyle.labelLarge
+                                  style: textTheme.labelLarge
                                       ?.copyWith(color: Colors.white),
                                 ),
                         )),
@@ -246,7 +245,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                                     children: [
                                       Text(
                                         widget.examplesList[pointer],
-                                        style: textStyle.headlineLarge
+                                        style: textTheme.headlineLarge
                                             ?.copyWith(
                                                 color: colorScheme.outline),
                                         softWrap: true,
@@ -272,7 +271,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                                   controller: exampleInputController,
                                   onChanged: (value) =>
                                       spellingController.comparingTexts(value),
-                                  style: textStyle.headlineMedium
+                                  style: textTheme.headlineMedium
                                       ?.copyWith(color: colorScheme.outline),
                                   decoration: InputDecoration(
                                     filled: true,
@@ -280,7 +279,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                                         ? const Color.fromARGB(
                                             255, 104, 198, 107)
                                         : null,
-                                    labelStyle: textStyle.bodyMedium?.copyWith(
+                                    labelStyle: textTheme.bodyMedium?.copyWith(
                                         color: colorScheme.onSurface),
                                     label: const Text('Write it down'),
                                     focusedBorder: OutlineInputBorder(
@@ -304,7 +303,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                                   padding: const EdgeInsets.all(20.0),
                                   child: Text(
                                     countSpelling.toString(),
-                                    style: textStyle.labelLarge
+                                    style: textTheme.labelLarge
                                         ?.copyWith(color: Colors.white),
                                   ),
                                 )),
