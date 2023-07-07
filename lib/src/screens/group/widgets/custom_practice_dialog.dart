@@ -5,19 +5,12 @@ import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class CustomPracticeDialog extends StatelessWidget {
   final WordRecord wordData;
-  final String groupId;
-
-  final String name;
-  final String date;
   final double padding;
   final double avatarRadius;
   const CustomPracticeDialog(
       {super.key,
       required this.padding,
       required this.avatarRadius,
-      required this.name,
-      required this.date,
-      required this.groupId,
       required this.wordData});
 
   @override

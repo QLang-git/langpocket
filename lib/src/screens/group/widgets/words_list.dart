@@ -5,59 +5,42 @@ import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/screens/group/controller/group_controller.dart';
 import 'package:langpocket/src/screens/group/widgets/custom_practice_dialog.dart';
 import 'package:langpocket/src/screens/group/widgets/word_info.dart';
-import 'package:langpocket/src/screens/home/widgets/groups_list/controller/groups_controller.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
 class WordsGroups extends ConsumerStatefulWidget {
-  final String groupName;
-  final String date;
-  final int groupId;
-  const WordsGroups(
-      {required this.groupName,
-      required this.date,
-      super.key,
-      required this.groupId});
+  final GroupController groupController;
+  const WordsGroups({
+    required this.groupController,
+    super.key,
+  });
 
   @override
-  ConsumerState<WordsGroups> createState() => _WordsGroupsState();
+  ConsumerState<WordsGroups> createState() => WordsGroupsState();
 }
 
-class _WordsGroupsState extends ConsumerState<WordsGroups> {
+class WordsGroupsState extends ConsumerState<WordsGroups> {
   @override
   Widget build(BuildContext context) {
-    final wordsList = ref.watch(watchWordsListbyIdProvider(widget.groupId));
     return AsyncValueWidget(
-        value: wordsList,
+        value: widget.groupController.getListOfWordsAsync(),
         data: (currentWords) {
           if (currentWords.isEmpty) {
             return const Center(child: Text('No Word saved in This Group'));
           }
 
           return _MyWordList(
-            words: wordDecoding(currentWords),
-            groupName: widget.groupName,
-            date: widget.date,
-            groupId: widget.groupId,
-            context: context,
+            groupController: widget.groupController,
           );
         });
   }
 }
 
 class _MyWordList extends ConsumerStatefulWidget {
-  final BuildContext context;
+  final GroupController groupController;
 
-  final List<WordRecord> words;
-  final String groupName;
-  final String date;
-  final int groupId;
   const _MyWordList({
-    required this.words,
-    required this.groupName,
-    required this.date,
-    required this.groupId,
-    required this.context,
+    required this.groupController,
   });
 
   @override
@@ -68,43 +51,58 @@ class __MyWordListState extends ConsumerState<_MyWordList> {
   late List<WordRecord> myWords;
 
   final tts = TextToSpeech();
+
   @override
   void initState() {
-    myWords = widget.words;
     super.initState();
+    myWords = widget.groupController.getListOfWordsData();
   }
 
-  void _onDismissed(int index, WordRecord word) async {
+  void _onDismissed(int index, WordRecord word) {
     final wordTarget = word;
     setState(() {
       myWords.removeAt(index);
     });
-    ScaffoldMessenger.of(widget.context)
-        .showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+          SnackBar(
             content: const Text("The word has been deleted"),
             duration: const Duration(seconds: 5),
             action: SnackBarAction(
-                label: "Undo",
-                textColor: Colors.yellow,
-                onPressed: () {
+              label: "Undo",
+              textColor: Colors.yellow,
+              onPressed: () {
+                if (mounted) {
                   setState(() {
                     myWords.insert(index, wordTarget);
                   });
-                })))
+                }
+              },
+            ),
+          ),
+        )
         .closed
-        .then((reason) async {
+        .then((reason) {
       if (reason != SnackBarClosedReason.action) {
-        deleteWord(word.id!, widget.groupId);
-        // update this line
+        _deleteWord(word.id!);
       }
     });
   }
 
+  Future<void> _deleteWord(int wordId) async {
+    try {
+      widget.groupController.deleteWord(wordId);
+      // Deletion succeeded
+    } catch (error) {
+      // Handle deletion failure
+      print("Failed to delete word: $error");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    myWords = widget.words;
-
-    return ListView.builder(
+    return Scaffold(
+      body: ListView.builder(
         itemCount: myWords.length,
         itemBuilder: (context, index) {
           final word = myWords[index];
@@ -131,7 +129,7 @@ class __MyWordListState extends ConsumerState<_MyWordList> {
                             .textTheme
                             .labelLarge
                             ?.copyWith(color: Colors.white),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -154,16 +152,14 @@ class __MyWordListState extends ConsumerState<_MyWordList> {
                   const double padding = 20;
                   const double avatarRadius = 45;
                   showDialog(
-                      context: context,
-                      builder: (BuildContext buildContext) =>
-                          CustomPracticeDialog(
-                            wordData: word,
-                            padding: padding,
-                            avatarRadius: avatarRadius,
-                            date: widget.date,
-                            name: widget.groupName,
-                            groupId: widget.groupId.toString(),
-                          ));
+                    context: context,
+                    builder: (BuildContext buildContext) =>
+                        CustomPracticeDialog(
+                      wordData: word,
+                      padding: padding,
+                      avatarRadius: avatarRadius,
+                    ),
+                  );
                 },
                 child: Container(
                   color: Colors.white,
@@ -176,21 +172,24 @@ class __MyWordListState extends ConsumerState<_MyWordList> {
                       Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: IconButton(
-                            onPressed: () {
-                              tts.speak(word.foreignWord);
-                            },
-                            icon: Icon(
-                              Icons.volume_up_outlined,
-                              color: Theme.of(context).colorScheme.outline,
-                              size: 25,
-                            )),
-                      )
+                          onPressed: () {
+                            tts.speak(word.foreignWord);
+                          },
+                          icon: Icon(
+                            Icons.volume_up_outlined,
+                            color: Theme.of(context).colorScheme.outline,
+                            size: 25,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
             ),
           );
-        });
+        },
+      ),
+    );
   }
 }

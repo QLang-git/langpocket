@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/screens/group/app_bar/group_appbar_controller.dart';
+import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
+import 'package:langpocket/src/screens/group/controller/group_controller.dart';
 
 //PreferredSizeWidget
 class GroupAppBar extends StatefulWidget implements PreferredSizeWidget {
-  final String groupName;
-  final String groupDate;
-  final int groupId;
-  const GroupAppBar(
-      {super.key,
-      required this.groupName,
-      required this.groupDate,
-      required this.groupId});
+  final GroupController groupController;
+  const GroupAppBar({
+    super.key,
+    required this.groupController,
+  });
 
   @override
   State<GroupAppBar> createState() => _GroupAppBarState();
@@ -27,18 +25,19 @@ class _GroupAppBarState extends State<GroupAppBar> {
   bool editModeActivate = false;
   final focus = FocusNode();
   final controller = TextEditingController();
-
+  late String currentGroupName;
   @override
   void initState() {
+    final GroupData(:groupName) = widget.groupController.groupData;
+    controller.text = groupName;
+    currentGroupName = groupName;
+    controller.selection =
+        TextSelection.collapsed(offset: (groupName.length / 2).round());
     focus.addListener(() {
       if (!focus.hasFocus && editModeActivate) {
         focus.requestFocus();
       }
     });
-    controller.text = widget.groupName;
-    originalText = widget.groupName;
-    controller.selection =
-        TextSelection.collapsed(offset: (widget.groupName.length / 2).round());
     super.initState();
   }
 
@@ -46,12 +45,15 @@ class _GroupAppBarState extends State<GroupAppBar> {
   void dispose() {
     focus.dispose();
     controller.dispose();
-
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    void setEditMode(bool state) => setState(() {
+          editModeActivate = state;
+        });
+
     final sizeWith = MediaQuery.of(context).size.width;
 
     return ResponsiveCenter(
@@ -105,7 +107,7 @@ class _GroupAppBarState extends State<GroupAppBar> {
               ),
             ),
             Text(
-              widget.groupDate,
+              widget.groupController.generateGroupDate(),
               style: Theme.of(context)
                   .textTheme
                   .labelSmall
@@ -121,18 +123,13 @@ class _GroupAppBarState extends State<GroupAppBar> {
                       builder: (context, ref, child) {
                         return IconButton(
                           onPressed: () {
-                            if (originalText != controller.text) {
-                              updateGroupName(widget.groupId, controller.text,
-                                  ref, inputKey, context);
-                              setState(() {
-                                editModeActivate = false;
-                                originalText = controller.text;
-                              });
-                            } else {
-                              setState(() {
-                                editModeActivate = false;
-                              });
-                            }
+                            final res = widget.groupController.editGroupName(
+                              controller,
+                              context,
+                              inputKey,
+                              setEditMode,
+                            );
+                            showSnackBar(res, context);
                           },
                           icon: const Icon(Icons.save_rounded,
                               size: 25, color: Colors.white),
@@ -140,14 +137,24 @@ class _GroupAppBarState extends State<GroupAppBar> {
                       },
                     )
                   : IconButton(
-                      onPressed: () => setState(() {
-                        editModeActivate = true;
-                      }),
+                      onPressed: () => setEditMode(true),
                       icon:
                           const Icon(Icons.edit, size: 25, color: Colors.white),
                     ))
         ],
       ),
     );
+  }
+
+  void showSnackBar(bool? res, BuildContext context) {
+    if (res != null) {
+      final snackBarContent = res
+          ? 'The name of the group has been changed'
+          : 'Error: Please try again';
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(snackBarContent)),
+      );
+    }
   }
 }
