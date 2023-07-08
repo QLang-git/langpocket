@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
@@ -9,24 +7,24 @@ import 'package:langpocket/src/common_widgets/custom_dialog_practice.dart';
 import 'package:langpocket/src/screens/practice/spelling/controller/spelling_controller.dart';
 import 'package:langpocket/src/utils/constants/messages.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class PracticeSpellingScreen extends StatefulWidget {
-  final List<Uint8List> imageList;
-  final String foreignWord;
-  final List<String> meanList;
-  final List<String> examplesList;
-  const PracticeSpellingScreen(
-      {super.key,
-      required this.imageList,
-      required this.foreignWord,
-      required this.meanList,
-      required this.examplesList});
+  final WordRecord word;
+  final String? groupId;
+
+  const PracticeSpellingScreen({
+    super.key,
+    required this.word,
+    this.groupId,
+  });
 
   @override
   State<PracticeSpellingScreen> createState() => PracticeSpellingScreenState();
 }
 
 class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
+  late WordRecord wordRecord;
   late int countSpelling;
   late int pointer;
   late bool activateExample;
@@ -40,15 +38,17 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
 
   @override
   void initState() {
+    wordRecord = widget.word;
     inputController = TextEditingController();
     exampleInputController = TextEditingController();
     isDialogShowing = false;
     correctness = false;
     spellingController = SpellingController(
+      onNewWordRecord: setNewWordRecord,
       readOnlyWord: setReadOnlyWord,
       readOnlyExample: setReadOnlyExample,
-      foreignWord: widget.foreignWord,
-      examplesList: widget.examplesList,
+      foreignWord: wordRecord.foreignWord,
+      examplesList: wordRecord.wordExamples,
       onListeningCount: setCounter,
       onExampleSateListening: setExamplesState,
       onPointerListening: setNewPointer,
@@ -88,27 +88,39 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
   void setReadOnlyWord(bool value) {
     readOnlyWord = value;
     value
-        ? inputController.text = widget.foreignWord
+        ? inputController.text = wordRecord.foreignWord
         : inputController.text = '';
   }
 
   void setReadOnlyExample(bool value) {
     readOnlyExample = value;
     value
-        ? exampleInputController.text = widget.examplesList[pointer]
+        ? exampleInputController.text = wordRecord.wordExamples[pointer]
         : exampleInputController.text = '';
+  }
+
+  void setNewWordRecord(WordRecord newWordRecord) {
+    setState(() {
+      wordRecord = newWordRecord;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final WordRecord(:foreignWord, :wordImages, :wordMeans, :wordExamples) =
+        wordRecord;
+
     final myMessage = MyMessages();
     final ThemeData(:textTheme, :colorScheme) = Theme.of(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      popUpDialog(context, myMessage);
+      if (widget.groupId != null) {
+        popUpDialogGroup(context, myMessage, foreignWord, wordExamples);
+      } else {
+        popUpDialogSingle(context, myMessage, foreignWord, wordExamples);
+      }
     });
 
     setStyleForCorrectness();
-
     return ResponsiveCenter(
         child: Scaffold(
       appBar: SpellingAppBar(
@@ -119,15 +131,15 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
           child: Column(
             children: [
-              ImageView(imageList: widget.imageList),
+              ImageView(imageList: wordImages),
               const SizedBox(
                 height: 15,
               ),
               countSpelling > spellingController.stopWordPeaking ||
                       activateExample
                   ? WordView(
-                      foreignWord: widget.foreignWord,
-                      means: widget.meanList,
+                      foreignWord: foreignWord,
+                      means: wordMeans,
                       noVoiceIcon: true,
                     )
                   : Card(
@@ -244,7 +256,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        widget.examplesList[pointer],
+                                        wordExamples[pointer],
                                         style: textTheme.headlineLarge
                                             ?.copyWith(
                                                 color: colorScheme.outline),
@@ -334,7 +346,8 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
     }
   }
 
-  void popUpDialog(BuildContext context, MyMessages myMessage) {
+  void popUpDialogSingle(BuildContext context, MyMessages myMessage,
+      String foreignWord, List<String> examplesList) {
     if (!isDialogShowing) {
       if (countSpelling == 0 && !activateExample) {
         isDialogShowing = true;
@@ -346,14 +359,14 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
               return CustomDialogPractice(
                 messages: myMessage.getPracticeMessage(
                   PracticeMessagesType.practiceSpelling,
-                  widget.foreignWord,
+                  foreignWord,
                 ),
                 reload: spellingController.resetting,
                 activateExamples: spellingController.examplesActivation,
               );
             }).then((value) => isDialogShowing = false);
       } else if (countSpelling == 0 && activateExample) {
-        if (pointer < widget.examplesList.length - 1) {
+        if (pointer < examplesList.length - 1) {
           spellingController.moveToNextExamples();
         } else {
           isDialogShowing = true;
@@ -364,12 +377,66 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                 return CustomDialogPractice(
                   messages: myMessage.getPracticeMessage(
                     PracticeMessagesType.practiceSpellingExampleComplete,
-                    widget.foreignWord,
+                    foreignWord,
                   ),
                   reload: spellingController.resetting,
                   activateExamples: spellingController.reactivateExample,
                 );
               }).then((value) => isDialogShowing = false);
+        }
+      }
+    }
+  }
+
+  void popUpDialogGroup(
+    BuildContext context,
+    MyMessages myMessage,
+    String foreignWord,
+    List<String> examplesList,
+  ) {
+    if (!isDialogShowing) {
+      if (countSpelling == 0) {
+        if (activateExample && pointer < examplesList.length - 1) {
+          spellingController.moveToNextExamples();
+        } else if (!activateExample) {
+          isDialogShowing = true;
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return CustomDialogPractice(
+                messages: myMessage.getPracticeMessage(
+                  PracticeMessagesType.practiceSpellingGroup,
+                  foreignWord,
+                ),
+                reload: spellingController.isThereNextWord
+                    ? spellingController.moveToNextWord
+                    : null,
+                activateExamples: spellingController.reactivateExample,
+              );
+            },
+          ).then((value) => isDialogShowing = false);
+        } else if (countSpelling == 0 &&
+            activateExample &&
+            spellingController.isThereNextWord) {
+          spellingController.moveToNextWord();
+          return;
+        } else if (countSpelling == 0 && activateExample) {
+          isDialogShowing = true;
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return CustomDialogPractice(
+                messages: myMessage.getPracticeMessage(
+                  PracticeMessagesType.practiceSpellingExampleCompleteGroup,
+                  foreignWord,
+                ),
+                reload: spellingController.resetting,
+                activateExamples: spellingController.reactivateExample,
+              );
+            },
+          ).then((value) => isDialogShowing = false);
         }
       }
     }

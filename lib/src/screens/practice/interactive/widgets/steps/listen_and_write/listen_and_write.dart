@@ -36,6 +36,7 @@ class _ListenWriteState extends State<ListenWrite>
     inputController = TextEditingController();
     final WordRecord(:foreignWord, :wordExamples) = widget.wordRecord;
     spellingController = SpellingController(
+      onNewWordRecord: (value) {},
       countExampleSpelling: 1,
       countWordSpelling: 1,
       foreignWord: foreignWord,

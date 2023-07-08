@@ -12,6 +12,7 @@ class GroupController {
   final GroupData groupData;
   final WidgetRef ref;
   late AsyncValue<List<WordData>> _wordList;
+  static List<WordRecord>? currentWordList;
 
   GroupController({required this.ref, required this.groupData});
 
@@ -21,6 +22,7 @@ class GroupController {
   }
 
   List<WordRecord> getListOfWordsData() {
+    currentWordList = _wordDecoding(_wordList.value!);
     return _wordDecoding(_wordList.value!);
   }
 

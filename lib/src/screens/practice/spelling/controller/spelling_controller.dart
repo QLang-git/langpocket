@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:langpocket/src/screens/group/controller/group_controller.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
-const int _countWordSpelling = 5;
-const int _countExampleSpelling = 3;
+const int _countWordSpelling = 1;
+const int _countExampleSpelling = 1;
 const bool _activateExampleState = false;
 const int _pointer = 0;
 const int _timeAfterCorrectSpell = 3; // second
-const int _stopWordPeaking = 3;
-const int _stopExamplesPeaking = 3;
+const int _stopWordPeaking = 0;
+const int _stopExamplesPeaking = 0;
 
 class SpellingController {
   final int countWordSpelling;
   final int countExampleSpelling;
-  final String foreignWord;
-  final List<String> examplesList;
+  String foreignWord;
+  List<String> examplesList;
   final ValueChanged<int> onListeningCount;
   final ValueChanged<bool> onExampleSateListening;
   final ValueChanged<int> onPointerListening;
+  final ValueChanged<WordRecord> onNewWordRecord;
   final ValueChanged<bool> onCorrectness;
   final ValueChanged<bool>? readOnlyWord;
   final ValueChanged<bool>? readOnlyExample;
@@ -26,6 +29,7 @@ class SpellingController {
   int countSpelling = _countWordSpelling;
   bool activateExample = _activateExampleState;
   int pointer = _pointer;
+  int wordPinter = 1;
 
   SpellingController(
       {this.countWordSpelling = _countWordSpelling,
@@ -36,6 +40,7 @@ class SpellingController {
       required this.onExampleSateListening,
       required this.onPointerListening,
       required this.onCorrectness,
+      required this.onNewWordRecord,
       this.readOnlyWord,
       this.readOnlyExample});
 
@@ -54,10 +59,16 @@ class SpellingController {
     );
   }
 
-  void resetting() {
+  void resetting({WordRecord? wordRecord}) {
     countSpelling = countWordSpelling;
     activateExample = _activateExampleState;
     pointer = _pointer;
+    if (wordRecord != null) {
+      onNewWordRecord(wordRecord);
+    } else {
+      _startWordsOver();
+    }
+
     onListeningCount(countSpelling);
     _readOnly(_ReadOnlyTypes.both, false);
 
@@ -66,7 +77,6 @@ class SpellingController {
   }
 
   void examplesActivation() {
-    print('get activation $countExampleSpelling');
     activateExample = true;
     countSpelling = countExampleSpelling;
     onExampleSateListening(activateExample);
@@ -74,14 +84,15 @@ class SpellingController {
   }
 
   void reactivateExample() {
+    activateExample = true;
     countSpelling = countExampleSpelling;
     pointer = _pointer;
     onPointerListening(pointer);
+    onExampleSateListening(activateExample);
     onListeningCount(countSpelling);
   }
 
   void comparingTexts(String text) {
-    print(text);
     if (activateExample && countSpelling > 0) {
       final res = _exampleSpellingChecker(text);
       if (res) {
@@ -112,14 +123,40 @@ class SpellingController {
     }
   }
 
-  void updateTextFields(
-    bool correctness,
-  ) {
+  void updateTextFields(bool correctness) {
     if (correctness || activateExample) {
       _readOnly(_ReadOnlyTypes.word, true);
     }
     if (correctness && activateExample) {
       _readOnly(_ReadOnlyTypes.example, true);
+    }
+  }
+
+  bool moveToNextWord() {
+    final wordList = GroupController.currentWordList;
+
+    if (wordList != null && wordList.length > wordPinter) {
+      foreignWord = wordList[wordPinter].foreignWord;
+      examplesList = wordList[wordPinter].wordExamples;
+      resetting(wordRecord: wordList[wordPinter]);
+      wordPinter += 1;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  get isThereNextWord =>
+      foreignWord != GroupController.currentWordList!.last.foreignWord;
+
+  void _startWordsOver() {
+    final wordList = GroupController.currentWordList!;
+    if (wordPinter != 1) {
+      wordPinter = 1;
+      foreignWord = wordList.first.foreignWord;
+      examplesList = wordList.first.wordExamples;
+
+      onNewWordRecord(wordList.first);
     }
   }
 

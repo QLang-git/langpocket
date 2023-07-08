@@ -1,5 +1,7 @@
 enum PracticeMessagesType {
   practiceSpelling,
+  practiceSpellingGroup,
+  practiceSpellingExampleCompleteGroup,
   practicePronunciation,
   practiceSpellingExampleComplete,
   practicePronExampleComplete,
@@ -15,6 +17,22 @@ class MyMessages {
             'You wrote " $word " 5 times correctly.\nKeep practicing  spelling several times for better results.',
         withSentences: 'Spell this word with sentences ',
         tryAgain: 'Try spell it again ',
+      );
+    }
+    if (messages == PracticeMessagesType.practiceSpellingGroup) {
+      return PracticeMessage(
+        titleMessage:
+            'You wrote " $word " 5 times correctly.\nKeep practicing  spelling several times for better results.',
+        withSentences: 'Spell " $word " with sentences ',
+        tryAgain: 'Move to next one',
+      );
+    }
+    if (messages == PracticeMessagesType.practiceSpellingExampleCompleteGroup) {
+      return PracticeMessage(
+        titleMessage:
+            'You\'ve completed your spelling practice for this group .\nKeep going...',
+        withSentences: 'Spell " $word " with sentences again ',
+        tryAgain: 'Start over',
       );
     }
     if (messages == PracticeMessagesType.practiceSpellingExampleComplete) {

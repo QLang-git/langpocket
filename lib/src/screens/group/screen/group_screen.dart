@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/screens/group/app_bar/group_appbar.dart';
 import 'package:langpocket/src/screens/group/controller/group_controller.dart';
 import 'package:langpocket/src/screens/group/widgets/words_list.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class GroupScreen extends ConsumerStatefulWidget {
   final GroupData groupData;
@@ -54,7 +56,17 @@ class _GroupScreenState extends ConsumerState<GroupScreen> {
             SpeedDialChild(
                 child: const Icon(Icons.spellcheck_rounded, size: 30),
                 label: 'practice spelling for Group words',
-                onTap: () {}),
+                onTap: () {
+                  final words = groupController.getListOfWordsData();
+                  context.pushNamed(AppRoute.spelling.name,
+                      extra: words.first,
+                      pathParameters: {
+                        'id': words.first.id.toString(),
+                      },
+                      queryParameters: {
+                        'groupId': widget.groupData.id.toString()
+                      });
+                }),
             SpeedDialChild(
               child: const Icon(Icons.speaker, size: 30),
               label: 'practice pronunciation for Group words',
