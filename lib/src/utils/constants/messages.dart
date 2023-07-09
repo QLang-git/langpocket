@@ -1,10 +1,17 @@
 enum PracticeMessagesType {
+  // spelling
   practiceSpelling,
   practiceSpellingGroup,
-  practiceSpellingExampleCompleteGroup,
-  practicePronunciation,
+  // with group
   practiceSpellingExampleComplete,
+  practiceSpellingExampleCompleteGroup,
+  //pron
+  practicePronunciation,
   practicePronExampleComplete,
+  // with group
+  practicePronunciationGroup,
+  practicePronExampleCompleteGroup,
+  // PI
   practiceInteractively
 }
 
@@ -52,11 +59,26 @@ class MyMessages {
         tryAgain: 'Try pronounce it again ',
       );
     }
+    if (messages == PracticeMessagesType.practicePronunciationGroup) {
+      return PracticeMessage(
+        titleMessage:
+            'You pronounced " $word " 5 times correctly.\nKeep practicing for better results.',
+        withSentences: 'Pronounce " $word " with sentences ',
+        tryAgain: 'Move to next one',
+      );
+    }
     if (messages == PracticeMessagesType.practicePronExampleComplete) {
       return PracticeMessage(
           titleMessage:
               'You\'ve completed your pronunciation task for this word .\nKeep going...',
           withSentences: 'Pronounce with sentences again ',
+          tryAgain: 'Start over');
+    }
+    if (messages == PracticeMessagesType.practicePronExampleCompleteGroup) {
+      return PracticeMessage(
+          titleMessage:
+              'You\'ve completed your pronunciation task for this word .\nKeep going...',
+          withSentences: 'Pronounce " $word " with sentences ',
           tryAgain: 'Start over');
     }
     if (messages == PracticeMessagesType.practiceInteractively) {

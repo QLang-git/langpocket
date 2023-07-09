@@ -3,8 +3,8 @@ import 'package:langpocket/src/screens/group/controller/group_controller.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
-const int _countWordSpelling = 1;
-const int _countExampleSpelling = 1;
+const int _countWordSpelling = 5;
+const int _countExampleSpelling = 3;
 const bool _activateExampleState = false;
 const int _pointer = 0;
 const int _timeAfterCorrectSpell = 3; // second
@@ -79,13 +79,6 @@ class SpellingController {
   void examplesActivation() {
     activateExample = true;
     countSpelling = countExampleSpelling;
-    onExampleSateListening(activateExample);
-    onListeningCount(countSpelling);
-  }
-
-  void reactivateExample() {
-    activateExample = true;
-    countSpelling = countExampleSpelling;
     pointer = _pointer;
     onPointerListening(pointer);
     onExampleSateListening(activateExample);
@@ -132,7 +125,7 @@ class SpellingController {
     }
   }
 
-  bool moveToNextWord() {
+  void moveToNextWord() {
     final wordList = GroupController.currentWordList;
 
     if (wordList != null && wordList.length > wordPinter) {
@@ -140,9 +133,6 @@ class SpellingController {
       examplesList = wordList[wordPinter].wordExamples;
       resetting(wordRecord: wordList[wordPinter]);
       wordPinter += 1;
-      return true;
-    } else {
-      return false;
     }
   }
 

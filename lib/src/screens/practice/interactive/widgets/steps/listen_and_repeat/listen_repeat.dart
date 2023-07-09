@@ -51,7 +51,8 @@ class _ListenRepeatState extends State<ListenRepeat>
         foreignWord: foreignWord,
         examplesList: wordExamples,
         onExampleSateListening: setExamplesState,
-        onPointerListening: setNewPointer);
+        onPointerListening: setNewPointer,
+        onNewWordRecord: (WordRecord value) {});
     listenRepeatController = ListenRepeatController(
       globuleSates: globuleStates,
       moveToNextStep: moveToNextStep,

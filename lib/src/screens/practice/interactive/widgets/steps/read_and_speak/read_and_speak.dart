@@ -43,7 +43,8 @@ class _ReadSpeakState extends State<ReadSpeak>
         foreignWord: foreignWord,
         examplesList: wordExamples,
         onExampleSateListening: setExamplesState,
-        onPointerListening: setNewPointer);
+        onPointerListening: setNewPointer,
+        onNewWordRecord: (WordRecord value) {});
 
     readSpeakController = ReadSpeakController(
       micActivation: setMicActivation,

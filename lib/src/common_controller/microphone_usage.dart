@@ -7,9 +7,9 @@ abstract class MicrophoneConst {
 
 class ConstPronMicrophone extends MicrophoneConst {
   @override
-  int get countWordPron => 4;
+  int get countWordPron => 1;
   @override
-  int get countExamplePron => 3;
+  int get countExamplePron => 1;
 
   @override
   String get initialMessage => "Hold to Start Recording ...";

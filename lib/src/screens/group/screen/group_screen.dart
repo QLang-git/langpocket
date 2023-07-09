@@ -68,9 +68,19 @@ class _GroupScreenState extends ConsumerState<GroupScreen> {
                       });
                 }),
             SpeedDialChild(
-              child: const Icon(Icons.speaker, size: 30),
-              label: 'practice pronunciation for Group words',
-            ),
+                child: const Icon(Icons.speaker, size: 30),
+                label: 'practice pronunciation for Group words',
+                onTap: () {
+                  final words = groupController.getListOfWordsData();
+                  context.pushNamed(AppRoute.pronunciation.name,
+                      extra: words.first,
+                      pathParameters: {
+                        'id': words.first.id.toString(),
+                      },
+                      queryParameters: {
+                        'groupId': widget.groupData.id.toString()
+                      });
+                }),
           ],
         ),
       ),

@@ -13,18 +13,16 @@ import 'package:langpocket/src/common_controller/microphone_controller.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/widgets/microphone_button.dart';
 import 'package:langpocket/src/common_widgets/custom_dialog_practice.dart';
 import 'package:langpocket/src/utils/constants/messages.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class PracticePronScreen extends ConsumerStatefulWidget {
-  final List<Uint8List> imageList;
-  final String foreignWord;
-  final List<String> meanList;
-  final List<String> examplesList;
-  const PracticePronScreen(
-      {super.key,
-      required this.imageList,
-      required this.foreignWord,
-      required this.meanList,
-      required this.examplesList});
+  final WordRecord word;
+  final String? groupId;
+  const PracticePronScreen({
+    super.key,
+    required this.word,
+    required this.groupId,
+  });
 
   @override
   ConsumerState<PracticePronScreen> createState() => _PracticePronScreenState();
@@ -39,16 +37,19 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
   late bool example;
   late MicrophoneController microphoneController;
   late String message;
+  late WordRecord wordRecord;
 
   @override
   void initState() {
+    wordRecord = widget.word;
     microphoneController = MicrophoneController(ConstPronMicrophone(),
         onListeningMessages: setMessage,
         onListeningCount: setCounter,
-        foreignWord: widget.foreignWord,
-        examplesList: widget.examplesList,
+        foreignWord: widget.word.foreignWord,
+        examplesList: widget.word.wordExamples,
         onExampleSateListening: setExamplesState,
-        onPointerListening: setNewPointer);
+        onPointerListening: setNewPointer,
+        onNewWordRecord: setNewWordRecord);
     final initial = microphoneController.initializeControllerValues();
     countPron = initial.countPron;
     example = initial.activateExample;
@@ -71,13 +72,24 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
   void setExamplesState(bool state) => setState(() {
         example = state;
       });
+  void setNewWordRecord(WordRecord newWordRecord) {
+    setState(() {
+      wordRecord = newWordRecord;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final WordRecord(:foreignWord, :wordImages, :wordExamples, :wordMeans) =
+        wordRecord;
     final myMessage = MyMessages();
     final textStyle = Theme.of(context).textTheme;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      popUpDialog(context, myMessage);
+      if (widget.groupId != null) {
+        popUpDialogGroup(context, myMessage, foreignWord, wordExamples);
+      } else {
+        popUpDialogSingle(context, myMessage, foreignWord, wordExamples);
+      }
     });
 
     return ResponsiveCenter(
@@ -89,14 +101,14 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
               child: Stack(children: [
                 Column(
                   children: [
-                    ImageView(imageList: widget.imageList),
+                    ImageView(imageList: wordImages),
                     const SizedBox(
                       height: 15,
                     ),
                     countPron > microphoneController.stopPeaking || example
                         ? WordView(
-                            foreignWord: widget.foreignWord,
-                            means: widget.meanList,
+                            foreignWord: foreignWord,
+                            means: wordMeans,
                           )
                         : Card(
                             elevation: 3,
@@ -127,7 +139,7 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
                                   height: 20,
                                 ),
                               ),
-                              ExampleView(example: widget.examplesList[pointer])
+                              ExampleView(example: wordExamples[pointer])
                             ],
                           )
                         : Container()
@@ -200,7 +212,8 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
     );
   }
 
-  void popUpDialog(BuildContext context, MyMessages myMessage) {
+  void popUpDialogSingle(BuildContext context, MyMessages myMessage,
+      String foreignWord, List<String> examplesList) {
     if (countPron == 0 && !example) {
       showDialog(
           context: context,
@@ -209,14 +222,14 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
             return CustomDialogPractice(
               messages: myMessage.getPracticeMessage(
                 PracticeMessagesType.practicePronunciation,
-                widget.foreignWord,
+                foreignWord,
               ),
               reload: microphoneController.resetting,
               activateExamples: microphoneController.examplesActivation,
             );
           });
     } else if (countPron == 0 && example) {
-      if (pointer < widget.examplesList.length - 1) {
+      if (pointer < examplesList.length - 1) {
         microphoneController.moveToNextExamples();
       } else {
         showDialog(
@@ -226,12 +239,58 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
               return CustomDialogPractice(
                 messages: myMessage.getPracticeMessage(
                   PracticeMessagesType.practicePronExampleComplete,
-                  widget.foreignWord,
+                  foreignWord,
                 ),
                 reload: microphoneController.resetting,
-                activateExamples: microphoneController.reactivateExample,
+                activateExamples: microphoneController.examplesActivation,
               );
             });
+      }
+    }
+  }
+
+  void popUpDialogGroup(BuildContext context, MyMessages myMessage,
+      String foreignWord, List<String> examplesList) {
+    if (countPron == 0) {
+      if (example && pointer < examplesList.length - 1) {
+        microphoneController.moveToNextExamples();
+      } else if (!example) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return CustomDialogPractice(
+              messages: myMessage.getPracticeMessage(
+                PracticeMessagesType.practicePronunciationGroup,
+                foreignWord,
+              ),
+              reload: microphoneController.isThereNextWord
+                  ? microphoneController.moveToNextWord
+                  : null,
+              activateExamples: microphoneController.examplesActivation,
+            );
+          },
+        );
+      } else if (countPron == 0 &&
+          example &&
+          microphoneController.isThereNextWord) {
+        microphoneController.moveToNextWord();
+        return;
+      } else if (countPron == 0 && example) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return CustomDialogPractice(
+              messages: myMessage.getPracticeMessage(
+                PracticeMessagesType.practicePronExampleCompleteGroup,
+                foreignWord,
+              ),
+              reload: microphoneController.resetting,
+              activateExamples: microphoneController.examplesActivation,
+            );
+          },
+        );
       }
     }
   }

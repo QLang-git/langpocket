@@ -380,7 +380,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                     foreignWord,
                   ),
                   reload: spellingController.resetting,
-                  activateExamples: spellingController.reactivateExample,
+                  activateExamples: spellingController.examplesActivation,
                 );
               }).then((value) => isDialogShowing = false);
         }
@@ -388,12 +388,8 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
     }
   }
 
-  void popUpDialogGroup(
-    BuildContext context,
-    MyMessages myMessage,
-    String foreignWord,
-    List<String> examplesList,
-  ) {
+  void popUpDialogGroup(BuildContext context, MyMessages myMessage,
+      String foreignWord, List<String> examplesList) {
     if (!isDialogShowing) {
       if (countSpelling == 0) {
         if (activateExample && pointer < examplesList.length - 1) {
@@ -412,7 +408,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                 reload: spellingController.isThereNextWord
                     ? spellingController.moveToNextWord
                     : null,
-                activateExamples: spellingController.reactivateExample,
+                activateExamples: spellingController.examplesActivation,
               );
             },
           ).then((value) => isDialogShowing = false);
@@ -433,7 +429,7 @@ class PracticeSpellingScreenState extends State<PracticeSpellingScreen> {
                   foreignWord,
                 ),
                 reload: spellingController.resetting,
-                activateExamples: spellingController.reactivateExample,
+                activateExamples: spellingController.examplesActivation,
               );
             },
           ).then((value) => isDialogShowing = false);

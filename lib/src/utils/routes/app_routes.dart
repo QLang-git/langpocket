@@ -138,7 +138,9 @@ final appScreens = [
 
                         return _navGoUp(
                             PracticeSpellingScreen(
-                                word: word, groupId: groupId),
+                              word: word,
+                              groupId: groupId,
+                            ),
                             state);
                       } else {
                         return _navGoUp(const ErrorNavScreen(), state);
@@ -151,14 +153,14 @@ final appScreens = [
                     pageBuilder: (context, state) {
                       final word = state.extra as WordRecord?;
                       if (word != null) {
+                        final groupId = state.queryParameters['groupId'];
                         return _navGoUp(
                             PracticePronScreen(
-                                key: ValueKey(
-                                    DateTime.now().millisecondsSinceEpoch),
-                                imageList: word.wordImages,
-                                foreignWord: word.foreignWord,
-                                meanList: word.wordMeans,
-                                examplesList: word.wordExamples),
+                              key: ValueKey(
+                                  DateTime.now().millisecondsSinceEpoch),
+                              word: word,
+                              groupId: groupId,
+                            ),
                             state);
                       } else {
                         return _navGoUp(const ErrorNavScreen(), state);
