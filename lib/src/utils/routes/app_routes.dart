@@ -9,6 +9,7 @@ import 'package:langpocket/src/data/local/repository/drift_group_repository.dart
 import 'package:langpocket/src/screens/group/screen/group_screen.dart';
 import 'package:langpocket/src/screens/home/screen/home_screen.dart';
 import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
+import 'package:langpocket/src/screens/practice/audio/screen/audio_screen.dart';
 import 'package:langpocket/src/screens/practice/interactive/screen/practice_interactive_screen.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/screen/practice_pron_screen.dart';
 import 'package:langpocket/src/screens/practice/spelling/screen/practice_spelling_screen.dart';
@@ -27,7 +28,8 @@ enum AppRoute {
   editMode,
   spelling,
   pronunciation,
-  interactive
+  interactive,
+  audioClip
 }
 
 class WordRecord {
@@ -178,6 +180,22 @@ final appScreens = [
                               key: ValueKey(
                                   DateTime.now().millisecondsSinceEpoch),
                               wordRecord: word,
+                            ),
+                            state);
+                      } else {
+                        return _navGoUp(const ErrorNavScreen(), state);
+                      }
+                    },
+                  ),
+                  GoRoute(
+                    path: 'audio',
+                    name: AppRoute.audioClip.name,
+                    pageBuilder: (context, state) {
+                      final words = state.extra as List<WordRecord>?;
+                      if (words != null) {
+                        return _navGoUp(
+                            AudioScreen(
+                              words: words,
                             ),
                             state);
                       } else {

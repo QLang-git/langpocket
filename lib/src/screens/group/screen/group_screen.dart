@@ -22,6 +22,7 @@ class GroupScreen extends ConsumerStatefulWidget {
 
 class _GroupScreenState extends ConsumerState<GroupScreen> {
   late GroupController groupController;
+
   late ({
     String dataFormat,
     String groupName,
@@ -29,6 +30,7 @@ class _GroupScreenState extends ConsumerState<GroupScreen> {
   @override
   void initState() {
     groupController = GroupController(ref: ref, groupData: widget.groupData);
+
     super.initState();
   }
 
@@ -51,31 +53,36 @@ class _GroupScreenState extends ConsumerState<GroupScreen> {
                 Icons.play_arrow_rounded,
                 size: 30,
               ),
-              label: 'Listen to the Group\'s audio clip ',
+              label: ' Listen to the Audio Clips : Group Practice',
+              onTap: () => context.pushNamed(AppRoute.audioClip.name,
+                  pathParameters: {
+                    'id': GroupController.currentWordList!.first.id.toString(),
+                  },
+                  extra: GroupController.currentWordList),
             ),
             SpeedDialChild(
                 child: const Icon(Icons.spellcheck_rounded, size: 30),
-                label: 'practice spelling for Group words',
+                label: 'Master Your Spelling: Group Practice',
                 onTap: () {
-                  final words = groupController.getListOfWordsData();
                   context.pushNamed(AppRoute.spelling.name,
-                      extra: words.first,
+                      extra: GroupController.currentWordList!.first,
                       pathParameters: {
-                        'id': words.first.id.toString(),
+                        'id': GroupController.currentWordList!.first.id
+                            .toString(),
                       },
                       queryParameters: {
                         'groupId': widget.groupData.id.toString()
                       });
                 }),
             SpeedDialChild(
-                child: const Icon(Icons.speaker, size: 30),
-                label: 'practice pronunciation for Group words',
+                child: const Icon(Icons.record_voice_over, size: 30),
+                label: 'Perfect Your Pronunciation: Group Practice',
                 onTap: () {
-                  final words = groupController.getListOfWordsData();
                   context.pushNamed(AppRoute.pronunciation.name,
-                      extra: words.first,
+                      extra: GroupController.currentWordList!.first,
                       pathParameters: {
-                        'id': words.first.id.toString(),
+                        'id': GroupController.currentWordList!.first.id
+                            .toString(),
                       },
                       queryParameters: {
                         'groupId': widget.groupData.id.toString()
