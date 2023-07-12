@@ -193,8 +193,10 @@ final appScreens = [
                     pageBuilder: (context, state) {
                       final words = state.extra as List<WordRecord>?;
                       if (words != null) {
+                        final groupName = state.queryParameters['groupName'];
                         return _navGoUp(
                             AudioScreen(
+                              groupName: groupName!,
                               words: words,
                             ),
                             state);

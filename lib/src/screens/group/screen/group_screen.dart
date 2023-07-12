@@ -58,6 +58,7 @@ class _GroupScreenState extends ConsumerState<GroupScreen> {
                   pathParameters: {
                     'id': GroupController.currentWordList!.first.id.toString(),
                   },
+                  queryParameters: {'groupName': widget.groupData.groupName},
                   extra: GroupController.currentWordList),
             ),
             SpeedDialChild(
