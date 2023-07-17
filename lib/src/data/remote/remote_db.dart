@@ -33,7 +33,7 @@ class RemoteDb implements RemoteGroupRepository {
   }
 
   @override
-  Future<WordData> fetchWordbyId(int groupId) {
+  Future<WordData> fetchWordById(int groupId) {
     // TODO: implement fetchWordbyId
     throw UnimplementedError();
   }

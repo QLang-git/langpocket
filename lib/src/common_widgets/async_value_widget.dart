@@ -6,44 +6,24 @@ class AsyncValueWidget<T> extends StatelessWidget {
   const AsyncValueWidget(
       {super.key,
       required this.value,
-      required this.data,
+      required this.child,
       this.padding = const EdgeInsets.all(0),
       this.loading = const CircularProgressIndicator()});
   final AsyncValue<T> value;
-  final Widget Function(T) data;
+  final Widget Function(T) child;
   final EdgeInsetsGeometry padding;
   final Widget loading;
 
   @override
   Widget build(BuildContext context) {
     return value.when(
-      data: data,
+      data: child,
       error: (e, st) => Center(child: ErrorMessageWidget(e.toString())),
       loading: () => Center(
           child: Padding(
         padding: padding,
         child: const CircularProgressIndicator(),
       )),
-    );
-  }
-}
-
-/// Sliver equivalent of [AsyncValueWidget]
-class AsyncValueSliverWidget<T> extends StatelessWidget {
-  const AsyncValueSliverWidget(
-      {super.key, required this.value, required this.data});
-  final AsyncValue<T> value;
-  final Widget Function(T) data;
-
-  @override
-  Widget build(BuildContext context) {
-    return value.when(
-      data: data,
-      loading: () => const SliverToBoxAdapter(
-          child: Center(child: CircularProgressIndicator())),
-      error: (e, st) => SliverToBoxAdapter(
-        child: Center(child: ErrorMessageWidget(e.toString())),
-      ),
     );
   }
 }

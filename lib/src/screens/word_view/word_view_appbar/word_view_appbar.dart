@@ -31,7 +31,7 @@ class WordViewAppBar extends StatelessWidget implements PreferredSizeWidget {
               onPressed: () {
                 context.pushNamed(AppRoute.editMode.name,
                     extra: wordData,
-                    pathParameters: {'id': wordData.id.toString()});
+                    pathParameters: {'wordId': wordData.id.toString()});
               },
               icon: const Icon(
                 Icons.edit_document,

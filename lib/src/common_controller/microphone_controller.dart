@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:langpocket/src/screens/group/controller/group_controller.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/data/data_flow/data_flow.dart';
+import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
+import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -11,9 +14,8 @@ const int _pointer = 0;
 const int _stopPeaking = 0;
 
 class MicrophoneController {
+  final WidgetRef ref;
   final MicrophoneConst microphoneConst;
-  String foreignWord;
-  List<String> examplesList;
   final ValueChanged<String> onListeningMessages;
   final ValueChanged<int> onListeningCount;
   final ValueChanged<bool> onExampleSateListening;
@@ -24,17 +26,19 @@ class MicrophoneController {
   bool activateExample = _activateExampleState;
   int pointer = _pointer;
   int wordPinter = 1;
+  List<WordRecord> wordList = [];
+  String foreignWord = '';
+  List<String> examplesList = [];
   MicrophoneController(this.microphoneConst,
       {required this.onListeningMessages,
+      required this.ref,
       required this.onNewWordRecord,
       required this.onListeningCount,
-      required this.foreignWord,
-      required this.examplesList,
       required this.onExampleSateListening,
       required this.onPointerListening});
   final speechToText = SpeechToText();
   RecordingStatus currentStatus = RecordingStatus.noVoice;
-
+  late DataFlow dataFlow;
   void initializeSpeechToText() async {
     countPron = microphoneConst.countWordPron;
     bool available = await speechToText.initialize();
@@ -50,6 +54,7 @@ class MicrophoneController {
     int pointer,
     String initialMessage
   }) initializeControllerValues() {
+    //dataFlow = DataFlow(ref: ref);
     return (
       countPron: microphoneConst.countWordPron,
       countExamplePron: microphoneConst.countExamplePron,
@@ -58,6 +63,25 @@ class MicrophoneController {
       initialMessage: microphoneConst.initialMessage
     );
   }
+
+  WordRecord? getSingleWord(int wordId) {
+    try {
+      return wordList.firstWhere((word) => word.id == wordId);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  AsyncValue<T> getSingleWordOrAll<T>(int? groupId, int wordId) {
+    if (groupId != null) {
+      return _getWordsInGroupById(groupId) as AsyncValue<T>;
+    } else {
+      return _fetchWord(wordId) as AsyncValue<T>;
+    }
+  }
+
+  set setWordList(List<WordData> words) =>
+      wordList = words.map((e) => e.decoding()).toList();
 
   void startRecording() async {
     if (speechToText.isNotListening) {
@@ -120,11 +144,10 @@ class MicrophoneController {
     onPointerListening(pointer);
   }
 
-  get isThereNextWord =>
-      foreignWord != GroupController.currentWordList!.last.foreignWord;
+  get isThereNextWord => foreignWord != wordList.last.foreignWord;
+
   void moveToNextWord() {
-    final wordList = GroupController.currentWordList;
-    if (wordList != null && wordList.length > wordPinter) {
+    if (wordList.length > wordPinter) {
       foreignWord = wordList[wordPinter].foreignWord;
       examplesList = wordList[wordPinter].wordExamples;
       resetting(wordRecord: wordList[wordPinter]);
@@ -152,7 +175,6 @@ class MicrophoneController {
   }
 
   void _startWordsOver() {
-    final wordList = GroupController.currentWordList!;
     if (wordPinter != 1) {
       wordPinter = 1;
       foreignWord = wordList.first.foreignWord;
@@ -160,6 +182,14 @@ class MicrophoneController {
 
       onNewWordRecord(wordList.first);
     }
+  }
+
+  AsyncValue<List<WordData>> _getWordsInGroupById(int currentGroupId) {
+    return dataFlow.watchWordsListbyId(currentGroupId);
+  }
+
+  AsyncValue<WordData> _fetchWord(int currentWordId) {
+    return dataFlow.fetchWordById(currentWordId);
   }
 
   void _setAlterUserMessage(String status, {String currentWord = ''}) {

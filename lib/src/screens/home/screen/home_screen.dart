@@ -11,15 +11,14 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sizeHeight = MediaQuery.of(context).size.height;
-    final colorStyle = Theme.of(context).colorScheme;
-    final textStyle = Theme.of(context).textTheme;
+    final ThemeData(:colorScheme, :textTheme) = Theme.of(context);
     return ResponsiveCenter(
       child: Scaffold(
+        backgroundColor: colorScheme.background,
         appBar: HomeAppBar(
           screenHeight: sizeHeight,
-          userName: 'Ali',
+          userName: 'User',
         ),
-        backgroundColor: colorStyle.background,
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Padding(
@@ -34,16 +33,16 @@ class HomeScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Groups',
-                          style: textStyle.headlineLarge
-                              ?.copyWith(color: colorStyle.outline)),
+                          style: textTheme.headlineLarge
+                              ?.copyWith(color: colorScheme.outline)),
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: colorStyle.onPrimary,
+                            backgroundColor: colorScheme.onPrimary,
                           ),
-                          onPressed: () {},
+                          onPressed: () => context.goNamed(AppRoute.todo.name),
                           child: Text(
                             'Todo',
-                            style: textStyle.labelMedium
+                            style: textTheme.labelMedium
                                 ?.copyWith(color: Colors.white),
                           ))
                     ],
@@ -56,7 +55,7 @@ class HomeScreen extends StatelessWidget {
         ),
         floatingActionButton: TextButton(
           style: TextButton.styleFrom(
-            backgroundColor: colorStyle.onPrimary,
+            backgroundColor: colorScheme.onPrimary,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18.0)),
           ),

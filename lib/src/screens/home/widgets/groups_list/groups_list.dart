@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
-import 'package:langpocket/src/screens/home/widgets/groups_list/controller/groups_controller.dart';
+import 'package:langpocket/src/screens/home/controller/home_controller.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class GroupsList extends ConsumerStatefulWidget {
@@ -14,14 +14,21 @@ class GroupsList extends ConsumerStatefulWidget {
 }
 
 class _GroupsListState extends ConsumerState<GroupsList> {
+  late HomeController homeController;
+  @override
+  void initState() {
+    homeController = HomeController(ref: ref);
+    homeController.initial();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final groupsList = ref.watch(groupsControllerProvider);
     final sizeHeight = MediaQuery.of(context).size.height;
-
+    final ThemeData(:colorScheme, :textTheme) = Theme.of(context);
     return AsyncValueWidget(
-        value: groupsList,
-        data: (groups) {
+        value: homeController.getAllGroups(),
+        child: (groups) {
           if (groups.isEmpty) {
             return SizedBox(
                 width: double.infinity,
@@ -36,14 +43,9 @@ class _GroupsListState extends ConsumerState<GroupsList> {
               shrinkWrap: true,
               itemCount: groups.length,
               itemBuilder: (BuildContext context, int index) {
-                final textStyle = Theme.of(context).textTheme;
-                final fontColor = Theme.of(context).colorScheme.outline;
-                final dataName = groups[index].creatingTime;
                 final wordsInGroup =
-                    ref.watch(watchWordsListbyIdProvider(groups[index].id));
-                final today = dataName.weekday;
-
-                final icontDay = setDayLogo(today);
+                    homeController.getWordsInGroupById(groups[index].id);
+                final iconDay = homeController.getLogoDay(groups[index]);
                 return Padding(
                   padding: const EdgeInsets.only(left: 9, right: 8),
                   child: Card(
@@ -52,8 +54,16 @@ class _GroupsListState extends ConsumerState<GroupsList> {
                         borderRadius: BorderRadius.circular(10)),
                     child: InkWell(
                       key: Key('group-${groups[index].id}'),
-                      onTap: () => context.goNamed(AppRoute.group.name,
-                          extra: groups[index]),
+                      onTap: () => context.goNamed(
+                        AppRoute.group.name,
+                        pathParameters: {
+                          'groupId': groups[index].id.toString(),
+                        },
+                        queryParameters: {
+                          'name': groups[index].groupName,
+                          'time': groups[index].creatingTime.toString()
+                        },
+                      ),
                       child: SizedBox(
                         width: double.infinity,
                         height: 100,
@@ -64,7 +74,7 @@ class _GroupsListState extends ConsumerState<GroupsList> {
                                 borderRadius: const BorderRadius.only(
                                     topLeft: Radius.circular(10),
                                     bottomLeft: Radius.circular(10)),
-                                color: icontDay.dayColor,
+                                color: iconDay.dayColor,
                               ),
                               height: double.infinity,
                               width: 90,
@@ -72,13 +82,13 @@ class _GroupsListState extends ConsumerState<GroupsList> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(
-                                    icontDay.dayIcon,
+                                    iconDay.dayIcon,
                                     color: Colors.white,
                                     size: 35,
                                   ),
                                   Text(
-                                    icontDay.dayName,
-                                    style: textStyle.headlineSmall
+                                    iconDay.dayName,
+                                    style: textTheme.headlineSmall
                                         ?.copyWith(color: Colors.white),
                                     softWrap: true,
                                     maxLines: 1,
@@ -96,8 +106,8 @@ class _GroupsListState extends ConsumerState<GroupsList> {
                                 children: [
                                   Text(
                                     groups[index].groupName,
-                                    style: textStyle.displayLarge
-                                        ?.copyWith(color: fontColor),
+                                    style: textTheme.displayLarge
+                                        ?.copyWith(color: colorScheme.outline),
                                     softWrap: true,
                                     maxLines: 1,
                                     overflow: TextOverflow.fade,
@@ -106,20 +116,22 @@ class _GroupsListState extends ConsumerState<GroupsList> {
                                     children: [
                                       Text(
                                         'Words: ',
-                                        style: textStyle.bodyMedium
-                                            ?.copyWith(color: fontColor),
+                                        style: textTheme.bodyMedium?.copyWith(
+                                            color: colorScheme.outline),
                                       ),
                                       AsyncValueWidget(
                                           value: wordsInGroup,
-                                          data: (words) => MyWordsInGroup(
-                                                words: words,
-                                              ))
+                                          child: (words) {
+                                            return MyWordsInGroup(
+                                              words: words,
+                                            );
+                                          })
                                     ],
                                   ),
                                   Text(
-                                    'Date: ${dataName.day}/${dataName.month}/${dataName.year}',
-                                    style: textStyle.bodyLarge
-                                        ?.copyWith(color: fontColor),
+                                    homeController.formatTime(groups[index]),
+                                    style: textTheme.bodyLarge
+                                        ?.copyWith(color: colorScheme.outline),
                                   ),
                                 ],
                               ),

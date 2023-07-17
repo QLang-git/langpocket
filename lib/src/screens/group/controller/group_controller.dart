@@ -2,31 +2,27 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/data/data_flow/data_flow.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/modules/extensions.dart';
-import 'package:langpocket/src/data/services/word_service.dart';
-import 'package:langpocket/src/screens/home/widgets/groups_list/controller/groups_controller.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class GroupController {
-  final GroupData groupData;
+  final int groupId;
   final WidgetRef ref;
-  late AsyncValue<List<WordData>> _wordList;
-  static List<WordRecord>? currentWordList;
 
-  GroupController({required this.ref, required this.groupData});
+  GroupController({required this.ref, required this.groupId});
+  late DataFlow dataFlow;
 
-  AsyncValue<List<WordData>> getListOfWordsAsync() {
-    _wordList = ref.watch(watchWordsListbyIdProvider(groupData.id));
-    return _wordList;
+  void initial() {
+    dataFlow = DataFlow(ref: ref);
   }
 
-  List<WordRecord> getListOfWordsData() {
-    currentWordList = _wordDecoding(_wordList.value!);
-    return _wordDecoding(_wordList.value!);
+  AsyncValue<List<WordData>> getWordsInGroupById(int currentGroupId) {
+    return dataFlow.watchWordsListbyId(currentGroupId);
   }
 
-  List<WordRecord> _wordDecoding(List<WordData> wordsData) {
+  List<WordRecord> wordDecoder(List<WordData> wordsData) {
     return wordsData
         .map((word) => WordRecord(
               id: word.id,
@@ -40,18 +36,16 @@ class GroupController {
         .toList();
   }
 
-  void deleteWord(int wordId) async {
-    await ref.watch(wordsServicesProvider).deleteWordById(wordId, groupData.id);
-  }
-
+  void deleteWord(int wordId) => dataFlow.deleteWordInGroup(wordId, groupId);
 // app bar
   bool? editGroupName(
+    String groupName,
     TextEditingController controller,
     BuildContext context,
     GlobalKey<FormState> inputKey,
     ValueChanged<bool> onEditModeActivating,
   ) {
-    if (groupData.groupName != controller.text) {
+    if (groupName != controller.text) {
       return _updateGroupName(controller.text, inputKey, context);
       // newGroupName(controller.text);
     }
@@ -59,8 +53,8 @@ class GroupController {
     return null;
   }
 
-  String generateGroupDate() {
-    final DateTime(:day, :month, :year) = groupData.creatingTime;
+  String generateGroupDate(DateTime creatingTime) {
+    final DateTime(:day, :month, :year) = creatingTime;
     return '$day/$month/$year';
   }
 
@@ -69,18 +63,7 @@ class GroupController {
     if (!inputKey.currentState!.validate()) {
       return null;
     }
-    final res = ref.read(
-        _updateGroupNameProvider((groupId: groupData.id, groupName: newName)));
+    final res = dataFlow.updateGroupNameProvider(groupId, newName);
     return !res.hasError;
   }
-
-  final _updateGroupNameProvider =
-      FutureProvider.family<void, ({int groupId, String groupName})>(
-          (ref, groupInfo) async {
-    await ref
-        .watch(wordsServicesProvider)
-        .updateGroupName(groupInfo.groupId, groupInfo.groupName);
-  });
-
-  void spellingWithGroup() {}
 }

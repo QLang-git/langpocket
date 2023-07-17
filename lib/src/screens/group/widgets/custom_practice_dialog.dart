@@ -7,8 +7,10 @@ class CustomPracticeDialog extends StatelessWidget {
   final WordRecord wordData;
   final double padding;
   final double avatarRadius;
+  final String groupId;
   const CustomPracticeDialog(
       {super.key,
+      required this.groupId,
       required this.padding,
       required this.avatarRadius,
       required this.wordData});
@@ -48,9 +50,13 @@ class CustomPracticeDialog extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: colorStyle.onPrimary),
                         onPressed: () {
-                          context.pushNamed(AppRoute.spelling.name,
-                              extra: wordData,
-                              pathParameters: {'id': wordData.id.toString()});
+                          context.pushNamed(
+                            AppRoute.spelling.name,
+                            pathParameters: {
+                              "groupId": groupId,
+                              'wordId': wordData.id.toString(),
+                            },
+                          );
                         },
                         child: Container(
                           width: double.infinity,
@@ -68,8 +74,9 @@ class CustomPracticeDialog extends StatelessWidget {
                             backgroundColor: colorStyle.onPrimary),
                         onPressed: () {
                           context.pushNamed(AppRoute.pronunciation.name,
-                              extra: wordData,
-                              pathParameters: {'id': wordData.id.toString()});
+                              pathParameters: {
+                                'wordId': wordData.id.toString()
+                              });
                         },
                         child: Container(
                           width: double.infinity,
@@ -87,8 +94,7 @@ class CustomPracticeDialog extends StatelessWidget {
                             backgroundColor: colorStyle.onPrimary),
                         onPressed: () => context.pushNamed(
                             AppRoute.interactive.name,
-                            extra: wordData,
-                            pathParameters: {'id': wordData.id.toString()}),
+                            pathParameters: {'wordId': wordData.id.toString()}),
                         child: Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(10.0),

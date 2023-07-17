@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/screens/group/controller/group_controller.dart';
 
 //PreferredSizeWidget
 class GroupAppBar extends StatefulWidget implements PreferredSizeWidget {
   final GroupController groupController;
+  final String groupName;
+  final DateTime creatingTime;
   const GroupAppBar({
     super.key,
+    required this.creatingTime,
+    required this.groupName,
     required this.groupController,
   });
 
@@ -28,7 +31,7 @@ class _GroupAppBarState extends State<GroupAppBar> {
   late String currentGroupName;
   @override
   void initState() {
-    final GroupData(:groupName) = widget.groupController.groupData;
+    final GroupAppBar(:groupName) = widget;
     controller.text = groupName;
     currentGroupName = groupName;
     controller.selection =
@@ -107,7 +110,7 @@ class _GroupAppBarState extends State<GroupAppBar> {
               ),
             ),
             Text(
-              widget.groupController.generateGroupDate(),
+              widget.groupController.generateGroupDate(widget.creatingTime),
               style: Theme.of(context)
                   .textTheme
                   .labelSmall
@@ -124,6 +127,7 @@ class _GroupAppBarState extends State<GroupAppBar> {
                         return IconButton(
                           onPressed: () {
                             final res = widget.groupController.editGroupName(
+                              widget.groupName,
                               controller,
                               context,
                               inputKey,

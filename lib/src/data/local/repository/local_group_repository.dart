@@ -11,7 +11,7 @@ abstract class LocalGroupRepository {
   Stream<GroupData> watchGroupById(int groupId);
   Future<GroupData> createGroup(GroupCompanion newgroup);
   Future<void> addNewWordInGroup(WordCompanion newWord);
-  Future<WordData> fetchWordbyId(int groupId);
+  Future<WordData> fetchWordById(int groupId);
   Stream<List<WordData>> watchWordsByGroupId(int groupId);
   Future<List<WordData>> fetchWordsByGroupId(int groupId);
   Future<void> updateGroupName(int groupId, String newName);

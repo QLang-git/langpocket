@@ -4,15 +4,13 @@ import 'package:langpocket/src/screens/practice/interactive/app_bar/practice_int
 import 'package:langpocket/src/screens/practice/interactive/controller/practice_stepper_controller.dart';
 import 'package:langpocket/src/screens/practice/interactive/widgets/practice_stepper/practice_stepper.dart';
 import 'package:langpocket/src/screens/practice/interactive/widgets/steps/listen_and_repeat/listen_repeat.dart';
-import 'package:langpocket/src/screens/practice/interactive/widgets/steps/listen_and_write/listen_and_write.dart';
 import 'package:langpocket/src/screens/practice/interactive/widgets/steps/read_and_speak/read_and_speak.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class PracticeInteractiveScreen extends StatefulWidget {
-  final WordRecord wordRecord;
+  final int wordId;
   const PracticeInteractiveScreen({
     super.key,
-    required this.wordRecord,
+    required this.wordId,
   });
 
   @override
@@ -28,9 +26,11 @@ class PracticePronScreenState extends State<PracticeInteractiveScreen> {
   @override
   void initState() {
     _steps = [
-      ListenRepeat(wordRecord: widget.wordRecord),
-      ReadSpeak(wordRecord: widget.wordRecord),
-      ListenWrite(wordRecord: widget.wordRecord)
+      ListenRepeat(
+        wordId: widget.wordId,
+      ),
+      ReadSpeak(wordId: widget.wordId),
+      // ListenWrite(wordId: widget.wordId)
     ];
 
     practiceStepperController =

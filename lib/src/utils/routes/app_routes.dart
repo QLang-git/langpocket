@@ -5,19 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/screens/group/screen/group_screen.dart';
 import 'package:langpocket/src/screens/home/screen/home_screen.dart';
 import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
-import 'package:langpocket/src/screens/practice/audio/screen/audio_screen.dart';
-import 'package:langpocket/src/screens/practice/interactive/screen/practice_interactive_screen.dart';
-import 'package:langpocket/src/screens/practice/pronunciation/screen/practice_pron_screen.dart';
+import 'package:langpocket/src/screens/practice/spelling/screen/practice_spelling_group_screen.dart';
 import 'package:langpocket/src/screens/practice/spelling/screen/practice_spelling_screen.dart';
+import 'package:langpocket/src/screens/todo/screen/todo_screen.dart';
 import 'package:langpocket/src/screens/word_edit/screen/edit_mode_word_screen.dart';
 import 'package:langpocket/src/screens/word_previewer/screen/word_previewer_screen.dart';
 import 'package:langpocket/src/screens/word_view/screen/word_view_screen.dart';
 import 'package:langpocket/src/utils/routes/error_nav_screen.dart';
-import 'package:langpocket/src/utils/routes/not_found_screen.dart';
 
 enum AppRoute {
   home,
@@ -29,7 +26,8 @@ enum AppRoute {
   spelling,
   pronunciation,
   interactive,
-  audioClip
+  audioClip,
+  todo
 }
 
 class WordRecord {
@@ -57,10 +55,7 @@ class WordRecord {
 
 final GoRouter goroute = GoRouter(
   initialLocation: '/',
-  debugLogDiagnostics: false,
   routes: appScreens,
-  errorPageBuilder: (context, state) => _navGoUp(const NotFoundScreen(), state),
-  errorBuilder: (context, state) => const NotFoundScreen(),
 );
 
 final appScreens = [
@@ -90,126 +85,203 @@ final appScreens = [
                   })
             ]),
         GoRoute(
-            path: 'group',
+          path: 'todo',
+          name: AppRoute.todo.name,
+          pageBuilder: (context, state) =>
+              _navGoRight(const TodoScreen(), state),
+        ),
+        GoRoute(
+            path: 'g/:groupId',
             name: AppRoute.group.name,
             pageBuilder: (context, state) {
-              final groupData = state.extra as GroupData?;
-              if (groupData is GroupData) {
-                return _navGoRight(GroupScreen(groupData: groupData), state);
+              final groupId = state.pathParameters['groupId'];
+              final groupName = state.queryParameters['name'];
+              final creatingTime = state.queryParameters['time'];
+              if (groupId != null &&
+                  int.tryParse(groupId) != null &&
+                  groupName != null &&
+                  creatingTime != null &&
+                  DateTime.tryParse(creatingTime) != null) {
+                return _navGoRight(
+                    GroupScreen(
+                      groupId: int.parse(groupId),
+                      groupName: groupName,
+                      creatingTime: DateTime.parse(creatingTime),
+                    ),
+                    state);
               } else {
                 return _navGoUp(const ErrorNavScreen(), state);
               }
             },
             routes: [
               GoRoute(
-                path: 'word/:id',
-                name: AppRoute.word.name,
-                pageBuilder: (context, state) {
-                  final wordId = state.pathParameters['id'];
-                  if (wordId != null) {
-                    return _navGoRight(
-                        WordViewScreen(wordId: int.parse(wordId)), state);
-                  } else {
-                    return _navGoUp(const ErrorNavScreen(), state);
-                  }
-                },
-                routes: [
-                  GoRoute(
-                    path: 'edit-mode',
-                    name: AppRoute.editMode.name,
-                    pageBuilder: (context, state) {
-                      final word = state.extra as WordRecord?;
-                      if (word is WordRecord) {
-                        return _navGoRight(
-                            EditModeWordScreen(
-                              wordData: word,
-                            ),
-                            state);
-                      } else {
-                        return _navGoUp(const ErrorNavScreen(), state);
-                      }
-                    },
-                  ),
-                  GoRoute(
-                    path: 'spelling',
-                    name: AppRoute.spelling.name,
-                    pageBuilder: (context, state) {
-                      final word = state.extra as WordRecord?;
-                      if (word != null) {
-                        final groupId = state.queryParameters['groupId'];
+                  path: 'w/:wordId',
+                  name: AppRoute.word.name,
+                  pageBuilder: (context, state) {
+                    final wordId = state.pathParameters['wordId'];
+                    if (wordId != null) {
+                      return _navGoRight(
+                          WordViewScreen(wordId: int.parse(wordId)), state);
+                    } else {
+                      return _navGoUp(const ErrorNavScreen(), state);
+                    }
+                  },
+                  routes: [
+                    GoRoute(
+                      path: 'edit-mode',
+                      name: AppRoute.editMode.name,
+                      pageBuilder: (context, state) {
+                        final word = state.extra as WordRecord?;
+                        if (word is WordRecord) {
+                          return _navGoRight(
+                              EditModeWordScreen(
+                                wordData: word,
+                              ),
+                              state);
+                        } else {
+                          return _navGoUp(const ErrorNavScreen(), state);
+                        }
+                      },
+                    ),
+                  ]),
+              GoRoute(
+                  path: 'spelling/:wordId',
+                  name: AppRoute.spelling.name,
+                  pageBuilder: (context, state) {
+                    final groupId = state.queryParameters['groupId'];
+                    final wordId = state.pathParameters['wordId'];
 
+                    if (_validatePath(wordId, groupId)) {
+                      if (groupId != null) {
                         return _navGoUp(
-                            PracticeSpellingScreen(
-                              word: word,
-                              groupId: groupId,
-                            ),
+                            PracticeSpellingGroupScreen(
+                                groupId: int.parse(groupId)),
                             state);
                       } else {
-                        return _navGoUp(const ErrorNavScreen(), state);
-                      }
-                    },
-                  ),
-                  GoRoute(
-                    path: 'pronunciation',
-                    name: AppRoute.pronunciation.name,
-                    pageBuilder: (context, state) {
-                      final word = state.extra as WordRecord?;
-                      if (word != null) {
-                        final groupId = state.queryParameters['groupId'];
                         return _navGoUp(
-                            PracticePronScreen(
-                              key: ValueKey(
-                                  DateTime.now().millisecondsSinceEpoch),
-                              word: word,
-                              groupId: groupId,
-                            ),
+                            PracticeSpellingScreen(wordId: int.parse(wordId!)),
                             state);
-                      } else {
-                        return _navGoUp(const ErrorNavScreen(), state);
                       }
-                    },
-                  ),
-                  GoRoute(
-                    path: 'interactively',
-                    name: AppRoute.interactive.name,
-                    pageBuilder: (context, state) {
-                      final word = state.extra as WordRecord?;
-                      if (word != null) {
-                        return _navGoUp(
-                            PracticeInteractiveScreen(
-                              key: ValueKey(
-                                  DateTime.now().millisecondsSinceEpoch),
-                              wordRecord: word,
-                            ),
-                            state);
-                      } else {
-                        return _navGoUp(const ErrorNavScreen(), state);
-                      }
-                    },
-                  ),
-                  GoRoute(
-                    path: 'audio',
-                    name: AppRoute.audioClip.name,
-                    pageBuilder: (context, state) {
-                      final words = state.extra as List<WordRecord>?;
-                      if (words != null) {
-                        final groupName = state.queryParameters['groupName'];
-                        return _navGoUp(
-                            AudioScreen(
-                              groupName: groupName!,
-                              words: words,
-                            ),
-                            state);
-                      } else {
-                        return _navGoUp(const ErrorNavScreen(), state);
-                      }
-                    },
-                  )
-                ],
-              )
-            ]),
+                    } else {
+                      return _navGoUp(const ErrorNavScreen(), state);
+                    }
+                  }),
+            ]
+            // routes:
+            // [
+            //   GoRoute(
+            //     path: ':wordId',
+            //     name: AppRoute.word.name,
+            //     pageBuilder: (context, state) {
+            //       final wordId = state.pathParameters['wordId'];
+            //       if (wordId != null) {
+            //         return _navGoRight(
+            //             WordViewScreen(wordId: int.parse(wordId)), state);
+            //       } else {
+            //         return _navGoUp(const ErrorNavScreen(), state);
+            //       }
+            //     },
+            //     routes: [
+            //       GoRoute(
+            //         path: 'edit-mode',
+            //         name: AppRoute.editMode.name,
+            //         pageBuilder: (context, state) {
+            //           final word = state.extra as WordRecord?;
+            //           if (word is WordRecord) {
+            //             return _navGoRight(
+            //                 EditModeWordScreen(
+            //                   wordData: word,
+            //                 ),
+            //                 state);
+            //           } else {
+            //             return _navGoUp(const ErrorNavScreen(), state);
+            //           }
+            //         },
+            //       ),
+            //       //  'groupId': groups[index].id.toString(),
+            //       //     'name': groups[index].groupName,
+            //       //     'time': groups[index].creatingTime.toString()
+            //       GoRoute(
+            //           path: 'spelling/:wordId',
+            //           name: AppRoute.spelling.name,
+            //           pageBuilder: (context, state) {
+            //             final groupId = state.queryParameters['groupId'];
+            //             final wordId = state.pathParameters['wordId'];
+            //             print("wordId : $wordId ; groupId : $groupId");
+            //             if (_validatePath(wordId, groupId)) {
+            //               return _navGoUp(Text('gggg'), state);
+            //             } else {
+            //               return _navGoUp(const ErrorNavScreen(), state);
+            //             }
+            //           }),
+            //       GoRoute(
+            //         path: 'pronunciation',
+            //         name: AppRoute.pronunciation.name,
+            //         pageBuilder: (context, state) {
+            //           final wordId = state.pathParameters['wordId'];
+            //           final groupId = state.queryParameters['groupId'];
+
+            //           if (_validatePath(wordId, groupId)) {
+            //             return _navGoUp(
+            //                 PracticePronScreen(
+            //                   key: ValueKey(
+            //                       DateTime.now().millisecondsSinceEpoch),
+            //                   wordId: int.parse(wordId!),
+            //                   groupId: int.parse(groupId!),
+            //                 ),
+            //                 state);
+            //           } else {
+            //             return _navGoUp(const ErrorNavScreen(), state);
+            //           }
+            //         },
+            //       ),
+            //       GoRoute(
+            //         path: 'interactively',
+            //         name: AppRoute.interactive.name,
+            //         pageBuilder: (context, state) {
+            //           final wordId = state.pathParameters['wordId'];
+            //           if (wordId != null && int.tryParse(wordId) != null) {
+            //             return _navGoUp(
+            //                 PracticeInteractiveScreen(
+            //                   key: ValueKey(
+            //                       DateTime.now().millisecondsSinceEpoch),
+            //                   wordId: int.parse(wordId),
+            //                 ),
+            //                 state);
+            //           } else {
+            //             return _navGoUp(const ErrorNavScreen(), state);
+            //           }
+            //         },
+            //       ),
+            //       GoRoute(
+            //         path: 'audio',
+            //         name: AppRoute.audioClip.name,
+            //         pageBuilder: (context, state) {
+            //           final words = state.extra as List<WordRecord>?;
+            //           if (words != null) {
+            //             final groupName = state.queryParameters['groupName'];
+            //             return _navGoUp(
+            //                 AudioScreen(
+            //                   groupName: groupName!,
+            //                   words: words,
+            //                 ),
+            //                 state);
+            //           } else {
+            //             return _navGoUp(const ErrorNavScreen(), state);
+            //           }
+            //         },
+            //       )
+            //     ],
+            //   )
+            // ]
+            ),
       ]),
 ];
+
+bool _validatePath(String? wordId, String? groupId) {
+  return wordId != null && int.tryParse(wordId) != null ||
+      groupId != null && int.tryParse(groupId) != null;
+}
 
 CustomTransitionPage _navGoUp(Widget screen, GoRouterState state) {
   return CustomTransitionPage(

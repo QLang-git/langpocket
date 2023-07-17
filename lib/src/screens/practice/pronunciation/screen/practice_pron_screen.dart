@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:langpocket/src/common_controller/microphone_usage.dart';
+import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/common_widgets/views/examples_view/example_view.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
 import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
+import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
+import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/app_bar/pron_appbar.dart';
 import 'package:langpocket/src/common_controller/microphone_controller.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/widgets/microphone_button.dart';
@@ -14,11 +17,11 @@ import 'package:langpocket/src/utils/constants/messages.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class PracticePronScreen extends ConsumerStatefulWidget {
-  final WordRecord word;
-  final String? groupId;
+  final int wordId;
+  final int? groupId;
   const PracticePronScreen({
     super.key,
-    required this.word,
+    required this.wordId,
     required this.groupId,
   });
 
@@ -35,16 +38,16 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
   late bool example;
   late MicrophoneController microphoneController;
   late String message;
-  late WordRecord wordRecord;
+  late MyMessages myMessages;
 
+  WordRecord? wordRecord;
   @override
   void initState() {
-    wordRecord = widget.word;
+    myMessages = MyMessages();
     microphoneController = MicrophoneController(ConstPronMicrophone(),
         onListeningMessages: setMessage,
         onListeningCount: setCounter,
-        foreignWord: widget.word.foreignWord,
-        examplesList: widget.word.wordExamples,
+        ref: ref,
         onExampleSateListening: setExamplesState,
         onPointerListening: setNewPointer,
         onNewWordRecord: setNewWordRecord);
@@ -78,72 +81,94 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final WordRecord(:foreignWord, :wordImages, :wordExamples, :wordMeans) =
-        wordRecord;
-    final myMessage = MyMessages();
     final textStyle = Theme.of(context).textTheme;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.groupId != null) {
-        popUpDialogGroup(context, myMessage, foreignWord, wordExamples);
-      } else {
-        popUpDialogSingle(context, myMessage, foreignWord, wordExamples);
-      }
-    });
+    if (wordRecord != null) {
+      addPostFrameCallback(context, myMessages, wordRecord!.foreignWord,
+          wordRecord!.wordExamples);
+    }
 
     return ResponsiveCenter(
       child: Scaffold(
         appBar: const PronAppBar(),
         body: SingleChildScrollView(
-          child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
-              child: Stack(children: [
-                Column(
-                  children: [
-                    ImageView(imageList: wordImages),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    countPron > microphoneController.stopPeaking || example
-                        ? WordView(
-                            foreignWord: foreignWord,
-                            means: wordMeans,
-                          )
-                        : Card(
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            margin: const EdgeInsets.all(10),
-                            child: const SizedBox(
-                                width: double.infinity,
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 10),
-                                  child: Icon(
-                                    Ionicons.eye_off,
-                                    size: 40,
-                                  ),
-                                )),
-                          ),
-                    example
-                        ? Column(
-                            children: [
-                              const SizedBox(
-                                height: 15,
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 20, horizontal: 25),
-                                child: Divider(
-                                  height: 20,
+          child: AsyncValueWidget(
+            value: widget.groupId != null
+                ? microphoneController.getSingleWordOrAll<List<WordData>>(
+                    widget.groupId, widget.wordId)
+                : microphoneController.getSingleWordOrAll<WordData>(
+                    widget.groupId, widget.wordId),
+            child: (value) {
+              if (value is List<WordData>) {
+                microphoneController.setWordList = value;
+                final currentWord =
+                    microphoneController.getSingleWord(widget.wordId);
+                if (currentWord == null) {
+                  return const Center(child: Text('No Word Found'));
+                }
+                setNewWordRecord(currentWord);
+              }
+              final word = value as WordData;
+              setNewWordRecord(word.decoding());
+              final WordRecord(
+                :foreignWord,
+                :wordImages,
+                :wordMeans,
+                :wordExamples
+              ) = wordRecord!;
+              return Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+                  child: Stack(children: [
+                    Column(
+                      children: [
+                        ImageView(imageList: wordImages),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        countPron > microphoneController.stopPeaking || example
+                            ? WordView(
+                                foreignWord: foreignWord,
+                                means: wordMeans,
+                              )
+                            : Card(
+                                elevation: 3,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
                                 ),
+                                margin: const EdgeInsets.all(10),
+                                child: const SizedBox(
+                                    width: double.infinity,
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 10),
+                                      child: Icon(
+                                        Ionicons.eye_off,
+                                        size: 40,
+                                      ),
+                                    )),
                               ),
-                              ExampleView(example: wordExamples[pointer])
-                            ],
-                          )
-                        : Container()
-                  ],
-                ),
-              ])),
+                        example
+                            ? Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 20, horizontal: 25),
+                                    child: Divider(
+                                      height: 20,
+                                    ),
+                                  ),
+                                  ExampleView(example: wordExamples[pointer])
+                                ],
+                              )
+                            : Container()
+                      ],
+                    ),
+                  ]));
+            },
+          ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: SizedBox(
@@ -208,6 +233,17 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
         ),
       ),
     );
+  }
+
+  void addPostFrameCallback(BuildContext context, MyMessages myMessage,
+      String foreignWord, List<String> wordExamples) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.groupId != null) {
+        popUpDialogGroup(context, myMessage, foreignWord, wordExamples);
+      } else {
+        popUpDialogSingle(context, myMessage, foreignWord, wordExamples);
+      }
+    });
   }
 
   void popUpDialogSingle(BuildContext context, MyMessages myMessage,

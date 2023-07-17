@@ -28,7 +28,7 @@ class _WordViewScreenState extends ConsumerState<WordViewScreen> {
 
     return AsyncValueWidget(
       value: word,
-      data: (word) {
+      child: (word) {
         final wordData = wordDecoding([word]).first;
         return ResponsiveCenter(
           child: Scaffold(

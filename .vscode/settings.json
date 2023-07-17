@@ -4,11 +4,13 @@
     "appbar",
     "autocorrect",
     "autofocus",
+    "cupertino",
     "goroute",
     "Ionicons",
     "langpocket",
     "Listby",
     "microtask",
+    "rxdart",
     "Swiper"
   ]
 }

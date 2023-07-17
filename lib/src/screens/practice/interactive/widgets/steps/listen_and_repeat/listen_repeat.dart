@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/common_controller/microphone_controller.dart';
 import 'package:langpocket/src/common_controller/microphone_usage.dart';
+import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
+import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/screens/practice/interactive/screen/practice_interactive_screen.dart';
 import 'package:langpocket/src/screens/practice/interactive/widgets/practice_stepper/animated_sound_icon.dart';
 import 'package:langpocket/src/screens/practice/interactive/widgets/practice_stepper/step_message.dart';
@@ -9,12 +12,12 @@ import 'package:langpocket/src/screens/practice/interactive/widgets/practice_ste
 import 'package:langpocket/src/screens/practice/interactive/widgets/steps/listen_and_repeat/listen_repeat_controller.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
-class ListenRepeat extends StatefulWidget {
-  final WordRecord wordRecord;
-  const ListenRepeat({super.key, required this.wordRecord});
+class ListenRepeat extends ConsumerStatefulWidget {
+  final int wordId;
+  const ListenRepeat({super.key, required this.wordId});
 
   @override
-  State<ListenRepeat> createState() => _ListenRepeatState();
+  ConsumerState<ListenRepeat> createState() => _ListenRepeatState();
 }
 
 // Known data points
@@ -29,7 +32,7 @@ Map<double, double> knownData = {
 };
 const _listStep = 4;
 
-class _ListenRepeatState extends State<ListenRepeat>
+class _ListenRepeatState extends ConsumerState<ListenRepeat>
     with AutomaticKeepAliveClientMixin {
   late ListenRepeatController listenRepeatController;
   late MicrophoneController microphoneController;
@@ -39,20 +42,18 @@ class _ListenRepeatState extends State<ListenRepeat>
   late int pointer;
   late bool example;
   int step = 1;
-
+  WordRecord? wordRecord;
   @override
   void initState() {
     final globuleStates =
         context.findAncestorStateOfType<PracticePronScreenState>()!;
-    final WordRecord(:foreignWord, :wordExamples) = widget.wordRecord;
     microphoneController = MicrophoneController(ConstListenRepeatMicrophone(),
         onListeningMessages: setMessage,
         onListeningCount: setCounter,
-        foreignWord: foreignWord,
-        examplesList: wordExamples,
+        ref: ref,
         onExampleSateListening: setExamplesState,
         onPointerListening: setNewPointer,
-        onNewWordRecord: (WordRecord value) {});
+        onNewWordRecord: setNewWordRecord);
     listenRepeatController = ListenRepeatController(
       globuleSates: globuleStates,
       moveToNextStep: moveToNextStep,
@@ -96,19 +97,23 @@ class _ListenRepeatState extends State<ListenRepeat>
   void moveToNextStep(int value) => setState(() {
         step = value;
       });
+  void setNewWordRecord(WordRecord newWordRecord) {
+    setState(() {
+      wordRecord = newWordRecord;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final WordRecord(:wordImages) = widget.wordRecord;
-
     final ThemeData(:colorScheme, :textTheme) = Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
 
     super.build(context);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      listenRepeatController.stepsMapper(step);
-    });
+    if (wordRecord != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        listenRepeatController.stepsMapper(step);
+      });
+    }
 
     return Theme(
       data: Theme.of(context).copyWith(
@@ -120,7 +125,21 @@ class _ListenRepeatState extends State<ListenRepeat>
             children: [
               const StepMessage(message: 'Echo Mastery: Listen and Repeat'),
               const SizedBox(height: 50),
-              ImageView(imageList: wordImages),
+              AsyncValueWidget(
+                  value: microphoneController.getSingleWordOrAll<WordData>(
+                      null, widget.wordId),
+                  child: (value) {
+                    final currentWord =
+                        microphoneController.getSingleWord(widget.wordId);
+
+                    if (currentWord == null) {
+                      return const Center(child: Text('No Word Found'));
+                    }
+                    setNewWordRecord(currentWord);
+                    final WordRecord(:wordImages) = wordRecord!;
+
+                    return ImageView(imageList: wordImages);
+                  }),
               AnimatedSoundIcon(micActivation: micActivation),
               const SizedBox(height: 50),
               Container(
@@ -139,39 +158,41 @@ class _ListenRepeatState extends State<ListenRepeat>
                       ),
                     ],
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      StepsMicrophoneButton(
-                        microphoneController: microphoneController,
-                        activation: micActivation,
-                      ),
-                      GestureDetector(
-                          child: FloatingActionButton(
-                        onPressed: step != _listStep
-                            ? null
-                            : () => listenRepeatController
-                                .playNormal(), // Disabled regular tap
-                        backgroundColor: step == _listStep
-                            ? Colors.indigo[500]
-                            : Colors.grey,
-                        elevation: 0,
-                        child: const Icon(Icons.play_arrow),
-                      )),
-                      GestureDetector(
-                        child: FloatingActionButton(
-                            onPressed: step != _listStep
-                                ? null
-                                : () => listenRepeatController
-                                    .reset(), // Disabled regular tap
-                            backgroundColor: step == _listStep
-                                ? Colors.indigo[500]
-                                : Colors.grey,
-                            elevation: 0,
-                            child: const Icon(Icons.repeat_outlined)),
-                      )
-                    ],
-                  )),
+                  child: wordRecord != null
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            StepsMicrophoneButton(
+                              microphoneController: microphoneController,
+                              activation: micActivation,
+                            ),
+                            GestureDetector(
+                                child: FloatingActionButton(
+                              onPressed: step != _listStep
+                                  ? null
+                                  : () => listenRepeatController
+                                      .playNormal(), // Disabled regular tap
+                              backgroundColor: step == _listStep
+                                  ? Colors.indigo[500]
+                                  : Colors.grey,
+                              elevation: 0,
+                              child: const Icon(Icons.play_arrow),
+                            )),
+                            GestureDetector(
+                              child: FloatingActionButton(
+                                  onPressed: step != _listStep
+                                      ? null
+                                      : () => listenRepeatController
+                                          .reset(), // Disabled regular tap
+                                  backgroundColor: step == _listStep
+                                      ? Colors.indigo[500]
+                                      : Colors.grey,
+                                  elevation: 0,
+                                  child: const Icon(Icons.repeat_outlined)),
+                            )
+                          ],
+                        )
+                      : const CircularProgressIndicator.adaptive()),
             ],
           ),
           Positioned(
