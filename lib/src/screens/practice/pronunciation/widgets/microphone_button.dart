@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:langpocket/src/common_controller/microphone_controller.dart';
+import 'package:langpocket/src/screens/practice/pronunciation/controllers/mic_controller.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-class MicrophoneButton extends StatefulWidget {
-  final MicrophoneController microphoneController;
+class MicrophoneButton<T extends MicController> extends StatefulWidget {
+  final T microphoneController;
+  final bool? isAnalyzing;
 
-  const MicrophoneButton({Key? key, required this.microphoneController})
+  const MicrophoneButton(
+      {Key? key, required this.microphoneController, required this.isAnalyzing})
       : super(key: key);
 
   @override
@@ -36,30 +38,30 @@ class _MicrophoneButtonState extends State<MicrophoneButton>
 
   @override
   Widget build(BuildContext context) {
-    final wordAnalyze =
-        widget.microphoneController.currentStatus == RecordingStatus.analyze;
     return Container(
       height: 170,
       width: 150,
       padding: const EdgeInsets.only(bottom: 10),
       child: GestureDetector(
-        onLongPressStart: wordAnalyze
-            ? null
-            : (_) {
-                widget.microphoneController.startRecording();
-                setState(() {
-                  isRecording = true;
-                });
-              },
+        onLongPressStart:
+            widget.isAnalyzing != null && widget.isAnalyzing == true
+                ? null
+                : (_) {
+                    if (mounted) {
+                      _startRecording();
+                    }
+                  },
         onLongPressEnd: (_) {
-          widget.microphoneController.stopRecording();
-          isRecording = false;
+          stopRecording();
         },
         child: FloatingActionButton(
           onPressed: null, // Disabled regular tap
-          backgroundColor: wordAnalyze ? Colors.grey : Colors.indigo[500],
+          backgroundColor:
+              widget.isAnalyzing != null && widget.isAnalyzing == true
+                  ? Colors.grey
+                  : Colors.indigo[500],
           elevation: 20,
-          child: wordAnalyze
+          child: widget.isAnalyzing != null && widget.isAnalyzing == true
               ? Container(
                   child: LoadingAnimationWidget.inkDrop(
                       color: const Color(0xFF3F51B5), size: 70))
@@ -86,5 +88,19 @@ class _MicrophoneButtonState extends State<MicrophoneButton>
         ),
       ),
     );
+  }
+
+  void stopRecording() {
+    widget.microphoneController.stopRecording();
+    setState(() {
+      isRecording = false;
+    });
+  }
+
+  void _startRecording() {
+    widget.microphoneController.startRecording();
+    setState(() {
+      isRecording = true;
+    });
   }
 }

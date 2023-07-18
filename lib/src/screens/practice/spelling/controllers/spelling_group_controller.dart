@@ -2,38 +2,39 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/data/services/word_service.dart';
-import 'package:langpocket/src/screens/practice/spelling/controller/spelling_controller.dart';
-import 'package:langpocket/src/screens/practice/spelling/controller/spelling_group_controller.dart';
+import 'package:langpocket/src/screens/practice/spelling/controllers/spelling_controller.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
-final spellingWordControllerProvider = StateNotifierProvider.autoDispose
-    .family<SpellingWordController, AsyncValue<SpellingWordState>, int>(
-        (ref, wordId) {
-  final currentWord = ref.watch(wordsServicesProvider).fetchWordById(wordId);
+final spellingGroupControllerProvider = StateNotifierProvider.autoDispose
+    .family<SpellingGroupController, AsyncValue<SpellingGroupState>, int>(
+        (ref, groupId) {
+  final currentWord =
+      ref.watch(wordsServicesProvider).fetchWordsByGroupId(groupId);
 
-  return SpellingWordController(currentWord);
+  return SpellingGroupController(currentWord);
 });
 
 const int _countWordSpelling = 5;
 const int _countExampleSpelling = 3;
 const bool _activateExampleState = false;
 const int _examplePinter = 0;
+const int _wordIndex = 0;
 
-class SpellingWordController
-    extends StateNotifier<AsyncValue<SpellingWordState>>
-    implements SpellingController<SpellingWordState> {
-  final Future<WordData> wordDataFuture;
-  SpellingWordController(this.wordDataFuture)
-      : super(const AsyncValue.loading());
+class SpellingGroupController
+    extends StateNotifier<AsyncValue<SpellingGroupState>>
+    implements SpellingController<SpellingGroupState> {
+  final Future<List<WordData>> wordsFuture;
+  SpellingGroupController(this.wordsFuture) : super(const AsyncValue.loading());
 
   @override
   void setWordRecords() async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() => wordDataFuture.then((word) =>
-        SpellingWordState(
+    state = await AsyncValue.guard(() => wordsFuture.then((words) =>
+        SpellingGroupState(
+            wordIndex: _wordIndex,
             correctness: false,
-            wordRecord: word.decoding(),
+            wordsRecord: words.map((e) => e.decoding()).toList(),
             countSpelling: _countWordSpelling,
             activateExample: _activateExampleState,
             examplePinter: _examplePinter)));
@@ -42,7 +43,7 @@ class SpellingWordController
   @override
   void startOver() {
     state = state.whenData((word) => word.copyWith(
-        correctness: false,
+        wordIndex: _wordIndex,
         countSpelling: _countWordSpelling,
         activateExample: _activateExampleState,
         examplePinter: _examplePinter));
@@ -57,22 +58,23 @@ class SpellingWordController
   }
 
   @override
-  void comparingTexts(String text, SpellingWordState spellingWordState) {
-    final SpellingWordState(
+  void comparingTexts(String text) {
+    final SpellingGroupState(
+      :wordIndex,
       :activateExample,
       :countSpelling,
-      :wordRecord,
+      :wordsRecord,
       :examplePinter
-    ) = spellingWordState;
+    ) = state.value!;
     if (activateExample && countSpelling > 0) {
-      final res = _exampleSpellingChecker(
-          text, wordRecord.wordExamples, examplePinter, countSpelling);
+      final res = _exampleSpellingChecker(text,
+          wordsRecord[wordIndex].wordExamples, examplePinter, countSpelling);
       if (res) {
         state = state.whenData((word) => word.copyWith(correctness: res));
       }
     } else if (!activateExample && countSpelling > 0) {
-      final res =
-          _wordSpellingChecker(text, wordRecord.foreignWord, countSpelling);
+      final res = _wordSpellingChecker(
+          text, wordsRecord[wordIndex].foreignWord, countSpelling);
       if (res) {
         state = state.whenData((word) => word.copyWith(correctness: res));
       }
@@ -118,41 +120,58 @@ class SpellingWordController
   }
 
   @override
-  get isThereNextWord => throw UnimplementedError();
+  void moveToNextWord() {
+    final SpellingGroupState(
+      :wordIndex,
+      :wordsRecord,
+    ) = state.value!;
+
+    if (wordsRecord.isNotEmpty && wordsRecord.length > wordIndex) {
+      state = state.whenData((word) => word.copyWith(
+          wordIndex: word.wordIndex + 1,
+          countSpelling: _countWordSpelling,
+          activateExample: _activateExampleState,
+          examplePinter: _examplePinter));
+    }
+  }
 
   @override
-  void moveToNextWord() {
-    throw UnimplementedError();
-  }
+  get isThereNextWord =>
+      state.value!.wordIndex < state.value!.wordsRecord.length - 1;
 }
 
-class SpellingWordState implements SpellingStateBase {
-  final WordRecord wordRecord;
+class SpellingGroupState implements SpellingStateBase {
+  final List<WordRecord> wordsRecord;
   @override
   final int countSpelling;
   @override
   final bool activateExample;
   @override
   final int examplePinter;
+  final int wordIndex;
   @override
   final bool correctness;
 
-  SpellingWordState({
+  SpellingGroupState({
+    required this.wordIndex,
     required this.correctness,
-    required this.wordRecord,
+    required this.wordsRecord,
     required this.countSpelling,
     required this.activateExample,
     required this.examplePinter,
   });
+
   @override
-  SpellingWordState copyWith(
-      {WordRecord? wordRecord,
+  SpellingGroupState copyWith(
+      {List<WordRecord>? wordsRecord,
       int? countSpelling,
       bool? activateExample,
       int? examplePinter,
-      bool? correctness}) {
-    return SpellingWordState(
-        wordRecord: wordRecord ?? this.wordRecord,
+      bool? correctness,
+      int? wordIndex}) {
+    return SpellingGroupState(
+        wordIndex: wordIndex ?? this.wordIndex,
+        wordsRecord: wordsRecord ?? this.wordsRecord,
         countSpelling: countSpelling ?? this.countSpelling,
         activateExample: activateExample ?? this.activateExample,
         examplePinter: examplePinter ?? this.examplePinter,

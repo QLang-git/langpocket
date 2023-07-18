@@ -8,8 +8,10 @@ import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/screens/group/screen/group_screen.dart';
 import 'package:langpocket/src/screens/home/screen/home_screen.dart';
 import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
-import 'package:langpocket/src/screens/practice/spelling/screen/practice_spelling_group_screen.dart';
-import 'package:langpocket/src/screens/practice/spelling/screen/practice_spelling_screen.dart';
+import 'package:langpocket/src/screens/practice/pronunciation/screen/practice_pron_group_screen.dart';
+import 'package:langpocket/src/screens/practice/pronunciation/screen/practice_pron_single_screen.dart';
+import 'package:langpocket/src/screens/practice/spelling/screens/practice_spelling_group_screen.dart';
+import 'package:langpocket/src/screens/practice/spelling/screens/practice_spelling_single_screen.dart';
 import 'package:langpocket/src/screens/todo/screen/todo_screen.dart';
 import 'package:langpocket/src/screens/word_edit/screen/edit_mode_word_screen.dart';
 import 'package:langpocket/src/screens/word_previewer/screen/word_previewer_screen.dart';
@@ -159,7 +161,31 @@ final appScreens = [
                             state);
                       } else {
                         return _navGoUp(
-                            PracticeSpellingScreen(wordId: int.parse(wordId!)),
+                            PracticeSpellingSingleScreen(
+                                wordId: int.parse(wordId!)),
+                            state);
+                      }
+                    } else {
+                      return _navGoUp(const ErrorNavScreen(), state);
+                    }
+                  }),
+              GoRoute(
+                  path: 'pron/:wordId',
+                  name: AppRoute.pronunciation.name,
+                  pageBuilder: (context, state) {
+                    final groupId = state.queryParameters['groupId'];
+                    final wordId = state.pathParameters['wordId'];
+
+                    if (_validatePath(wordId, groupId)) {
+                      if (groupId != null) {
+                        return _navGoUp(
+                            PracticePronGroupScreen(
+                                groupId: int.parse(groupId)),
+                            state);
+                      } else {
+                        return _navGoUp(
+                            PracticePronSingleScreen(
+                                wordId: int.parse(wordId!)),
                             state);
                       }
                     } else {

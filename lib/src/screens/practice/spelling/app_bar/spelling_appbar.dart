@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/screens/practice/spelling/controller/spelling_controller.dart';
+import 'package:langpocket/src/screens/practice/spelling/controllers/spelling_controller.dart';
 
 class SpellingAppBar extends StatefulWidget implements PreferredSizeWidget {
   final SpellingController spellingController;

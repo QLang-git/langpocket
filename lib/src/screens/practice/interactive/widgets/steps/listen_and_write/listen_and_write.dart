@@ -8,6 +8,7 @@
 // import 'package:langpocket/src/screens/practice/interactive/widgets/practice_stepper/step_message.dart';
 // import 'package:langpocket/src/screens/practice/interactive/widgets/steps/listen_and_write/listen_write_controller.dart';
 // import 'package:langpocket/src/screens/practice/spelling/controller/spelling_controller.dart';
+// import 'package:langpocket/src/screens/practice/spelling/controller/spelling_word_controller.dart';
 // import 'package:langpocket/src/utils/constants/messages.dart';
 // import 'package:langpocket/src/utils/routes/app_routes.dart';
 
@@ -22,13 +23,13 @@
 // class _ListenWriteState extends ConsumerState<ListenWrite>
 //     with AutomaticKeepAliveClientMixin {
 //   late int pointer;
-//   late SpellingController spellingController;
 //   late int countSpelling;
 //   late bool activateExample;
 //   late bool correctness;
 
 //   late TextEditingController inputController;
 //   late ListenWriteController listenWriteController;
+//   late SpellingWordController spellingController;
 
 //   late bool isDialogShowing;
 //   WordRecord? wordRecord;
@@ -37,16 +38,10 @@
 //     final globuleStates =
 //         context.findAncestorStateOfType<PracticePronScreenState>()!;
 //     inputController = TextEditingController();
-//     spellingController = SpellingController(
-//       ref: ref,
-//       onNewWordRecord: setNewWordRecord,
-//       countExampleSpelling: 1,
-//       countWordSpelling: 1,
-//       onListeningCount: setCounter,
-//       onExampleSateListening: setExamplesState,
-//       onPointerListening: setNewPointer,
-//       onCorrectness: setTextCorrectness,
-//     );
+//     spellingController =
+//         ref.read(spellingWordControllerProvider(widget.wordId).notifier);
+//     spellingController.setCountValue(1, 1);
+//     spellingController.setWordRecords();
 //     listenWriteController = ListenWriteController(
 //         setTextCorrectness: setTextCorrectness,
 //         inputController: inputController,

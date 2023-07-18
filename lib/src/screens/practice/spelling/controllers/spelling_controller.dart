@@ -5,7 +5,7 @@ abstract class SpellingController<T extends SpellingStateBase> {
   void setWordRecords();
   void startOver();
   void exampleActivation();
-  void comparingTexts(String text, T spellingStateBase);
+  void comparingTexts(String text);
   void moveToNextExamples(int examplePinter);
   void setCorrectness(bool status);
 }

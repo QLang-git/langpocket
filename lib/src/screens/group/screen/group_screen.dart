@@ -93,9 +93,10 @@ class _GroupScreenState extends ConsumerState<GroupScreen> {
                           context.pushNamed(AppRoute.pronunciation.name,
                               pathParameters: {
                                 'wordId': wordRecords.first.id.toString(),
+                                'groupId': widget.groupId.toString(),
                               },
                               queryParameters: {
-                                'groupId': widget.groupId
+                                'groupId': widget.groupId.toString(),
                               });
                         }),
                   ],

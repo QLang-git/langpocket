@@ -73,10 +73,13 @@ class CustomPracticeDialog extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: colorStyle.onPrimary),
                         onPressed: () {
-                          context.pushNamed(AppRoute.pronunciation.name,
-                              pathParameters: {
-                                'wordId': wordData.id.toString()
-                              });
+                          context.pushNamed(
+                            AppRoute.pronunciation.name,
+                            pathParameters: {
+                              "groupId": groupId,
+                              'wordId': wordData.id.toString(),
+                            },
+                          );
                         },
                         child: Container(
                           width: double.infinity,

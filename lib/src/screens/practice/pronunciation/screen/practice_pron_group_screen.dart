@@ -1,90 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:langpocket/src/common_controller/microphone_usage.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/common_widgets/views/examples_view/example_view.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
 import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
-import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
-import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/app_bar/pron_appbar.dart';
-import 'package:langpocket/src/common_controller/microphone_controller.dart';
+import 'package:langpocket/src/screens/practice/pronunciation/controllers/mic_group_controller.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/widgets/microphone_button.dart';
 import 'package:langpocket/src/common_widgets/custom_dialog_practice.dart';
 import 'package:langpocket/src/utils/constants/messages.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
-class PracticePronScreen extends ConsumerStatefulWidget {
-  final int wordId;
-  final int? groupId;
-  const PracticePronScreen({
+class PracticePronGroupScreen extends ConsumerStatefulWidget {
+  final int groupId;
+  const PracticePronGroupScreen({
     super.key,
-    required this.wordId,
     required this.groupId,
   });
 
   @override
-  ConsumerState<PracticePronScreen> createState() => _PracticePronScreenState();
+  ConsumerState<PracticePronGroupScreen> createState() =>
+      _PracticePronScreenState();
 }
 
-class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
-  late int countPron;
-  late bool correct;
-  late List<bool> correctExample;
-  late List<int> examplePronCount;
-  late int pointer;
-  late bool example;
-  late MicrophoneController microphoneController;
-  late String message;
+class _PracticePronScreenState extends ConsumerState<PracticePronGroupScreen> {
+  late MicGroupController microphoneController;
   late MyMessages myMessages;
 
-  WordRecord? wordRecord;
   @override
   void initState() {
     myMessages = MyMessages();
-    microphoneController = MicrophoneController(ConstPronMicrophone(),
-        onListeningMessages: setMessage,
-        onListeningCount: setCounter,
-        ref: ref,
-        onExampleSateListening: setExamplesState,
-        onPointerListening: setNewPointer,
-        onNewWordRecord: setNewWordRecord);
-    final initial = microphoneController.initializeControllerValues();
-    countPron = initial.countPron;
-    example = initial.activateExample;
-    pointer = initial.pointer;
-    message = initial.initialMessage;
+    microphoneController =
+        ref.read(micGroupControllerProvider(widget.groupId).notifier);
+    microphoneController.setWordRecords(
+        initialMessage: 'Hold to Start Recording ...');
+
     super.initState();
-    microphoneController.initializeSpeechToText();
-  }
-
-  void setMessage(String currentMessage) => setState(() {
-        message = currentMessage;
-      });
-  void setCounter(int count) => setState(() {
-        countPron = count;
-      });
-  void setNewPointer(int state) => setState(() {
-        pointer = state;
-      });
-
-  void setExamplesState(bool state) => setState(() {
-        example = state;
-      });
-  void setNewWordRecord(WordRecord newWordRecord) {
-    setState(() {
-      wordRecord = newWordRecord;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final micState = ref.watch(micGroupControllerProvider(widget.groupId));
+
     final textStyle = Theme.of(context).textTheme;
-    if (wordRecord != null) {
-      addPostFrameCallback(context, myMessages, wordRecord!.foreignWord,
-          wordRecord!.wordExamples);
+    if (micState.hasValue) {
+      addPostFrameCallback(context, myMessages, micState.value!);
     }
 
     return ResponsiveCenter(
@@ -92,29 +54,21 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
         appBar: const PronAppBar(),
         body: SingleChildScrollView(
           child: AsyncValueWidget(
-            value: widget.groupId != null
-                ? microphoneController.getSingleWordOrAll<List<WordData>>(
-                    widget.groupId, widget.wordId)
-                : microphoneController.getSingleWordOrAll<WordData>(
-                    widget.groupId, widget.wordId),
-            child: (value) {
-              if (value is List<WordData>) {
-                microphoneController.setWordList = value;
-                final currentWord =
-                    microphoneController.getSingleWord(widget.wordId);
-                if (currentWord == null) {
-                  return const Center(child: Text('No Word Found'));
-                }
-                setNewWordRecord(currentWord);
-              }
-              final word = value as WordData;
-              setNewWordRecord(word.decoding());
+            value: micState,
+            child: (micWordState) {
+              final MicGroupState(
+                :indexWord,
+                :countPron,
+                :activateExample,
+                :examplePinter
+              ) = micWordState;
+
               final WordRecord(
                 :foreignWord,
                 :wordImages,
                 :wordMeans,
                 :wordExamples
-              ) = wordRecord!;
+              ) = micWordState.wordsRecord[indexWord];
               return Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
@@ -125,7 +79,7 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
                         const SizedBox(
                           height: 15,
                         ),
-                        countPron > microphoneController.stopPeaking || example
+                        countPron > 2 || activateExample
                             ? WordView(
                                 foreignWord: foreignWord,
                                 means: wordMeans,
@@ -147,7 +101,7 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
                                       ),
                                     )),
                               ),
-                        example
+                        activateExample
                             ? Column(
                                 children: [
                                   const SizedBox(
@@ -160,7 +114,8 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
                                       height: 20,
                                     ),
                                   ),
-                                  ExampleView(example: wordExamples[pointer])
+                                  ExampleView(
+                                      example: wordExamples[examplePinter])
                                 ],
                               )
                             : Container()
@@ -185,7 +140,9 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    message,
+                    micState.hasValue
+                        ? micState.value!.micMessage
+                        : 'Loading..',
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                     style: const TextStyle(
@@ -205,6 +162,7 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 70),
                       child: MicrophoneButton(
+                        isAnalyzing: micState.value?.isAnalyzing,
                         microphoneController: microphoneController,
                       ),
                     ),
@@ -219,7 +177,9 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Text(
-                          countPron.toString(),
+                          micState.hasValue
+                              ? micState.value!.countPron.toString()
+                              : '0',
                           style: textStyle.displayLarge
                               ?.copyWith(color: Colors.white),
                         ),
@@ -235,60 +195,33 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
     );
   }
 
-  void addPostFrameCallback(BuildContext context, MyMessages myMessage,
-      String foreignWord, List<String> wordExamples) {
+  void addPostFrameCallback(
+      BuildContext context, MyMessages myMessage, MicGroupState micWordsState) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.groupId != null) {
-        popUpDialogGroup(context, myMessage, foreignWord, wordExamples);
-      } else {
-        popUpDialogSingle(context, myMessage, foreignWord, wordExamples);
-      }
+      popUpDialogGroup(context, myMessage, micWordsState);
+      // if (widget.groupId != null) {
+      //   popUpDialogGroup(context, myMessage, foreignWord, wordExamples);
+      // } else {
+      //   popUpDialogSingle(context, myMessage, foreignWord, wordExamples);
+      // }
     });
   }
 
-  void popUpDialogSingle(BuildContext context, MyMessages myMessage,
-      String foreignWord, List<String> examplesList) {
-    if (countPron == 0 && !example) {
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return CustomDialogPractice(
-              messages: myMessage.getPracticeMessage(
-                PracticeMessagesType.practicePronunciation,
-                foreignWord,
-              ),
-              reload: microphoneController.resetting,
-              activateExamples: microphoneController.examplesActivation,
-            );
-          });
-    } else if (countPron == 0 && example) {
-      if (pointer < examplesList.length - 1) {
-        microphoneController.moveToNextExamples();
-      } else {
-        showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (BuildContext context) {
-              return CustomDialogPractice(
-                messages: myMessage.getPracticeMessage(
-                  PracticeMessagesType.practicePronExampleComplete,
-                  foreignWord,
-                ),
-                reload: microphoneController.resetting,
-                activateExamples: microphoneController.examplesActivation,
-              );
-            });
-      }
-    }
-  }
-
-  void popUpDialogGroup(BuildContext context, MyMessages myMessage,
-      String foreignWord, List<String> examplesList) {
+  void popUpDialogGroup(
+      BuildContext context, MyMessages myMessage, MicGroupState micGroupState) {
+    final MicGroupState(
+      :countPron,
+      :examplePinter,
+      :activateExample,
+      :wordsRecord,
+      :indexWord
+    ) = micGroupState;
+    final wordRecord = wordsRecord[indexWord];
     if (countPron == 0) {
-      if (example && pointer < examplesList.length - 1) {
-        microphoneController.moveToNextExamples();
-      } else if (!example) {
+      if (activateExample &&
+          examplePinter < wordRecord.wordExamples.length - 1) {
+        microphoneController.moveToNextExamples(examplePinter);
+      } else if (!activateExample) {
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -296,21 +229,21 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
             return CustomDialogPractice(
               messages: myMessage.getPracticeMessage(
                 PracticeMessagesType.practicePronunciationGroup,
-                foreignWord,
+                wordRecord.foreignWord,
               ),
               reload: microphoneController.isThereNextWord
                   ? microphoneController.moveToNextWord
                   : null,
-              activateExamples: microphoneController.examplesActivation,
+              activateExamples: microphoneController.exampleActivation,
             );
           },
         );
       } else if (countPron == 0 &&
-          example &&
+          activateExample &&
           microphoneController.isThereNextWord) {
         microphoneController.moveToNextWord();
         return;
-      } else if (countPron == 0 && example) {
+      } else if (countPron == 0 && activateExample) {
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -318,10 +251,10 @@ class _PracticePronScreenState extends ConsumerState<PracticePronScreen> {
             return CustomDialogPractice(
               messages: myMessage.getPracticeMessage(
                 PracticeMessagesType.practicePronExampleCompleteGroup,
-                foreignWord,
+                wordRecord.foreignWord,
               ),
-              reload: microphoneController.resetting,
-              activateExamples: microphoneController.examplesActivation,
+              reload: microphoneController.startOver,
+              activateExamples: microphoneController.exampleActivation,
             );
           },
         );
