@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/screens/practice/interactive/app_bar/practice_interactive_appbar.dart';
 import 'package:langpocket/src/screens/practice/interactive/controller/practice_stepper_controller.dart';
 import 'package:langpocket/src/screens/practice/interactive/widgets/practice_stepper/practice_stepper.dart';
 import 'package:langpocket/src/screens/practice/interactive/widgets/steps/listen_and_repeat/listen_repeat.dart';
+import 'package:langpocket/src/screens/practice/interactive/widgets/steps/listen_and_write/listen_and_write.dart';
 import 'package:langpocket/src/screens/practice/interactive/widgets/steps/read_and_speak/read_and_speak.dart';
 
-class PracticeInteractiveScreen extends StatefulWidget {
+class PracticeInteractiveScreen extends ConsumerStatefulWidget {
   final int wordId;
   const PracticeInteractiveScreen({
     super.key,
@@ -14,44 +16,30 @@ class PracticeInteractiveScreen extends StatefulWidget {
   });
 
   @override
-  State<PracticeInteractiveScreen> createState() => PracticePronScreenState();
+  ConsumerState<PracticeInteractiveScreen> createState() =>
+      PracticePronScreenState();
 }
 
-class PracticePronScreenState extends State<PracticeInteractiveScreen> {
+class PracticePronScreenState extends ConsumerState<PracticeInteractiveScreen> {
   late List<Widget> _steps;
-  late int activeStep;
   late PracticeStepperController practiceStepperController;
-  bool isNextStepAvailable = false;
 
   @override
   void initState() {
     _steps = [
-      ListenRepeat(
-        wordId: widget.wordId,
-      ),
+      ListenRepeat(wordId: widget.wordId),
       ReadSpeak(wordId: widget.wordId),
-      // ListenWrite(wordId: widget.wordId)
+      ListenWrite(wordId: widget.wordId)
     ];
-
     practiceStepperController =
-        PracticeStepperController(moveToNext: moveToNext, steps: _steps);
-    final PracticeStepperController(:initialStep) = practiceStepperController;
-    activeStep = initialStep();
+        ref.read(practiceStepperControllerProvider.notifier);
+
     super.initState();
   }
 
-  void moveToNext(int step) {
-    setState(() {
-      activeStep = step;
-    });
-  }
-
-  void updateNextStepAvailability(bool state) => setState(() {
-        isNextStepAvailable = state;
-      });
-
   @override
   Widget build(BuildContext context) {
+    final currentState = ref.watch(practiceStepperControllerProvider);
     final ThemeData(:colorScheme, :textTheme) = Theme.of(context);
 
     return ResponsiveCenter(
@@ -61,12 +49,13 @@ class PracticePronScreenState extends State<PracticeInteractiveScreen> {
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 4),
-            child: PracticeStepper(steps: _steps, currentStep: activeStep),
+            child:
+                PracticeStepper(steps: _steps, currentStep: currentState.step),
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-        floatingActionButton: activeStep == _steps.length - 1
+        floatingActionButton: currentState.step == _steps.length - 1
             ? null
             : SizedBox(
                 width: double.infinity,
@@ -75,7 +64,7 @@ class PracticePronScreenState extends State<PracticeInteractiveScreen> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     AnimatedOpacity(
-                      opacity: isNextStepAvailable ? 1.0 : 0.0,
+                      opacity: currentState.isNextStepAvailable ? 1.0 : 0.0,
                       duration: const Duration(milliseconds: 200),
                       child: Container(
                         alignment: Alignment.bottomRight,
@@ -106,13 +95,14 @@ class PracticePronScreenState extends State<PracticeInteractiveScreen> {
                       width: 70,
                       height: 70,
                       child: FloatingActionButton(
-                        backgroundColor: isNextStepAvailable
+                        backgroundColor: currentState.isNextStepAvailable
                             ? colorScheme.primary
                             : Colors.grey,
-                        onPressed: isNextStepAvailable
+                        onPressed: currentState.isNextStepAvailable
                             ? () {
                                 practiceStepperController.goToNext();
-                                updateNextStepAvailability(false);
+                                practiceStepperController
+                                    .updateNextStepAvailability(false);
                               }
                             : null,
                         child: const Icon(

@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:langpocket/src/common_controller/microphone_controller.dart';
-import 'package:langpocket/src/common_controller/microphone_usage.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
-import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
-import 'package:langpocket/src/screens/practice/interactive/screen/practice_interactive_screen.dart';
+import 'package:langpocket/src/screens/practice/interactive/controller/practice_stepper_controller.dart';
 import 'package:langpocket/src/screens/practice/interactive/widgets/practice_stepper/animated_sound_icon.dart';
 import 'package:langpocket/src/screens/practice/interactive/widgets/practice_stepper/step_message.dart';
 import 'package:langpocket/src/screens/practice/interactive/widgets/practice_stepper/steps_microphone_button.dart';
 import 'package:langpocket/src/screens/practice/interactive/widgets/steps/listen_and_repeat/listen_repeat_controller.dart';
+import 'package:langpocket/src/screens/practice/pronunciation/controllers/mic_single_controller.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class ListenRepeat extends ConsumerStatefulWidget {
@@ -19,6 +17,8 @@ class ListenRepeat extends ConsumerStatefulWidget {
   @override
   ConsumerState<ListenRepeat> createState() => _ListenRepeatState();
 }
+
+const _listStep = 5;
 
 // Known data points
 Map<double, double> knownData = {
@@ -30,88 +30,40 @@ Map<double, double> knownData = {
   1000: 82,
   1840: 83
 };
-const _listStep = 4;
 
-class _ListenRepeatState extends ConsumerState<ListenRepeat>
-    with AutomaticKeepAliveClientMixin {
+class _ListenRepeatState extends ConsumerState<ListenRepeat> {
+  late MicSingleController microphoneController;
   late ListenRepeatController listenRepeatController;
-  late MicrophoneController microphoneController;
+  late PracticeStepperController stepperController;
 
-  late String message;
-  late int countPron;
-  late int pointer;
-  late bool example;
-  int step = 1;
-  WordRecord? wordRecord;
   @override
   void initState() {
-    final globuleStates =
-        context.findAncestorStateOfType<PracticePronScreenState>()!;
-    microphoneController = MicrophoneController(ConstListenRepeatMicrophone(),
-        onListeningMessages: setMessage,
-        onListeningCount: setCounter,
-        ref: ref,
-        onExampleSateListening: setExamplesState,
-        onPointerListening: setNewPointer,
-        onNewWordRecord: setNewWordRecord);
-    listenRepeatController = ListenRepeatController(
-      globuleSates: globuleStates,
-      moveToNextStep: moveToNextStep,
-      microphoneController: microphoneController,
-      setMicActivation: setMicActivation,
-    );
-    listenRepeatController.listen();
-    final initial = microphoneController.initializeControllerValues();
-    countPron = initial.countPron;
-    example = initial.activateExample;
-    pointer = initial.pointer;
-    message = initial.initialMessage;
     super.initState();
-    microphoneController.initializeSpeechToText();
-  }
-
-  bool micActivation = false;
-
-  void setMessage(String currentMessage) => setState(() {
-        message = currentMessage;
-      });
-  void setCounter(int count) => setState(() {
-        countPron = count;
-        if (count == 0) listenRepeatController.setMicState(false);
-      });
-  void setNewPointer(int state) => setState(() {
-        pointer = state;
-      });
-
-  void setExamplesState(bool state) => setState(() {
-        example = state;
-      });
-  void setMicActivation(bool state) {
-    if (mounted) {
-      setState(() {
-        micActivation = state;
-      });
-    }
-  }
-
-  void moveToNextStep(int value) => setState(() {
-        step = value;
-      });
-  void setNewWordRecord(WordRecord newWordRecord) {
-    setState(() {
-      wordRecord = newWordRecord;
-    });
+    stepperController = ref.read(practiceStepperControllerProvider.notifier);
+    microphoneController =
+        ref.refresh(micSingleControllerProvider(widget.wordId).notifier);
+    listenRepeatController = ref.read(listenRepeatControllerProvider.notifier);
+    stepperController = ref.read(practiceStepperControllerProvider.notifier);
+    microphoneController.setWordRecords(
+        countPron: 1,
+        countExamplePron: 1,
+        exampleActivationMessage:
+            'Now your turn : Try to Pronounce the sentence ',
+        initialMessage: 'Now your turn : Hold to Start Recording ...');
   }
 
   @override
   Widget build(BuildContext context) {
+    final lRs = ref.watch(listenRepeatControllerProvider);
+    final mic = ref.watch(micSingleControllerProvider(widget.wordId));
+
     final ThemeData(:colorScheme, :textTheme) = Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
 
-    super.build(context);
-    if (wordRecord != null) {
+    if (mounted && mic.hasValue) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        listenRepeatController.stepsMapper(step);
+        listenRepeatController.stageMapper(
+            mic.value!, microphoneController, stepperController);
       });
     }
 
@@ -119,118 +71,121 @@ class _ListenRepeatState extends ConsumerState<ListenRepeat>
       data: Theme.of(context).copyWith(
         iconTheme: IconThemeData(size: 40, color: colorScheme.primary),
       ),
-      child: Stack(
-        children: [
-          Column(
+      child: AsyncValueWidget(
+        value: mic,
+        child: (micStates) {
+          final WordRecord(:wordImages) = micStates.wordRecord;
+
+          return Stack(
             children: [
-              const StepMessage(message: 'Echo Mastery: Listen and Repeat'),
-              const SizedBox(height: 50),
-              AsyncValueWidget(
-                  value: microphoneController.getSingleWordOrAll<WordData>(
-                      null, widget.wordId),
-                  child: (value) {
-                    final currentWord =
-                        microphoneController.getSingleWord(widget.wordId);
-
-                    if (currentWord == null) {
-                      return const Center(child: Text('No Word Found'));
-                    }
-                    setNewWordRecord(currentWord);
-                    final WordRecord(:wordImages) = wordRecord!;
-
-                    return ImageView(imageList: wordImages);
-                  }),
-              AnimatedSoundIcon(micActivation: micActivation),
-              const SizedBox(height: 50),
-              Container(
-                  alignment: Alignment.bottomLeft,
-                  height: 60,
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0),
-                    color: colorScheme.onSecondary,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        spreadRadius: 2,
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
+              Column(
+                children: [
+                  const StepMessage(message: 'Echo Mastery: Listen and Repeat'),
+                  const SizedBox(height: 50),
+                  ImageView(imageList: wordImages),
+                  AnimatedSoundIcon(micActivation: lRs.micState),
+                  const SizedBox(height: 50),
+                  Container(
+                      alignment: Alignment.bottomLeft,
+                      height: 60,
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        color: colorScheme.onSecondary,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: wordRecord != null
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            StepsMicrophoneButton(
-                              microphoneController: microphoneController,
-                              activation: micActivation,
-                            ),
-                            GestureDetector(
-                                child: FloatingActionButton(
-                              onPressed: step != _listStep
-                                  ? null
-                                  : () => listenRepeatController
-                                      .playNormal(), // Disabled regular tap
-                              backgroundColor: step == _listStep
-                                  ? Colors.indigo[500]
-                                  : Colors.grey,
-                              elevation: 0,
-                              child: const Icon(Icons.play_arrow),
-                            )),
-                            GestureDetector(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          StepsMicrophoneButton(
+                            isAnalyzing: micStates.isAnalyzing,
+                            microphoneController: microphoneController,
+                            activation: lRs.micState,
+                          ),
+                          GestureDetector(
                               child: FloatingActionButton(
-                                  onPressed: step != _listStep
-                                      ? null
-                                      : () => listenRepeatController
-                                          .reset(), // Disabled regular tap
-                                  backgroundColor: step == _listStep
-                                      ? Colors.indigo[500]
-                                      : Colors.grey,
-                                  elevation: 0,
-                                  child: const Icon(Icons.repeat_outlined)),
-                            )
-                          ],
-                        )
-                      : const CircularProgressIndicator.adaptive()),
-            ],
-          ),
-          Positioned(
-            top: 0,
-            bottom: 54.5,
-            left: _adjustMessageLocation(
-                screenWidth), // Adjust the value as needed
-            right: 0,
-            child: AnimatedOpacity(
-              opacity: micActivation ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 200),
-              child: Container(
-                alignment: Alignment.bottomLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 82, right: 5),
+                            onPressed: lRs.micState || lRs.stage == 5
+                                ? () {
+                                    ref
+                                        .read(listenRepeatControllerProvider
+                                            .notifier)
+                                        .playNormal(micStates);
+                                  }
+                                : null, // Disabled regular tap
+                            backgroundColor: lRs.micState || lRs.stage == 5
+                                ? Colors.indigo[500]
+                                : Colors.grey,
+                            elevation: 0,
+                            child: const Icon(Icons.play_arrow),
+                          )),
+                          GestureDetector(
+                            child: FloatingActionButton(
+                                onPressed: lRs.stage != _listStep
+                                    ? null
+                                    : () {
+                                        ref
+                                            .read(listenRepeatControllerProvider
+                                                .notifier)
+                                            .reset(microphoneController,
+                                                stepperController);
+                                      }, // Disabled regular tap
+                                backgroundColor: lRs.stage == _listStep
+                                    ? Colors.indigo[500]
+                                    : Colors.grey,
+                                elevation: 0,
+                                child: const Icon(Icons.repeat_outlined)),
+                          )
+                        ],
+                      )),
+                ],
+              ),
+              Positioned(
+                top: 0,
+                bottom: 54.5,
+                left: _adjustMessageLocation(
+                    screenWidth), // Adjust the value as needed
+                right: 0,
+                child: AnimatedOpacity(
+                  opacity: lRs.micState ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 200),
                   child: Container(
-                    padding: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      color: colorScheme.onSurface,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(20.0),
-                        topRight: Radius.circular(20.0),
-                        bottomRight: Radius.circular(20.0),
-                      ),
-                    ),
-                    child: Text(
-                      message,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: textTheme.labelLarge?.fontSize,
+                    alignment: Alignment.bottomLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 82, right: 5),
+                      child: Container(
+                        padding: const EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                          color: colorScheme.onSurface,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(20.0),
+                            topRight: Radius.circular(20.0),
+                            bottomRight: Radius.circular(20.0),
+                          ),
+                        ),
+                        child: Text(
+                          mic.value != null
+                              ? mic.value!.micMessage
+                              : 'Loading...',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: textTheme.labelLarge?.fontSize,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }
@@ -259,7 +214,4 @@ class _ListenRepeatState extends ConsumerState<ListenRepeat>
       return knownData[lowerScreenSize]!;
     }
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

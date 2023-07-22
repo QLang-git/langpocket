@@ -9,7 +9,7 @@ import 'package:text_to_speech/text_to_speech.dart';
 final spellingWordControllerProvider = StateNotifierProvider.autoDispose
     .family<SpellingWordController, AsyncValue<SpellingWordState>, int>(
         (ref, wordId) {
-  final currentWord = ref.watch(wordsServicesProvider).fetchWordById(wordId);
+  final currentWord = ref.read(wordsServicesProvider).fetchWordById(wordId);
 
   return SpellingWordController(currentWord);
 });
@@ -32,32 +32,34 @@ class SpellingWordController
   }
 
   @override
-  void setWordRecords() async {
+  void setWordRecords({int? countSpelling, int? countExampleSpelling}) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() => wordDataFuture.then((word) =>
         SpellingWordState(
+            countExampleSpelling: countExampleSpelling ?? _countExampleSpelling,
             correctness: false,
             wordRecord: word.decoding(),
-            countSpelling: _countWordSpelling,
+            countSpelling: countSpelling ?? _countWordSpelling,
             activateExample: _activateExampleState,
             examplePinter: _examplePinter)));
   }
 
   @override
-  void startOver() {
+  void startOver({int? countSpelling, int? countExampleSpelling}) {
     state = state.whenData((word) => word.copyWith(
+        countExampleSpelling: countExampleSpelling ?? _countExampleSpelling,
         correctness: false,
-        countSpelling: _countWordSpelling,
+        countSpelling: countSpelling ?? _countWordSpelling,
         activateExample: _activateExampleState,
         examplePinter: _examplePinter));
   }
 
   @override
-  void exampleActivation() {
+  void exampleActivation({int? countExampleSpelling}) {
     state = state.whenData((word) => word.copyWith(
         activateExample: true,
         examplePinter: _examplePinter,
-        countSpelling: _countExampleSpelling));
+        countSpelling: countExampleSpelling ?? _countExampleSpelling));
   }
 
   @override
@@ -84,9 +86,9 @@ class SpellingWordController
   }
 
   @override
-  void moveToNextExamples(int examplePinter) {
+  void moveToNextExamples(int examplePinter, {int? countExampleSpelling}) {
     state = state.whenData((word) => word.copyWith(
-        countSpelling: _countExampleSpelling,
+        countSpelling: countExampleSpelling ?? _countExampleSpelling,
         examplePinter: examplePinter + 1));
   }
 
@@ -132,6 +134,7 @@ class SpellingWordController
 
 class SpellingWordState implements SpellingStateBase {
   final WordRecord wordRecord;
+  final int countExampleSpelling;
   @override
   final int countSpelling;
   @override
@@ -142,6 +145,7 @@ class SpellingWordState implements SpellingStateBase {
   final bool correctness;
 
   SpellingWordState({
+    required this.countExampleSpelling,
     required this.correctness,
     required this.wordRecord,
     required this.countSpelling,
@@ -152,12 +156,14 @@ class SpellingWordState implements SpellingStateBase {
   SpellingWordState copyWith(
       {WordRecord? wordRecord,
       int? countSpelling,
+      int? countExampleSpelling,
       bool? activateExample,
       int? examplePinter,
       bool? correctness}) {
     return SpellingWordState(
         wordRecord: wordRecord ?? this.wordRecord,
         countSpelling: countSpelling ?? this.countSpelling,
+        countExampleSpelling: countExampleSpelling ?? this.countExampleSpelling,
         activateExample: activateExample ?? this.activateExample,
         examplePinter: examplePinter ?? this.examplePinter,
         correctness: correctness ?? this.correctness);

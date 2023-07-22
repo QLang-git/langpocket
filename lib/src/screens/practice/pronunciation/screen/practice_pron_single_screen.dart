@@ -53,7 +53,6 @@ class _PracticePronScreenState extends ConsumerState<PracticePronSingleScreen> {
           child: AsyncValueWidget(
             value: micState,
             child: (micWordState) {
-              print('tttt ${micWordState.wordRecord.foreignWord}');
               final word = micWordState.wordRecord;
               return PracticePronunciation<MicWordState>(
                 wordRecord: word,

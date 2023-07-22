@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:langpocket/src/common_controller/microphone_controller.dart';
+import 'package:langpocket/src/screens/practice/pronunciation/controllers/mic_single_controller.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class StepsMicrophoneButton extends StatefulWidget {
   final bool activation;
-  final MicrophoneController microphoneController;
+  final bool? isAnalyzing;
+  final MicSingleController microphoneController;
 
-  const StepsMicrophoneButton({
-    Key? key,
-    required this.microphoneController,
-    required this.activation,
-  }) : super(key: key);
+  const StepsMicrophoneButton(
+      {Key? key,
+      required this.microphoneController,
+      required this.activation,
+      required this.isAnalyzing})
+      : super(key: key);
 
   @override
   State<StepsMicrophoneButton> createState() => _StepsMicrophoneButtonState();
@@ -41,7 +43,7 @@ class _StepsMicrophoneButtonState extends State<StepsMicrophoneButton>
   @override
   Widget build(BuildContext context) {
     final wordAnalyze =
-        widget.microphoneController.currentStatus == RecordingStatus.analyze;
+        widget.isAnalyzing != null && widget.isAnalyzing == true;
     return GestureDetector(
       onLongPressStart: wordAnalyze || !widget.activation
           ? null

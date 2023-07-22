@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/screens/group/screen/group_screen.dart';
 import 'package:langpocket/src/screens/home/screen/home_screen.dart';
 import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
+import 'package:langpocket/src/screens/practice/interactive/screen/practice_interactive_screen.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/screen/practice_pron_group_screen.dart';
 import 'package:langpocket/src/screens/practice/pronunciation/screen/practice_pron_single_screen.dart';
 import 'package:langpocket/src/screens/practice/spelling/screens/practice_spelling_group_screen.dart';
@@ -192,6 +193,19 @@ final appScreens = [
                       return _navGoUp(const ErrorNavScreen(), state);
                     }
                   }),
+              GoRoute(
+                  path: 'interactive/:wordId',
+                  name: AppRoute.interactive.name,
+                  pageBuilder: (context, state) {
+                    final wordId = state.pathParameters['wordId'];
+                    if (_validatePath(wordId, null)) {
+                      return _navGoUp(
+                          PracticeInteractiveScreen(wordId: int.parse(wordId!)),
+                          state);
+                    } else {
+                      return _navGoUp(const ErrorNavScreen(), state);
+                    }
+                  })
             ]
             // routes:
             // [

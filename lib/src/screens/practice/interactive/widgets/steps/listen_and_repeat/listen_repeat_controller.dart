@@ -1,111 +1,183 @@
-import 'package:flutter/material.dart';
-import 'package:langpocket/src/common_controller/microphone_controller.dart';
-import 'package:langpocket/src/screens/practice/interactive/screen/practice_interactive_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/screens/practice/interactive/controller/practice_stepper_controller.dart';
+import 'package:langpocket/src/screens/practice/pronunciation/controllers/mic_single_controller.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
-class ListenRepeatController {
-  final PracticePronScreenState globuleSates;
-  final MicrophoneController microphoneController;
-  final ValueChanged<int> moveToNextStep;
-  final ValueChanged<bool> setMicActivation;
+final listenRepeatControllerProvider = StateNotifierProvider.autoDispose<
+    ListenRepeatController, ListenRepeatStates>(
+  (ref) {
+    return ListenRepeatController();
+  },
+);
 
-  bool mic = false;
-
-  ListenRepeatController({
-    required this.globuleSates,
-    required this.moveToNextStep,
-    required this.microphoneController,
-    required this.setMicActivation,
-  });
+class ListenRepeatController extends StateNotifier<ListenRepeatStates> {
   final tts = TextToSpeech();
 
-  // step 1
-  void listen() async {
-    final MicrophoneController(:foreignWord) = microphoneController;
-    await _speakWithDelay(foreignWord, 0, rate: 1);
-    await _speakWithDelay(foreignWord, 2, rate: 0.1);
-    await _speakWithDelay(foreignWord, 2, rate: 0.3);
-    await _speakWithDelay(foreignWord, 3, rate: 1).then((_) =>
-        Future.delayed(const Duration(seconds: 1), () => setMicState(true)));
+  ListenRepeatController()
+      : super(ListenRepeatStates(
+            micState: false,
+            stage: 1,
+            micMessage: 'Now your turn : Hold to Start Recording ...'));
+
+  @override
+  void dispose() {
+    tts.stop();
+    super.dispose();
   }
 
-  void stepsMapper(int step) async {
-    final MicrophoneController(:countPron, :examplesList, :pointer) =
-        microphoneController;
-    final perfectDelay = (examplesList[pointer].split(' ').length * 0.5).ceil();
-
-    //* step 1
-    if (countPron == 0 && step == 1) {
-      moveToNextStep(2);
+  void stageMapper(
+      MicWordState micWordState,
+      MicSingleController micSingleController,
+      PracticeStepperController practiceStepperController) async {
+    final MicWordState(:countPron, :wordRecord, :examplePinter) = micWordState;
+    final perfectDelay =
+        (wordRecord.wordExamples[examplePinter].split(' ').length * 0.6).ceil();
+    //* first case listen and activate mic
+    if (countPron != 0 && state.stage == 1 && !state.micState) {
+      _listen(micWordState, micSingleController);
+      return;
     }
-
-    //* step 2
-    if (step == 2 && !mic) {
-      await _speakWithDelay(examplesList[pointer], 1, rate: 1);
-      await _speakWithDelay(examplesList[pointer], perfectDelay, rate: 0.2);
-      microphoneController.examplesActivation();
-
-      moveToNextStep(3);
+    //* move To Next Stage 2  and deactivate mic
+    if (countPron == 0 && state.stage == 1 && state.micState) {
+      if (mounted) {
+        state = state.copyWith(
+            stage: 2, micState: false, micMessage: micWordState.micMessage);
+      }
+      return;
     }
-    //* step 3
-    if (countPron > 0 && step == 3 && !mic) {
+    //* move To Next Stage 3  and activate examples
+    if (state.stage == 2 && !state.micState) {
+      await _speakWithDelay(wordRecord.wordExamples[examplePinter], 0, rate: 1);
+      await _speakWithDelay(
+              wordRecord.wordExamples[examplePinter], perfectDelay,
+              rate: 0.5)
+          .then((value) {
+        micSingleController.exampleActivation();
+        if (mounted) {
+          state = state.copyWith(
+              stage: 3,
+              micMessage: 'Now your turn : Try to Pronounce the sentence ');
+        }
+      });
+
+      return;
+    }
+    if (countPron > 0 && state.stage == 3 && !state.micState) {
       await Future.delayed(Duration(seconds: perfectDelay));
-      setMicState(true);
+      if (mounted) {
+        state =
+            state.copyWith(micState: true, micMessage: micWordState.micMessage);
+      }
     }
-
-    if (countPron == 0 && step == 3) {
-      await Future.delayed(Duration(seconds: perfectDelay));
-      if (pointer < examplesList.length - 1) {
-        microphoneController.moveToNextExamples();
-        moveToNextStep(2);
-        setMicState(false);
+    //* handle others
+    if (countPron == 0 && state.stage == 3) {
+      if (examplePinter < wordRecord.wordExamples.length - 1) {
+        Future.delayed(Duration(seconds: perfectDelay));
+        micSingleController.moveToNextExamples(examplePinter);
+        if (mounted) {
+          state = state.copyWith(
+            micState: false,
+            stage: 4,
+          );
+        }
       } else {
-        // finished
-        globuleSates.updateNextStepAvailability(true);
-        moveToNextStep(4);
+        practiceStepperController.updateNextStepAvailability(true);
+        if (mounted) {
+          state = state.copyWith(
+              stage: 5, micMessage: micWordState.micMessage, micState: false);
+        }
+        return;
+      }
+    }
+    if (state.stage == 4 && !state.micState) {
+      await _speakWithDelay(wordRecord.wordExamples[examplePinter], 0, rate: 1);
+      await _speakWithDelay(
+              wordRecord.wordExamples[examplePinter], perfectDelay,
+              rate: 0.5)
+          .then((value) {
+        if (mounted) {
+          state = state.copyWith(
+              stage: 3,
+              micMessage: 'Now your turn : Try to Pronounce the sentence ');
+        }
+      });
+
+      return;
+    }
+  }
+
+  void reset(MicSingleController micSingleController,
+      PracticeStepperController practiceStepperController) async {
+    micSingleController.startOver();
+
+    practiceStepperController.updateNextStepAvailability(false);
+    state = state.copyWith(
+      micState: false,
+      stage: 1,
+      micMessage: 'Now your turn : Hold to Start Recording ...',
+    );
+  }
+
+  void playNormal(MicWordState micWordState) async {
+    final WordRecord(:foreignWord, :wordExamples) = micWordState.wordRecord;
+    if (state.stage == 5) {
+      await _speakWithDelay(foreignWord, 0, rate: 1);
+      for (var example in wordExamples) {
+        await _speakWithDelay(example, 2, rate: 1);
+      }
+    } else {
+      if (micWordState.activateExample) {
+        await _speakWithDelay(
+            micWordState.wordRecord.wordExamples[micWordState.examplePinter], 0,
+            rate: 1);
+      } else {
+        await _speakWithDelay(foreignWord, 0, rate: 1);
       }
     }
   }
 
-  void reset() {
-    moveToNextStep(1);
-    microphoneController.resetting();
+  void _listen(MicWordState micWordState,
+      MicSingleController micSingleController) async {
+    final WordRecord(:foreignWord) = micWordState.wordRecord;
 
-    globuleSates.updateNextStepAvailability(false);
-    listen();
-  }
-
-  void activateExamples() {
-    final MicrophoneController(:pointer, :examplesList) = microphoneController;
-    if (pointer < examplesList.length) {
-      microphoneController.examplesActivation();
-      _speakExamples(examplesList[microphoneController.pointer]);
+    await _speakWithDelay(foreignWord, 0, rate: 1);
+    await _speakWithDelay(foreignWord, 2, rate: 0.1);
+    await _speakWithDelay(foreignWord, 2, rate: 0.3);
+    await _speakWithDelay(foreignWord, 3, rate: 1);
+    if (mounted) {
+      state =
+          state.copyWith(micState: true, micMessage: micWordState.micMessage);
     }
-  }
-
-  void setMicState(bool status) {
-    mic = status;
-    setMicActivation(status);
-  }
-
-  void _speakExamples(String example) async {
-    await _speakWithDelay(example, 1, rate: 1);
-    await _speakWithDelay(example, 2, rate: 0.2);
   }
 
   Future<void> _speakWithDelay(String text, int delay, {double rate = 1}) {
     return Future.delayed(Duration(seconds: delay), () async {
-      await tts.setRate(rate);
-      await tts.speak(text);
+      if (mounted) {
+        await tts.setRate(rate);
+        await tts.speak(text);
+      }
     });
   }
+}
 
-  void playNormal() async {
-    final MicrophoneController(:foreignWord, :examplesList) =
-        microphoneController;
-    await _speakWithDelay(foreignWord, 0, rate: 1);
-    for (var example in examplesList) {
-      await _speakWithDelay(example, 2, rate: 1);
-    }
+class ListenRepeatStates {
+  final bool micState;
+  final int stage;
+  final String micMessage;
+
+  ListenRepeatStates(
+      {required this.micState, required this.stage, required this.micMessage});
+  ListenRepeatStates copyWith({
+    WordRecord? wordRecord,
+    bool? micState,
+    int? stage,
+    String? micMessage,
+  }) {
+    return ListenRepeatStates(
+      micMessage: micMessage ?? this.micMessage,
+      stage: stage ?? this.stage,
+      micState: micState ?? this.micState,
+    );
   }
 }

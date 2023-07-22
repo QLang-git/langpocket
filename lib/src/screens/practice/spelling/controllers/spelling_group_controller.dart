@@ -10,7 +10,7 @@ final spellingGroupControllerProvider = StateNotifierProvider.autoDispose
     .family<SpellingGroupController, AsyncValue<SpellingGroupState>, int>(
         (ref, groupId) {
   final currentWord =
-      ref.watch(wordsServicesProvider).fetchWordsByGroupId(groupId);
+      ref.read(wordsServicesProvider).fetchWordsByGroupId(groupId);
 
   return SpellingGroupController(currentWord);
 });

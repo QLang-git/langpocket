@@ -1,42 +1,48 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/screens/practice/interactive/controller/practice_stepper_controller.dart';
+import 'package:langpocket/src/screens/practice/pronunciation/controllers/mic_single_controller.dart';
 
-import 'package:flutter/material.dart';
-import 'package:langpocket/src/common_controller/microphone_controller.dart';
-import 'package:langpocket/src/screens/practice/interactive/screen/practice_interactive_screen.dart';
+final readSpeakControllerProvider =
+    StateNotifierProvider.autoDispose<ReadSpeakController, bool>(
+  (ref) {
+    return ReadSpeakController();
+  },
+);
 
-class ReadSpeakController {
-  final MicrophoneController microphoneController;
-  final PracticePronScreenState globuleStates;
-  final ValueChanged<bool> micActivation;
+class ReadSpeakController extends StateNotifier<bool> {
+  ReadSpeakController() : super(true);
 
-  ReadSpeakController({
-    required this.globuleStates,
-    required this.microphoneController,
-    required this.micActivation,
-  });
-
-  void goBack() {
-    globuleStates.moveToNext(0);
-  }
-
-  void reset() {
-    microphoneController.resetting();
-    globuleStates.updateNextStepAvailability(false);
-  }
-
-  void activateExample(int currentCount, bool example) {
-    if (currentCount == 0 && !example) {
-      microphoneController.examplesActivation();
-    } else if (example && currentCount == 0 && _checkExamplesListOutOfBounds) {
-      microphoneController.moveToNextExamples();
-    } else if (example && currentCount == 0 && !_checkExamplesListOutOfBounds) {
-      globuleStates.updateNextStepAvailability(true);
-      micActivation(false);
+  void stepsMapper(
+      MicWordState micWordState,
+      MicSingleController micSingleController,
+      PracticeStepperController practiceStepperController) async {
+    final MicWordState(
+      :countPron,
+      :wordRecord,
+      :examplePinter,
+      :activateExample
+    ) = micWordState;
+    if (countPron == 0 && !activateExample) {
+      micSingleController.exampleActivation();
+    } else if (activateExample &&
+        countPron == 0 &&
+        examplePinter < wordRecord.wordExamples.length - 1) {
+      micSingleController.moveToNextExamples(examplePinter);
+    } else if (activateExample &&
+        countPron == 0 &&
+        examplePinter == wordRecord.wordExamples.length - 1) {
+      practiceStepperController.updateNextStepAvailability(true);
+      if (mounted) {
+        state = false;
+      }
     }
   }
 
-  bool get _checkExamplesListOutOfBounds {
-    return microphoneController.pointer <
-        microphoneController.examplesList.length - 1;
+  void reset(MicSingleController micSingleController,
+      PracticeStepperController practiceStepperController) async {
+    micSingleController.startOver();
+
+    practiceStepperController.updateNextStepAvailability(false);
+    state = true;
   }
 }
