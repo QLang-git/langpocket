@@ -11,8 +11,8 @@ class HomeRobot {
   final WidgetTester tester;
   HomeRobot(this.tester);
   Future<void> pumpHomeScreen([DriftGroupRepository? db]) async {
-    tester.binding.window.physicalSizeTestValue = const Size(1080, 1920);
-    tester.binding.window.devicePixelRatioTestValue = 1.0;
+    // simulate a larger screen size
+    await tester.binding.setSurfaceSize(const Size(1280, 720));
     if (db != null) {
       await tester.pumpWidget(ProviderScope(
         overrides: [localGroupRepositoryProvider.overrideWithValue(db)],
@@ -49,11 +49,11 @@ class HomeRobot {
   }
 
   void noGroupInDb() async {
-    final messag = find.text('You don\'t have any group yet');
-    expect(messag, findsOneWidget);
+    final message = find.text('You don\'t have any group yet');
+    expect(message, findsOneWidget);
   }
 
-  void runderGroups(List<GroupData> groupList) {
+  void renderGroups(List<GroupData> groupList) {
     for (var group in groupList) {
       expect(find.text(group.groupName), findsOneWidget);
       expect(

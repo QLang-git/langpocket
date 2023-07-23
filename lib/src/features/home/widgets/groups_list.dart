@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
-import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/features/home/controller/home_controller.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
@@ -17,17 +16,23 @@ class _GroupsListState extends ConsumerState<GroupsList> {
   late HomeController homeController;
   @override
   void initState() {
-    homeController = HomeController(ref: ref);
-    homeController.initial();
     super.initState();
+    homeController = HomeController();
   }
 
   @override
   Widget build(BuildContext context) {
+    final HomeController(
+      :groupsListStreamProvider,
+      :getLogoDay,
+      :formatTime,
+      :wordsListStreamProvider
+    ) = homeController;
+    final groups = ref.watch(groupsListStreamProvider);
     final sizeHeight = MediaQuery.of(context).size.height;
     final ThemeData(:colorScheme, :textTheme) = Theme.of(context);
     return AsyncValueWidget(
-        value: homeController.getAllGroups(),
+        value: groups,
         child: (groups) {
           if (groups.isEmpty) {
             return SizedBox(
@@ -44,8 +49,8 @@ class _GroupsListState extends ConsumerState<GroupsList> {
               itemCount: groups.length,
               itemBuilder: (BuildContext context, int index) {
                 final wordsInGroup =
-                    homeController.getWordsInGroupById(groups[index].id);
-                final iconDay = homeController.getLogoDay(groups[index]);
+                    ref.watch(wordsListStreamProvider(groups[index].id));
+                final iconDay = getLogoDay(groups[index]);
                 return Padding(
                   padding: const EdgeInsets.only(left: 9, right: 8),
                   child: Card(
@@ -57,7 +62,7 @@ class _GroupsListState extends ConsumerState<GroupsList> {
                       onTap: () => context.goNamed(
                         AppRoute.group.name,
                         pathParameters: {
-                          'groupId': groups[index].id.toString(),
+                          'groupId': groups[index].id.toString()
                         },
                         queryParameters: {
                           'name': groups[index].groupName,
@@ -97,43 +102,58 @@ class _GroupsListState extends ConsumerState<GroupsList> {
                                 ],
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    groups[index].groupName,
-                                    style: textTheme.displayLarge
-                                        ?.copyWith(color: colorScheme.outline),
-                                    softWrap: true,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.fade,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Words: ',
-                                        style: textTheme.bodyMedium?.copyWith(
-                                            color: colorScheme.outline),
-                                      ),
-                                      AsyncValueWidget(
+                            Flexible(
+                              fit: FlexFit.loose,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      groups[index].groupName,
+                                      style: textTheme.displayLarge?.copyWith(
+                                          color: colorScheme.outline),
+                                      softWrap: true,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.fade,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Words: ',
+                                          style: textTheme.bodyMedium?.copyWith(
+                                              color: colorScheme.outline),
+                                        ),
+                                        AsyncValueWidget(
                                           value: wordsInGroup,
                                           child: (words) {
-                                            return MyWordsInGroup(
-                                              words: words,
+                                            String text = words
+                                                .map((word) => word.foreignWord)
+                                                .join(", ");
+                                            return Expanded(
+                                              child: Text(
+                                                text,
+                                                style: textTheme.bodyLarge
+                                                    ?.copyWith(
+                                                        color: colorScheme
+                                                            .outline),
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
                                             );
-                                          })
-                                    ],
-                                  ),
-                                  Text(
-                                    homeController.formatTime(groups[index]),
-                                    style: textTheme.bodyLarge
-                                        ?.copyWith(color: colorScheme.outline),
-                                  ),
-                                ],
+                                          },
+                                        )
+                                      ],
+                                    ),
+                                    Text(
+                                      formatTime(groups[index]),
+                                      style: textTheme.bodyLarge?.copyWith(
+                                          color: colorScheme.outline),
+                                    ),
+                                  ],
+                                ),
                               ),
                             )
                           ],
@@ -144,40 +164,5 @@ class _GroupsListState extends ConsumerState<GroupsList> {
                 );
               });
         });
-  }
-}
-
-class MyWordsInGroup extends StatelessWidget {
-  final List<WordData> words;
-  const MyWordsInGroup({
-    super.key,
-    required this.words,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme;
-    final fontColor = Theme.of(context).colorScheme.outline;
-    return Row(
-      children: words.map((word) {
-        if (words.last == word) {
-          return Text(
-            '${word.foreignWord} ',
-            style: textStyle.bodyLarge?.copyWith(color: fontColor),
-            softWrap: true,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          );
-        } else {
-          return Text(
-            '${word.foreignWord} , ',
-            style: textStyle.bodyLarge?.copyWith(color: fontColor),
-            softWrap: true,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          );
-        }
-      }).toList(),
-    );
   }
 }

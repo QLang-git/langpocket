@@ -25,7 +25,6 @@ class MicSingleController extends StateNotifier<AsyncValue<MicWordState>>
 
   @override
   void dispose() {
-    print('dispose');
     speechToText.cancel();
     speechToText.stop();
     // Stop speech recognition if it's currently active.

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/features/home/widgets/groups_list/groups_list.dart';
+import 'package:langpocket/src/features/home/widgets/groups_list.dart';
 import 'package:langpocket/src/features/home/app_bar/presentation/home_appbar.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:go_router/go_router.dart';

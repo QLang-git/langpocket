@@ -1,34 +1,30 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:langpocket/src/data/data_flow/data_flow.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
+import 'package:langpocket/src/data/services/word_service.dart';
 
 class HomeController {
-  final WidgetRef ref;
-  late DataFlow dataFlow;
+  final groupsListStreamProvider = StreamProvider<List<GroupData>>((ref) {
+    final watchGroups = ref.watch(wordsServicesProvider);
+    return watchGroups.watchGroups();
+  });
 
-  HomeController({required this.ref});
-
-  void initial() {
-    dataFlow = DataFlow(ref: ref);
-  }
-
-  AsyncValue<List<GroupData>> getAllGroups() => dataFlow.watchAllGroups();
-  AsyncValue<List<WordData>> getWordsInGroupById(int currentGroupId) {
-    return dataFlow.watchWordsListbyId(currentGroupId);
-  }
-
-  DayLogo getLogoDay(GroupData groupData) {
-    return _setLogoDay(groupData.creatingTime.weekday);
-  }
+  final wordsListStreamProvider =
+      StreamProvider.family<List<WordData>, int>((ref, groupId) {
+    final watchWords = ref.watch(wordsServicesProvider);
+    return watchWords.watchWordsGroupId(groupId);
+  });
 
   String formatTime(GroupData groupData) {
     final DateTime(:day, :month, :year) = groupData.creatingTime;
     return 'Date: $day/$month/$year';
   }
 
-  DayLogo _setLogoDay(int dayNumber) {
-    switch (dayNumber) {
+  DayLogo getLogoDay(GroupData groupData) {
+    final DateTime(:weekday) = groupData.creatingTime;
+
+    switch (weekday) {
       case 1:
         return DayLogo(Colors.red[400]!, Icons.coffee_rounded, 'Mon');
 

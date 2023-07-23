@@ -1,50 +1,123 @@
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image/image.dart' as img;
+
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/services/word_service.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 
-class SaveWordController extends StateNotifier<AsyncValue<void>> {
+final newWordControllerProvider =
+    StateNotifierProvider<NewWordController, AsyncValue<WordRecord>>(
+        (ref) => NewWordController(
+              wordsServices: ref.watch(wordsServicesProvider),
+            ),
+        dependencies: [
+      wordsServicesProvider,
+    ]);
+
+class NewWordController extends StateNotifier<AsyncValue<WordRecord>> {
   final WordServices wordsServices;
 
-  SaveWordController({
+  NewWordController({
     required this.wordsServices,
-  }) : super(const AsyncLoading());
+  }) : super(AsyncData(WordRecord(
+            foreignWord: '',
+            wordMeans: List.filled(3, ''),
+            wordImages: [],
+            wordExamples: List.filled(5, ''),
+            wordNote: '')));
 
-  Future<void> addNewWord({
-    required String foreignWord,
-    required String wordMeans,
-    required String wordImages,
-    required String wordExamples,
-    required String wordNote,
-  }) async {
+  Future<void> saveNewWord() async {
+    final WordRecord(
+      :foreignWord,
+      :wordExamples,
+      :wordMeans,
+      :wordImages,
+      :wordNote,
+    ) = state.value!;
     // validations
     if (foreignWord.isEmpty || wordExamples.isEmpty || wordMeans.isEmpty) {
       state = AsyncValue.error(
           'ONE of the required value not found', StackTrace.current);
       return;
     }
+    _validateForeignWord(foreignWord);
+    _validateMeans(wordMeans);
+    _validateWordExamples(wordExamples);
+    _validateWordImage(wordImages);
+    _validateNote(wordNote);
+
     // get the group
-    final now = DateTime.now();
-    final res = await AsyncValue.guard(() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final now = DateTime.now();
       final groupId = await _checkTodayGroup(now, wordsServices);
       final newWordCompanion = WordCompanion.insert(
           group: groupId,
           foreignWord: foreignWord,
-          wordMeans: wordMeans,
-          wordImages: wordImages,
-          wordExamples: wordExamples,
+          wordMeans: wordMeans.join('-'),
+          wordImages: wordImages.join('-'),
+          wordExamples: wordExamples.join('-'),
           wordNote: wordNote,
           wordDate: now);
       await wordsServices.addNewWordInGroup(newWordCompanion);
-      return true;
+      //! clear states and word's form if saved succeeded
+      return WordRecord(
+          foreignWord: '',
+          wordMeans: List.filled(3, ''),
+          wordImages: [],
+          wordExamples: List.filled(5, ''),
+          wordNote: '');
     });
-    if (res.hasError) {
-      state = AsyncValue.error(res.error!, StackTrace.current);
-    } else {
-      state = res;
-    }
   }
 
-  //! helper function
+  void saveForeignWord(String foreignWord) {
+    state = AsyncData(state.value!.copyWith(foreignWord: foreignWord));
+  }
+
+  void saveWordMeans(String mean, int index) {
+    // Create a copy of the current mean list
+    List<String> updatedMeans = List.from(state.value!.wordMeans);
+
+    // Update the specific mean
+    updatedMeans[index] = mean;
+
+    // Update the state with the modified mean list
+    state = AsyncData(state.value!.copyWith(wordMeans: updatedMeans));
+  }
+
+  void saveWordImage(Uint8List image) {
+    // Create a copy of the current image list
+    List<Uint8List> updatedImages = List.from(state.value!.wordImages);
+
+    // Update the specific image
+    updatedImages = [...updatedImages, image];
+
+    // Update the state with the modified image list
+    state = AsyncData(state.value!.copyWith(wordImages: updatedImages));
+  }
+
+  void removeImage(int index) {
+    List<Uint8List> updatedImages = List.from(state.value!.wordImages);
+    updatedImages.removeAt(index);
+    state = AsyncData(state.value!.copyWith(wordImages: updatedImages));
+  }
+
+  void saveWordExample(String example, int index) {
+    // Create a copy of the current examples list
+    List<String> updatedExamples = List.from(state.value!.wordExamples);
+
+    // Update the specific example
+    updatedExamples[index] = example;
+    // Update the state with the modified examples list
+    state = AsyncData(state.value!.copyWith(wordExamples: updatedExamples));
+  }
+
+  void saveWordNote(String note) {
+    state = AsyncData(state.value!.copyWith(wordNote: note));
+  }
+
   Future<int> _checkTodayGroup(DateTime now, WordServices wordsServices) async {
     try {
       final todayGroup = await wordsServices.fetchGroupByTime(now);
@@ -55,13 +128,83 @@ class SaveWordController extends StateNotifier<AsyncValue<void>> {
       return newGroup.id;
     }
   }
-}
 
-final saveWordControllerProvider =
-    StateNotifierProvider<SaveWordController, AsyncValue<void>>(
-        (ref) => SaveWordController(
-              wordsServices: ref.watch(wordsServicesProvider),
-            ),
-        dependencies: [
-      wordsServicesProvider,
-    ]);
+  void _validateForeignWord(String foreignWord) {
+    if (foreignWord.split(' ').length != 1) {
+      state = AsyncValue.error(
+          'Keep it one word in this field', StackTrace.current);
+      return;
+    }
+    if (foreignWord.length > 25) {
+      state = AsyncValue.error('Word Too long', StackTrace.current);
+      return;
+    }
+  }
+
+  void _validateMeans(List<String> wordMeans) {
+    for (var wordMean in wordMeans) {
+      if (wordMean.length > 50) {
+        state = AsyncValue.error(
+            'keep the definition of the word smaller', StackTrace.current);
+        return;
+      }
+    }
+    if (wordMeans.length > 3 || wordMeans.isEmpty) {
+      state = AsyncValue.error('Invalid text', StackTrace.current);
+      return;
+    }
+  }
+
+  void _validateWordExamples(List<String> wordExamples) {
+    if (wordExamples.length > 5 || wordExamples.isEmpty) {
+      state = AsyncValue.error('Invalid text', StackTrace.current);
+      return;
+    }
+    for (var wordExample in wordExamples) {
+      if (wordExample.length > 50) {
+        state =
+            AsyncValue.error('keep your definition short', StackTrace.current);
+        return;
+      }
+    }
+  }
+
+  void _validateWordImage(List<Uint8List> wordImages) {
+    // Check the number of images
+    if (wordImages.length > 5) {
+      state = AsyncValue.error(
+          'You cannot upload more than 10 images.', StackTrace.current);
+      return;
+    }
+    // Check image sizes and formats
+    for (var image in wordImages) {
+      // Check the image size
+      if (image.lengthInBytes > 5000000) {
+        // 5MB
+        state = AsyncValue.error(
+            'Images must be less than 5MB in size.', StackTrace.current);
+        return;
+      }
+      // Decode the image to check dimensions and format
+      final decodedImage = img.decodeImage(image);
+      if (decodedImage == null) {
+        state = AsyncValue.error('Invalid Image', StackTrace.current);
+        return;
+      }
+      // Check the image dimensions
+      if (decodedImage.width < 400 || decodedImage.height < 400) {
+        state = AsyncValue.error(
+            'Images must be at least 400x400 pixels.', StackTrace.current);
+        return;
+      }
+    }
+  }
+
+  void _validateNote(String wordNote) {
+    if (wordNote.length > 150) {
+      state = AsyncValue.error(
+          'keep your notes short and concise ', StackTrace.current);
+      return;
+    }
+  }
+}

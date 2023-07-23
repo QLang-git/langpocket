@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:langpocket/src/features/home/widgets/groups_list/groups_list.dart';
+import 'package:langpocket/src/features/home/widgets/groups_list.dart';
 
 import 'home_robot.dart';
 
@@ -15,7 +15,7 @@ void main() {
         r.hasTodoButton();
       });
     });
-    testWidgets('home screen runder all widgetes inside ', (tester) async {
+    testWidgets('home screen render all widgets inside ', (tester) async {
       final r = HomeRobot(tester);
       await tester.runAsync(() async {
         await r.pumpHomeScreen();

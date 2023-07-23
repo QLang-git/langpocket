@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:langpocket/src/features/new_word/screen/new_word_screen.dart';
+import 'package:langpocket/src/features/new_word/controller/save_word_controller.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
@@ -19,8 +19,13 @@ class _ForeignWordState extends State<ForeignWord> {
   final inputController = TextEditingController();
 
   @override
+  void dispose() {
+    super.dispose();
+    inputController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final states = context.findAncestorStateOfType<NewWordScreenState>()!;
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
       child: Consumer(builder: (context, ref, child) {
@@ -56,7 +61,9 @@ class _ForeignWordState extends State<ForeignWord> {
             if (value == null || value.isEmpty) {
               return 'Please enter the word';
             } else {
-              states.setForeignWord(value);
+              ref
+                  .read(newWordControllerProvider.notifier)
+                  .saveForeignWord(value);
               return null;
             }
           },

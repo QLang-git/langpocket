@@ -54,6 +54,24 @@ class WordRecord {
   String toString() {
     return 'Word(id: $id, foreignWord: $foreignWord, wordMeans: $wordMeans, wordImages: $wordImages, wordExamples: $wordExamples, wordNote: $wordNote)';
   }
+
+  WordRecord copyWith({
+    int? id,
+    String? foreignWord,
+    List<String>? wordMeans,
+    List<Uint8List>? wordImages,
+    List<String>? wordExamples,
+    String? wordNote,
+  }) {
+    return WordRecord(
+      id: id ?? this.id,
+      foreignWord: foreignWord ?? this.foreignWord,
+      wordMeans: wordMeans ?? this.wordMeans,
+      wordImages: wordImages ?? this.wordImages,
+      wordExamples: wordExamples ?? this.wordExamples,
+      wordNote: wordNote ?? this.wordNote,
+    );
+  }
 }
 
 final GoRouter goroute = GoRouter(

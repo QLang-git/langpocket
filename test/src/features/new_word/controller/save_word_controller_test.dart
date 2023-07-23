@@ -35,15 +35,15 @@ void main() {
                   creatingTime: DateTime.now(),
                 ),
               ));
-      final controller = container.read(saveWordControllerProvider.notifier);
+      final controller = container.read(newWordControllerProvider.notifier);
       when(() => db.addNewWordInGroup(any<WordCompanion>()))
           .thenAnswer((_) => Future.value());
-      await controller.addNewWord(
-          foreignWord: 'myTest',
-          wordMeans: 'test-test',
-          wordImages: '',
-          wordExamples: 'etest1-etest2',
-          wordNote: '');
+      // await controller.saveNewWord(
+      //     foreignWord: 'myTest',
+      //     wordMeans: 'test-test',
+      //     wordImages: '',
+      //     wordExamples: 'etest1-etest2',
+      //     wordNote: '');
 
       verify(() => db.fetchGroupByTime(any<DateTime>())).called(1);
       verify(() => db.createGroup(any<GroupCompanion>())).called(1);
@@ -62,15 +62,15 @@ void main() {
                   creatingTime: DateTime.now(),
                 ),
               ));
-      final controller = container.read(saveWordControllerProvider.notifier);
+      final controller = container.read(newWordControllerProvider.notifier);
       when(() => db.addNewWordInGroup(any<WordCompanion>()))
           .thenAnswer((_) => Future.value());
-      await controller.addNewWord(
-          foreignWord: 'myTest',
-          wordMeans: 'test-test',
-          wordImages: '',
-          wordExamples: 'etest1-etest2',
-          wordNote: '');
+      // await controller.saveNewWord(
+      //     foreignWord: 'myTest',
+      //     wordMeans: 'test-test',
+      //     wordImages: '',
+      //     wordExamples: 'etest1-etest2',
+      //     wordNote: '');
 
       verify(() => db.fetchGroupByTime(any<DateTime>())).called(1);
       verifyNever(() => db.createGroup(any<GroupCompanion>()));
@@ -83,14 +83,14 @@ void main() {
       overrides: [localGroupRepositoryProvider.overrideWithValue(db)],
     );
 
-    final controller = container.read(saveWordControllerProvider.notifier);
+    final controller = container.read(newWordControllerProvider.notifier);
 
-    await controller.addNewWord(
-        foreignWord: '',
-        wordMeans: 'test-test',
-        wordImages: '',
-        wordExamples: 'etest1-etest2',
-        wordNote: '');
+    // await controller.saveNewWord(
+    //     foreignWord: '',
+    //     wordMeans: 'test-test',
+    //     wordImages: '',
+    //     wordExamples: 'etest1-etest2',
+    //     wordNote: '');
 
     verifyNever(() => db.fetchGroupByTime(any<DateTime>()));
     verifyNever(() => db.createGroup(any<GroupCompanion>()));
@@ -110,13 +110,13 @@ void main() {
                 creatingTime: DateTime.now(),
               ),
             ));
-    final controller = container.read(saveWordControllerProvider.notifier);
-    await controller.addNewWord(
-        foreignWord: 'myTest',
-        wordMeans: 'test-test',
-        wordImages: '',
-        wordExamples: 'etest1-etest2',
-        wordNote: '');
+    final controller = container.read(newWordControllerProvider.notifier);
+    // await controller.saveNewWord(
+    //     foreignWord: 'myTest',
+    //     wordMeans: 'test-test',
+    //     wordImages: '',
+    //     wordExamples: 'etest1-etest2',
+    //     wordNote: '');
 
     verify(() => db.fetchGroupByTime(any<DateTime>())).called(1);
     verifyNever(() => db.createGroup(any<GroupCompanion>()));

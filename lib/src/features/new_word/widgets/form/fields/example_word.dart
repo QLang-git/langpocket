@@ -1,22 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:langpocket/src/features/new_word/screen/new_word_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/features/new_word/controller/save_word_controller.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
-class ExampleWord extends StatefulWidget {
-  const ExampleWord({super.key});
+class ExampleWord extends ConsumerStatefulWidget {
+  const ExampleWord({Key? key}) : super(key: key);
 
   @override
-  State<ExampleWord> createState() => _ExampleWordState();
+  ConsumerState<ExampleWord> createState() => _ExampleWordState();
 }
 
-class _ExampleWordState extends State<ExampleWord> {
+class _ExampleWordState extends ConsumerState<ExampleWord> {
   final exampleControllers = [
     TextEditingController(),
     TextEditingController(),
   ];
   @override
+  void dispose() {
+    for (var controller in exampleControllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  void addExample() {
+    exampleControllers.add(TextEditingController());
+  }
+
+  void removeExample(int index) {
+    exampleControllers[index].clear();
+    ref.read(newWordControllerProvider.notifier).saveWordExample('', index);
+    exampleControllers.removeAt(index);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final states = context.findAncestorStateOfType<NewWordScreenState>()!;
     return Column(children: [
       Align(
         alignment: Alignment.centerLeft,
@@ -29,60 +47,10 @@ class _ExampleWordState extends State<ExampleWord> {
         ),
       ),
       for (int i = 0; i < exampleControllers.length; i++)
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: TextFormField(
-            controller: exampleControllers[i],
-            style: headline3(primaryFontColor),
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-              suffixIcon: i > 1
-                  ? TextButton(
-                      onPressed: () {
-                        exampleControllers[i].clear();
-                        states.setWordExample('', i);
-                        states.setWordExample('', i + 1);
-
-                        setState(() {
-                          exampleControllers.remove(exampleControllers[i]);
-                        });
-                      },
-                      child: Icon(
-                        Icons.close_outlined,
-                        color: primaryColor,
-                      ),
-                    )
-                  : Icon(
-                      Icons.language_outlined,
-                      color: primaryColor,
-                    ),
-              labelStyle: bodyLarge(primaryColor),
-              label: Text('example ${i + 1}'),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(width: 2, color: secondaryColor),
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-            ),
-            // The validator receives the text that the user has entered.
-            validator: i < 2
-                ? (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter one meaning for this word';
-                    } else {
-                      states.setWordExample(value, i);
-                    }
-                    return null;
-                  }
-                : ((value) {
-                    if (value != null) {
-                      states.setWordExample(value, i);
-                    }
-                    return null;
-                  }),
-          ),
+        ExampleInputField(
+          controller: exampleControllers[i],
+          index: i,
+          removeExample: removeExample,
         ),
       if (exampleControllers.length < 5)
         TextButton(
@@ -90,11 +58,7 @@ class _ExampleWordState extends State<ExampleWord> {
             backgroundColor: Theme.of(context).colorScheme.onPrimary,
             shape: const CircleBorder(),
           ),
-          onPressed: () {
-            setState(() {
-              exampleControllers.add(TextEditingController());
-            });
-          },
+          onPressed: addExample,
           child: const Icon(
             Icons.add,
             size: 45,
@@ -102,5 +66,65 @@ class _ExampleWordState extends State<ExampleWord> {
           ),
         ),
     ]);
+  }
+}
+
+class ExampleInputField extends ConsumerWidget {
+  final TextEditingController controller;
+  final int index;
+  final Function(int) removeExample;
+
+  const ExampleInputField({
+    super.key,
+    required this.controller,
+    required this.index,
+    required this.removeExample,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Consumer(builder: (context, watch, _) {
+        final newWordController = ref.read(newWordControllerProvider.notifier);
+
+        return TextFormField(
+          controller: controller,
+          style: headline3(primaryFontColor),
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+            suffixIcon: index > 1
+                ? TextButton(
+                    onPressed: () => removeExample(index),
+                    child: Icon(
+                      Icons.close_outlined,
+                      color: primaryColor,
+                    ),
+                  )
+                : Icon(
+                    Icons.language_outlined,
+                    color: primaryColor,
+                  ),
+            labelStyle: bodyLarge(primaryColor),
+            label: Text('example ${index + 1}'),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(width: 2, color: secondaryColor),
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+          ),
+          validator: (value) {
+            if (value == null || (index < 2 && value.isEmpty)) {
+              return 'Please enter 2 examples for this word';
+            } else {
+              newWordController.saveWordExample(value, index);
+            }
+            return null;
+          },
+        );
+      }),
+    );
   }
 }
