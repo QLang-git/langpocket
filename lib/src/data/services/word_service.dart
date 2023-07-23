@@ -85,7 +85,7 @@ class WordServices {
     if (user) {
       await remoteGroupRepository.upadateWordInf(wordId, wordCompanion);
     } else {
-      await localGroupRepository.upadateWordInf(wordId, wordCompanion);
+      await localGroupRepository.updateWordInf(wordId, wordCompanion);
     }
   }
 

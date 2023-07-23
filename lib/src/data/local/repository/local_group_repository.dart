@@ -17,7 +17,7 @@ abstract class LocalGroupRepository {
   Future<void> updateGroupName(int groupId, String newName);
   Future<void> deleteWordById(int wordId, int groupId);
   Stream<WordData> watchWordById(int wordId);
-  Future<void> upadateWordInf(int wordId, WordCompanion wordCompanion);
+  Future<void> updateWordInf(int wordId, WordCompanion wordCompanion);
 }
 
 // ignore: non_constant_identifier_names

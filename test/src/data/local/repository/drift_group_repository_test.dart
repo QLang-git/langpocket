@@ -17,7 +17,7 @@ void main() {
     wordDate: Value(DateTime.now()),
   );
   setUp(() {
-    database = DriftGroupRepository(NativeDatabase.memory());
+    database = DriftGroupRepository(NativeDatabase.memory(), isTesting: true);
   });
   tearDown(() async {
     await database.close();
@@ -107,7 +107,7 @@ void main() {
       wordDate: Value(DateTime.now()),
     );
 
-    await database.upadateWordInf(1, newWord);
+    await database.updateWordInf(1, newWord);
 
     final getWord = await database.fetchWordById(1);
 

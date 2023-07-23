@@ -8,9 +8,11 @@ part 'drift_group_repository.g.dart';
 @DriftDatabase(tables: [Group, Word])
 class DriftGroupRepository extends _$DriftGroupRepository
     implements LocalGroupRepository {
+  final bool isTesting;
   final QueryExecutor queryExecutor;
   // we tell the database where to store the data with this constructor
-  DriftGroupRepository(this.queryExecutor) : super(queryExecutor);
+  DriftGroupRepository(this.queryExecutor, {this.isTesting = false})
+      : super(queryExecutor);
 
   // you should bump this number whenever you change or add a table definition.
   // Migrations are covered later in the documentation.
@@ -22,7 +24,7 @@ class DriftGroupRepository extends _$DriftGroupRepository
       beforeOpen: (details) async {
         // Make sure that foreign keys are enabled
         await customStatement('PRAGMA foreign_keys = ON');
-        if (details.wasCreated) {
+        if (details.wasCreated && !isTesting) {
           await batch((batch) {
             batch.insertAll(group, defaultGroups);
             batch.insertAll(word, defaultWords);
@@ -97,7 +99,7 @@ class DriftGroupRepository extends _$DriftGroupRepository
   }
 
   @override
-  Future<void> upadateWordInf(int wordId, WordCompanion wordCompanion) async {
+  Future<void> updateWordInf(int wordId, WordCompanion wordCompanion) async {
     await (update(word)..where((tbl) => tbl.id.equals(wordId)))
         .write(wordCompanion);
   }

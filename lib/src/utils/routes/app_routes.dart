@@ -5,18 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:langpocket/src/screens/group/screen/group_screen.dart';
-import 'package:langpocket/src/screens/home/screen/home_screen.dart';
-import 'package:langpocket/src/screens/new_word/screen/new_word_screen.dart';
-import 'package:langpocket/src/screens/practice/interactive/screen/practice_interactive_screen.dart';
-import 'package:langpocket/src/screens/practice/pronunciation/screen/practice_pron_group_screen.dart';
-import 'package:langpocket/src/screens/practice/pronunciation/screen/practice_pron_single_screen.dart';
-import 'package:langpocket/src/screens/practice/spelling/screens/practice_spelling_group_screen.dart';
-import 'package:langpocket/src/screens/practice/spelling/screens/practice_spelling_single_screen.dart';
-import 'package:langpocket/src/screens/todo/screen/todo_screen.dart';
-import 'package:langpocket/src/screens/word_edit/screen/edit_mode_word_screen.dart';
-import 'package:langpocket/src/screens/word_previewer/screen/word_previewer_screen.dart';
-import 'package:langpocket/src/screens/word_view/screen/word_view_screen.dart';
+import 'package:langpocket/src/features/group/screen/group_screen.dart';
+import 'package:langpocket/src/features/home/screen/home_screen.dart';
+import 'package:langpocket/src/features/new_word/screen/new_word_screen.dart';
+import 'package:langpocket/src/features/practice/interactive/screen/practice_interactive_screen.dart';
+import 'package:langpocket/src/features/practice/pronunciation/screen/practice_pron_group_screen.dart';
+import 'package:langpocket/src/features/practice/pronunciation/screen/practice_pron_single_screen.dart';
+import 'package:langpocket/src/features/practice/spelling/screens/practice_spelling_group_screen.dart';
+import 'package:langpocket/src/features/practice/spelling/screens/practice_spelling_single_screen.dart';
+import 'package:langpocket/src/features/todo/screen/todo_screen.dart';
+import 'package:langpocket/src/features/word_edit/screen/edit_mode_word_screen.dart';
+import 'package:langpocket/src/features/word_previewer/screen/word_previewer_screen.dart';
+import 'package:langpocket/src/features/word_view/screen/word_view_screen.dart';
 import 'package:langpocket/src/utils/routes/error_nav_screen.dart';
 
 enum AppRoute {
