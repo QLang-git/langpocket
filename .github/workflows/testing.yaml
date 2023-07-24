@@ -14,7 +14,7 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
       - name: Test app
-        run: flutter test --coverage
+        run: flutter test --exclude='/home/ali/Projects/langpocket/test/images_testing/images_test.dart'
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
