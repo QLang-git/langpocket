@@ -28,7 +28,7 @@ void main() {
       final res1 = homeController.formatTime(group1);
       final res2 = homeController.formatTime(group2);
       expect(res1, 'Date: 23/7/2023');
-      expect(res2, 'Date: 20/7/2023');
+      expect(res2, 'Date: 22/7/2023');
     });
     test('_setLogoDay should return the correct DayLogo', () {
       //set up

@@ -1,12 +1,8 @@
-// import 'dart:convert';
-// import 'dart:io';
+import 'package:flutter_test/flutter_test.dart';
 
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:flutter_test/flutter_test.dart';
-// import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
-// import 'package:langpocket/src/data/local/repository/local_group_repository.dart';
-// import 'package:langpocket/src/utils/routes/app_routes.dart';
-// import 'package:mocktail/mocktail.dart';
+void main() {
+  test('start it out', () {});
+}
 
 // class MockDriftGroupRepository extends Mock implements DriftGroupRepository {}
 
