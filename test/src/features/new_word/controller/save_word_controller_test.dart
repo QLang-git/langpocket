@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/local/repository/local_group_repository.dart';
-import 'package:langpocket/src/features/new_word/controller/save_word_controller.dart';
+import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockDriftGroupRepository extends Mock implements DriftGroupRepository {}

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/features/home/controller/home_controller.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class GroupsList extends ConsumerStatefulWidget {
   const GroupsList({super.key});
@@ -22,6 +23,8 @@ class _GroupsListState extends ConsumerState<GroupsList> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData(:colorScheme, :textTheme) = Theme.of(context);
+
     final HomeController(
       :groupsListStreamProvider,
       :getLogoDay,
@@ -30,7 +33,6 @@ class _GroupsListState extends ConsumerState<GroupsList> {
     ) = homeController;
     final groups = ref.watch(groupsListStreamProvider);
     final sizeHeight = MediaQuery.of(context).size.height;
-    final ThemeData(:colorScheme, :textTheme) = Theme.of(context);
     return AsyncValueWidget(
         value: groups,
         child: (groups) {
@@ -111,46 +113,65 @@ class _GroupsListState extends ConsumerState<GroupsList> {
                                       MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      groups[index].groupName,
-                                      style: textTheme.displayLarge?.copyWith(
-                                          color: colorScheme.outline),
-                                      softWrap: true,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.fade,
+                                    Expanded(
+                                      child: Text(
+                                        groups[index].groupName,
+                                        style: textTheme.displayLarge?.copyWith(
+                                            color: colorScheme.outline),
+                                        softWrap: true,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.fade,
+                                      ),
                                     ),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'Words: ',
-                                          style: textTheme.bodyMedium?.copyWith(
-                                              color: colorScheme.outline),
-                                        ),
-                                        AsyncValueWidget(
-                                          value: wordsInGroup,
-                                          child: (words) {
-                                            String text = words
-                                                .map((word) => word.foreignWord)
-                                                .join(", ");
-                                            return Expanded(
-                                              child: Text(
-                                                text,
-                                                style: textTheme.bodyLarge
-                                                    ?.copyWith(
-                                                        color: colorScheme
-                                                            .outline),
-                                                overflow: TextOverflow.ellipsis,
-                                                softWrap: false,
-                                              ),
-                                            );
-                                          },
-                                        )
-                                      ],
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            'Words: ',
+                                            style: textTheme.bodyMedium
+                                                ?.copyWith(
+                                                    color: colorScheme.outline),
+                                          ),
+                                          wordsInGroup.when(
+                                              data: (words) {
+                                                String text = words
+                                                    .map((word) =>
+                                                        word.foreignWord)
+                                                    .join(", ");
+                                                return Expanded(
+                                                  child: Text(
+                                                    text,
+                                                    style: textTheme.bodyLarge
+                                                        ?.copyWith(
+                                                            color: colorScheme
+                                                                .outline),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    softWrap: false,
+                                                  ),
+                                                );
+                                              },
+                                              loading: () =>
+                                                  LoadingAnimationWidget
+                                                      .waveDots(
+                                                          color: colorScheme
+                                                              .outline,
+                                                          size: 20),
+                                              error: (error, stackTrace) =>
+                                                  const Text(
+                                                    'Failed Loading the words',
+                                                    style: TextStyle(
+                                                        color: Colors.red),
+                                                  )),
+                                        ],
+                                      ),
                                     ),
-                                    Text(
-                                      formatTime(groups[index]),
-                                      style: textTheme.bodyLarge?.copyWith(
-                                          color: colorScheme.outline),
+                                    Expanded(
+                                      child: Text(
+                                        formatTime(groups[index]),
+                                        style: textTheme.bodyLarge?.copyWith(
+                                            color: colorScheme.outline),
+                                      ),
                                     ),
                                   ],
                                 ),

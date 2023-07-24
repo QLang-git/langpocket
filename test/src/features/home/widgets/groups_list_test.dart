@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../screen/home_robot.dart';
+import '../screen/home_robot.dart';
 
 class MockDriftGroupRepository extends Mock implements DriftGroupRepository {}
 
@@ -44,7 +44,8 @@ void main() {
       )
     ];
   });
-  group('existing', () {
+  group('existing. Succeed', () {
+    // You don\'t have any group yet
     testWidgets('show not found message if no group in DB', (tester) async {
       //set up
       final r = HomeRobot(tester);
@@ -54,49 +55,53 @@ void main() {
       await tester.runAsync(() async {
         await r.pumpHomeScreen(db);
         await tester.pumpAndSettle();
-        r.noGroupInDb();
+        r.hasNoGroup();
       });
     });
-    testWidgets('show the groups in  DB', (tester) async {
+    testWidgets('show the groups in  in home screen', (tester) async {
+      //set up
+      final r = HomeRobot(tester);
+      final db = MockDriftGroupRepository();
+      when(db.watchGroups).thenAnswer((_) => Stream.value(groups));
+      await tester.runAsync(() async {
+        await r.pumpHomeScreen(db);
+        await tester.pumpAndSettle();
+        r.hasAllGroups(groups);
+      });
+    });
+  });
+
+  group('existing , Failed', () {
+    testWidgets('Failed Loading the words from DB', (tester) async {
       //set up
       final r = HomeRobot(tester);
       final db = MockDriftGroupRepository();
       when(db.watchGroups).thenAnswer((_) => Stream.value(groups));
       when(() => db.watchWordsByGroupId(1))
-          .thenAnswer((_) => Stream.value([words.first]));
+          .thenThrow(Exception('Loading Error'));
       when(() => db.watchWordsByGroupId(2))
-          .thenAnswer((_) => Stream.value([words.last]));
+          .thenThrow(Exception('Loading Error'));
       await tester.runAsync(() async {
         await r.pumpHomeScreen(db);
         await tester.pumpAndSettle();
-        r.renderGroups(groups);
+        r.failedLoadingWords('Failed Loading the words');
       });
     });
-    testWidgets('show the words in existing groups', (tester) async {
+    testWidgets('Failed Loading the groups from DB', (tester) async {
       //set up
+      final r = HomeRobot(tester);
       final db = MockDriftGroupRepository();
-      when(db.watchGroups).thenAnswer((_) => Stream.value(groups));
-      when(() => db.watchWordsByGroupId(1))
-          .thenAnswer((_) => Stream.value([words.first]));
-      when(() => db.watchWordsByGroupId(2))
-          .thenAnswer((_) => Stream.value([words.last]));
+      when(db.watchGroups).thenThrow(Exception('Loading Error'));
 
-      // await tester.runAsync(() async {
-      //   await tester.pumpWidget(
-      //     ProviderScope(
-      //       child: MaterialApp(
-      //         home: MyWordsInGroup(words: words),
-      //       ),
-      //     ),
-      //   );
-      //   await tester.pumpAndSettle();
-
-      //   expect(find.text('word1 , '), findsOneWidget);
-      //   expect(find.text('word2 '), findsOneWidget);
-      // });
+      await tester.runAsync(() async {
+        await r.pumpHomeScreen(db);
+        await tester.pumpAndSettle();
+        r.failedLoadingGroups('Exception: Loading Error');
+      });
     });
   });
-  group('Actions', () {
+
+  group('Actions , Succeed', () {
     testWidgets('nav to words list for the group that been clicked',
         (tester) async {
       //set up
@@ -116,5 +121,9 @@ void main() {
         await r.navToGroupScreenByGivingId(1);
       });
     });
+  });
+
+  group('Action, Failed', () {
+    //todo: implement action failed here
   });
 }

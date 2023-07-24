@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/features/new_word/controller/save_word_controller.dart';
+import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
 import 'package:langpocket/src/features/new_word/widgets/form/word_form.dart';
 import 'package:langpocket/src/features/new_word/app_bar/new_word_appbar.dart';
 import 'package:langpocket/src/features/new_word/widgets/image_picker/images_dashboard.dart';
@@ -53,7 +53,7 @@ class NewWordScreenState extends State<NewWordScreen> {
                     //! 2-save the word in db
                     await ref
                         .read(newWordControllerProvider.notifier)
-                        .saveNewWord()
+                        .saveNewWord(DateTime.now())
                         .then((_) {
                       formKey.currentState?.reset();
                       context.pop();

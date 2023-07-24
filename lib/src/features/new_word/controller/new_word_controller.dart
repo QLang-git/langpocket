@@ -5,6 +5,7 @@ import 'package:image/image.dart' as img;
 
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/services/word_service.dart';
+import 'package:langpocket/src/features/new_word/controller/validation_input.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 final newWordControllerProvider =
@@ -28,7 +29,7 @@ class NewWordController extends StateNotifier<AsyncValue<WordRecord>> {
             wordExamples: List.filled(5, ''),
             wordNote: '')));
 
-  Future<void> saveNewWord() async {
+  Future<void> saveNewWord(DateTime now) async {
     final WordRecord(
       :foreignWord,
       :wordExamples,
@@ -37,11 +38,7 @@ class NewWordController extends StateNotifier<AsyncValue<WordRecord>> {
       :wordNote,
     ) = state.value!;
     // validations
-    if (foreignWord.isEmpty || wordExamples.isEmpty || wordMeans.isEmpty) {
-      state = AsyncValue.error(
-          'ONE of the required value not found', StackTrace.current);
-      return;
-    }
+
     _validateForeignWord(foreignWord);
     _validateMeans(wordMeans);
     _validateWordExamples(wordExamples);
@@ -51,7 +48,6 @@ class NewWordController extends StateNotifier<AsyncValue<WordRecord>> {
     // get the group
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      final now = DateTime.now();
       final groupId = await _checkTodayGroup(now, wordsServices);
       final newWordCompanion = WordCompanion.insert(
           group: groupId,
@@ -129,43 +125,29 @@ class NewWordController extends StateNotifier<AsyncValue<WordRecord>> {
     }
   }
 
+  final validate = ValidationInput();
+
   void _validateForeignWord(String foreignWord) {
-    if (foreignWord.split(' ').length != 1) {
-      state = AsyncValue.error(
-          'Keep it one word in this field', StackTrace.current);
-      return;
-    }
-    if (foreignWord.length > 25) {
-      state = AsyncValue.error('Word Too long', StackTrace.current);
+    final valid = validate.foreignWordValidation(foreignWord);
+    if (!valid.status) {
+      state = AsyncValue.error(valid.message, StackTrace.current);
       return;
     }
   }
 
   void _validateMeans(List<String> wordMeans) {
-    for (var wordMean in wordMeans) {
-      if (wordMean.length > 50) {
-        state = AsyncValue.error(
-            'keep the definition of the word smaller', StackTrace.current);
-        return;
-      }
-    }
-    if (wordMeans.length > 3 || wordMeans.isEmpty) {
-      state = AsyncValue.error('Invalid text', StackTrace.current);
+    final valid = validate.meaningWordsValidation(wordMeans);
+    if (!valid.status) {
+      state = AsyncValue.error(valid.message, StackTrace.current);
       return;
     }
   }
 
   void _validateWordExamples(List<String> wordExamples) {
-    if (wordExamples.length > 5 || wordExamples.isEmpty) {
-      state = AsyncValue.error('Invalid text', StackTrace.current);
+    final valid = validate.exampleWordsValidation(wordExamples);
+    if (!valid.status) {
+      state = AsyncValue.error(valid.message, StackTrace.current);
       return;
-    }
-    for (var wordExample in wordExamples) {
-      if (wordExample.length > 50) {
-        state =
-            AsyncValue.error('keep your definition short', StackTrace.current);
-        return;
-      }
     }
   }
 
@@ -201,9 +183,9 @@ class NewWordController extends StateNotifier<AsyncValue<WordRecord>> {
   }
 
   void _validateNote(String wordNote) {
-    if (wordNote.length > 150) {
-      state = AsyncValue.error(
-          'keep your notes short and concise ', StackTrace.current);
+    final valid = validate.notesWordsValidation(wordNote);
+    if (!valid.status) {
+      state = AsyncValue.error(valid.message, StackTrace.current);
       return;
     }
   }

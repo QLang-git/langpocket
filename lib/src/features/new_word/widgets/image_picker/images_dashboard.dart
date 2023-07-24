@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
-import 'package:langpocket/src/features/new_word/controller/save_word_controller.dart';
+import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
 
 class ImagesDashboard extends ConsumerStatefulWidget {
   const ImagesDashboard({Key? key}) : super(key: key);

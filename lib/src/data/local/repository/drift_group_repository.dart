@@ -63,7 +63,9 @@ class DriftGroupRepository extends _$DriftGroupRepository
       (select(group)..where((tbl) => tbl.id.equals(groupId))).watchSingle();
 
   @override
-  Stream<List<GroupData>> watchGroups() => select(group).watch();
+  Stream<List<GroupData>> watchGroups() {
+    return select(group).watch();
+  }
 
   @override
   Future<GroupData> fetchGroupByTime(DateTime now) async {
@@ -76,8 +78,9 @@ class DriftGroupRepository extends _$DriftGroupRepository
   }
 
   @override
-  Stream<List<WordData>> watchWordsByGroupId(int groupId) =>
-      (select(word)..where((tbl) => tbl.group.equals(groupId))).watch();
+  Stream<List<WordData>> watchWordsByGroupId(int groupId) {
+    return (select(word)..where((tbl) => tbl.group.equals(groupId))).watch();
+  }
 
   @override
   Future<List<WordData>> fetchWordsByGroupId(int groupId) async =>
