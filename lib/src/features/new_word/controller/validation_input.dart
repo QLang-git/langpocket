@@ -1,6 +1,6 @@
 class ValidationInput {
-  ({String message, bool status}) foreignWordValidation(String foreignWord) {
-    if (foreignWord.trim().isEmpty) {
+  ({String message, bool status}) foreignWordValidation(String? foreignWord) {
+    if (foreignWord == null || foreignWord.trim().isEmpty) {
       return (message: 'The word field can\'t be empty.', status: false);
     }
     if (foreignWord.split(' ').length != 1) {

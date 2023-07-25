@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
+import 'package:langpocket/src/features/new_word/controller/validation_input.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class NotesWord extends StatefulWidget {
@@ -11,6 +12,8 @@ class NotesWord extends StatefulWidget {
 }
 
 class _NotesWordState extends State<NotesWord> {
+  final validate = ValidationInput();
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -20,6 +23,7 @@ class _NotesWordState extends State<NotesWord> {
           return Consumer(
             builder: (BuildContext context, WidgetRef ref, _) {
               return TextFormField(
+                key: const Key('NotesWord'),
                 style: headline3(primaryFontColor),
                 maxLines: 5,
                 decoration: InputDecoration(
@@ -34,12 +38,14 @@ class _NotesWordState extends State<NotesWord> {
                   ),
                 ),
                 validator: (value) {
-                  if (value != null) {
-                    ref
-                        .read(newWordControllerProvider.notifier)
-                        .saveWordNote(value);
+                  final (:status, :message) =
+                      validate.notesWordsValidation(value ?? '');
+                  if (!status) {
+                    return message;
                   }
-                  return null;
+                  ref
+                      .read(newWordControllerProvider.notifier)
+                      .saveWordNote(value!);
                 },
               );
             },

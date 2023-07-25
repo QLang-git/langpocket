@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
+import 'package:langpocket/src/features/new_word/controller/validation_input.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class ExampleWord extends ConsumerStatefulWidget {
@@ -83,12 +84,14 @@ class ExampleInputField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final validate = ValidationInput();
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Consumer(builder: (context, watch, _) {
         final newWordController = ref.read(newWordControllerProvider.notifier);
 
         return TextFormField(
+          key: Key('ExampleWord$index'),
           controller: controller,
           style: headline3(primaryFontColor),
           decoration: InputDecoration(
@@ -116,10 +119,12 @@ class ExampleInputField extends ConsumerWidget {
             ),
           ),
           validator: (value) {
-            if (value == null || (index < 2 && value.isEmpty)) {
-              return 'Please enter 2 examples for this word';
+            final (:status, :message) =
+                validate.exampleWordsValidation([value ?? '']);
+            if (!status) {
+              return message;
             } else {
-              newWordController.saveWordExample(value, index);
+              newWordController.saveWordExample(value!, index);
             }
             return null;
           },

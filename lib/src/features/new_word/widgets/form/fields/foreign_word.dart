@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
+import 'package:langpocket/src/features/new_word/controller/validation_input.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
@@ -17,6 +18,7 @@ class _ForeignWordState extends State<ForeignWord> {
   TextToSpeech tts = TextToSpeech();
   String? inputText;
   final inputController = TextEditingController();
+  final validate = ValidationInput();
 
   @override
   void dispose() {
@@ -30,6 +32,7 @@ class _ForeignWordState extends State<ForeignWord> {
       padding: const EdgeInsets.only(bottom: 2),
       child: Consumer(builder: (context, ref, child) {
         return TextFormField(
+          key: const Key('ForeignWord'),
           controller: inputController,
           onChanged: (value) => inputText = value,
           style: headline3(primaryFontColor),
@@ -58,12 +61,13 @@ class _ForeignWordState extends State<ForeignWord> {
           ),
           // The validator receives the text that the user has entered.
           validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter the word';
+            final (:status, :message) = validate.foreignWordValidation(value);
+            if (!status) {
+              return message;
             } else {
               ref
                   .read(newWordControllerProvider.notifier)
-                  .saveForeignWord(value);
+                  .saveForeignWord(value!);
               return null;
             }
           },
