@@ -46,6 +46,7 @@ class _NotesWordState extends State<NotesWord> {
                   ref
                       .read(newWordControllerProvider.notifier)
                       .saveWordNote(value!);
+                  return null;
                 },
               );
             },

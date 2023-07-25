@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/common_widgets/views/examples_view/examples_view.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
 import 'package:langpocket/src/common_widgets/views/note_view/note_view.dart';
 import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
+import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
 import 'package:langpocket/src/features/word_previewer/app_bar/word_previewer_appbar.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
 
-class WordPreviewerScreen extends StatefulWidget {
-  final WordRecord wordData;
+class WordPreviewerScreen extends ConsumerStatefulWidget {
   const WordPreviewerScreen({
-    required this.wordData,
     super.key,
   });
 
   @override
-  State<WordPreviewerScreen> createState() => _WordPreviewerScreenState();
+  ConsumerState<WordPreviewerScreen> createState() =>
+      _WordPreviewerScreenState();
 }
 
-class _WordPreviewerScreenState extends State<WordPreviewerScreen> {
+class _WordPreviewerScreenState extends ConsumerState<WordPreviewerScreen> {
   @override
   Widget build(BuildContext context) {
+    final wordState = ref.watch(newWordControllerProvider);
     return ResponsiveCenter(
         child: Scaffold(
       appBar: const WordPreviewerAppBar(),
@@ -29,25 +31,30 @@ class _WordPreviewerScreenState extends State<WordPreviewerScreen> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
-          child: Column(
-            children: [
-              ImageView(imageList: widget.wordData.wordImages),
-              const SizedBox(
-                height: 15,
-              ),
-              WordView(
-                foreignWord: widget.wordData.foreignWord,
-                means: widget.wordData.wordMeans,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              ExamplesView(examples: widget.wordData.wordExamples),
-              const SizedBox(
-                height: 20,
-              ),
-              NoteView(note: widget.wordData.wordNote)
-            ],
+          child: AsyncValueWidget(
+            value: wordState,
+            child: (word) {
+              return Column(
+                children: [
+                  ImageView(imageList: word.wordImages),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  WordView(
+                    foreignWord: word.foreignWord,
+                    means: word.wordMeans,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  ExamplesView(examples: word.wordExamples),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  NoteView(note: word.wordNote)
+                ],
+              );
+            },
           ),
         ),
       ),

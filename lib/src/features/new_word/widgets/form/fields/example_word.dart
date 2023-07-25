@@ -25,13 +25,17 @@ class _ExampleWordState extends ConsumerState<ExampleWord> {
   }
 
   void addExample() {
-    exampleControllers.add(TextEditingController());
+    setState(() {
+      exampleControllers.add(TextEditingController());
+    });
   }
 
   void removeExample(int index) {
-    exampleControllers[index].clear();
     ref.read(newWordControllerProvider.notifier).saveWordExample('', index);
-    exampleControllers.removeAt(index);
+    setState(() {
+      exampleControllers[index].clear();
+      exampleControllers.removeAt(index);
+    });
   }
 
   @override
@@ -98,7 +102,9 @@ class ExampleInputField extends ConsumerWidget {
             contentPadding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
             suffixIcon: index > 1
                 ? TextButton(
-                    onPressed: () => removeExample(index),
+                    onPressed: () {
+                      removeExample(index);
+                    },
                     child: Icon(
                       Icons.close_outlined,
                       color: primaryColor,

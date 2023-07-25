@@ -15,13 +15,18 @@ class _MeanWordState extends ConsumerState<MeanWord> {
   final meaningControllers = [TextEditingController()];
 
   void addMeaning() {
-    meaningControllers.add(TextEditingController());
+    setState(() {
+      meaningControllers.add(TextEditingController());
+    });
   }
 
   void removeMeaning(int index) {
-    meaningControllers[index].clear();
     ref.read(newWordControllerProvider.notifier).saveWordMeans('', index);
-    meaningControllers.removeAt(index);
+
+    setState(() {
+      meaningControllers[index].clear();
+      meaningControllers.removeAt(index);
+    });
   }
 
   @override

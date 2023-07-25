@@ -1,7 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import '../group_robot.dart';
-
 void main() {
   group('existing', () {
     testWidgets('group screen has all necessary widgets', (tester) async {});

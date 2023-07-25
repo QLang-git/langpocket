@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
+import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class NewWordAppBar extends StatefulWidget implements PreferredSizeWidget {
   final GlobalKey<FormState> formKey;
@@ -30,15 +32,7 @@ class _NewWordAppBarState extends State<NewWordAppBar> {
             child: IconButton(
                 onPressed: () {
                   if (widget.formKey.currentState!.validate()) {
-                    // context.goNamed(
-                    //   AppRoute.wordView.name,
-                    //   extra: WordRecord(
-                    //       foreignWord: states.foreignWord,
-                    //       wordMeans: states.wordMeans,
-                    //       wordImages: states.wordImages,
-                    //       wordExamples: states.wordExample,
-                    //       wordNote: states.wordNote),
-                    // );
+                    context.goNamed(AppRoute.wordView.name);
                   }
                 },
                 icon: const Icon(

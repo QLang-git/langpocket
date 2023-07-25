@@ -8,12 +8,12 @@ import 'package:langpocket/src/data/services/word_service.dart';
 import 'package:langpocket/src/features/new_word/controller/validation_input.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
-final newWordControllerProvider =
-    StateNotifierProvider<NewWordController, AsyncValue<WordRecord>>(
-        (ref) => NewWordController(
-              wordsServices: ref.watch(wordsServicesProvider),
-            ),
-        dependencies: [
+final newWordControllerProvider = StateNotifierProvider.autoDispose<
+        NewWordController, AsyncValue<WordRecord>>(
+    (ref) => NewWordController(
+          wordsServices: ref.watch(wordsServicesProvider),
+        ),
+    dependencies: [
       wordsServicesProvider,
     ]);
 

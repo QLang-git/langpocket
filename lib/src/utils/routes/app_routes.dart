@@ -95,14 +95,7 @@ final appScreens = [
                   path: 'view',
                   name: AppRoute.wordView.name,
                   pageBuilder: (context, state) {
-                    final word = state.extra as WordRecord?;
-
-                    if (word is WordRecord) {
-                      return _navGoRight(
-                          WordPreviewerScreen(wordData: word), state);
-                    } else {
-                      return _navGoUp(const ErrorNavScreen(), state);
-                    }
+                    return _navGoRight(const WordPreviewerScreen(), state);
                   })
             ]),
         GoRoute(
