@@ -6,7 +6,7 @@ import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/data/services/word_service.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
-final watchWordbyIdProvider =
+final watchWordByIdProvider =
     StreamProvider.family<WordData, int>((ref, wordId) {
   final words = ref.watch(wordsServicesProvider).watchWordById(wordId);
 

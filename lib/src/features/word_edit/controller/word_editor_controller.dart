@@ -1,81 +1,59 @@
 import 'dart:convert';
 
 import 'package:drift/drift.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
+import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/data/services/word_service.dart';
-import 'package:langpocket/src/features/word_edit/screen/edit_mode_word_screen.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
-class NewWordInfo {
-  final int wordId;
-  final WordCompanion wordCompanion;
+final wordEditorProvider = StateNotifierProvider.autoDispose<EditWordController,
+    AsyncValue<WordRecord>>((ref) {
+  final wordService = ref.watch(wordsServicesProvider);
 
-  NewWordInfo(this.wordId, this.wordCompanion);
-}
-
-final updateWordInfoProvider =
-    FutureProvider.family<void, NewWordInfo>((ref, wordNew) async {
-  await ref
-      .watch(wordsServicesProvider)
-      .updateWordInfo(wordNew.wordId, wordNew.wordCompanion);
+  return EditWordController(wordService: wordService);
 });
-Future<void> saveNewUpdate(
-    {required WidgetRef ref,
-    required FormState currentState,
-    required EditModeWordScreenState states,
-    required BuildContext context}) async {
-  if (currentState.validate()) {
-    final imagesbase64 =
-        states.newImages.map((img) => base64Encode(img)).toList();
-    final newInfo = NewWordInfo(
-        1,
-        WordCompanion(
-          foreignWord: Value(states.newforeignWord),
-          wordMeans: Value(states.newMeans.join('-')),
-          wordImages: Value(imagesbase64.join('-')),
-          wordExamples: Value(states.newExample.join('-')),
-          wordNote: Value(states.newNote),
-        ));
 
-    final res = ref.read(updateWordInfoProvider(newInfo));
-    if (!res.hasError) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('The word has been updated')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Server Error, try again')),
-      );
-    }
-    currentState.reset();
-    context.pop();
+class EditWordController extends StateNotifier<AsyncValue<WordRecord>> {
+  WordServices wordService;
+
+  EditWordController({required this.wordService}) : super(const AsyncLoading());
+  Future<void> getWord(int wordId) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final word = await wordService.fetchWordById(wordId);
+      return word.decoding();
+    });
   }
-}
 
-List<String> _cleanList(List<String> list) {
-  return list.where((element) => element.isNotEmpty).toList();
-}
+  bool isWordInfoSimilar(WordRecord newWordRecord) {
+    final newWord = newWordRecord.copyWith(
+        wordExamples: newWordRecord.wordExamples
+            .where((element) => element.isNotEmpty)
+            .toList(),
+        wordMeans: newWordRecord.wordMeans
+            .where((element) => element.isNotEmpty)
+            .toList());
+    return state.value == newWord;
+  }
 
-bool isWordInfoSimilar(
-    {required EditModeWordScreenState states, required WordRecord wordData}) {
-  final isUpdatedforeignWord = states.newforeignWord == wordData.foreignWord;
-  final isUpdatedMeans =
-      listEquals(_cleanList(states.newMeans), _cleanList(wordData.wordMeans));
-  final isUpdatedExample = listEquals(
-      _cleanList(states.newExample), _cleanList(wordData.wordExamples));
-  final isUpdatedImage = listEquals(states.newImages, wordData.wordImages);
-  final isUpdatedNote = states.newNote == wordData.wordNote;
-  if (isUpdatedforeignWord &&
-      isUpdatedMeans &&
-      isUpdatedExample &&
-      isUpdatedImage &&
-      isUpdatedNote) {
-    return true;
-  } else {
-    return false;
+  Future<bool> updateWordInfo(WordRecord newWordRecord) async {
+    final wordId = newWordRecord.id!;
+    final imagesBase64 =
+        newWordRecord.wordImages.map((img) => base64Encode(img)).toList();
+    final wordCompanion = WordCompanion(
+        foreignWord: Value(newWordRecord.foreignWord),
+        wordMeans: Value(newWordRecord.wordMeans.join('-')),
+        wordExamples: Value(newWordRecord.wordExamples.join('-')),
+        wordImages: Value(imagesBase64.join('-')),
+        wordNote: Value(newWordRecord.wordNote));
+    try {
+      await wordService.updateWordInfo(wordId, wordCompanion);
+      state = AsyncData(newWordRecord);
+
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

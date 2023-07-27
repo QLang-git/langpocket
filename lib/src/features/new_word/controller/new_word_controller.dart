@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,6 +30,8 @@ class NewWordController extends StateNotifier<AsyncValue<WordRecord>> {
             wordExamples: List.filled(5, ''),
             wordNote: '')));
 
+  AsyncValue<WordRecord> getCurrentWord() => state;
+
   Future<void> saveNewWord(DateTime now) async {
     final WordRecord(
       :foreignWord,
@@ -49,11 +52,12 @@ class NewWordController extends StateNotifier<AsyncValue<WordRecord>> {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final groupId = await _checkTodayGroup(now, wordsServices);
+      final imagesBase64 = wordImages.map((img) => base64Encode(img)).toList();
       final newWordCompanion = WordCompanion.insert(
           group: groupId,
           foreignWord: foreignWord,
           wordMeans: wordMeans.join('-'),
-          wordImages: wordImages.join('-'),
+          wordImages: imagesBase64.join('-'),
           wordExamples: wordExamples.join('-'),
           wordNote: wordNote,
           wordDate: now);

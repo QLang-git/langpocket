@@ -24,17 +24,18 @@ class _WordPreviewerScreenState extends ConsumerState<WordPreviewerScreen> {
   @override
   Widget build(BuildContext context) {
     final wordState = ref.watch(newWordControllerProvider);
+
     return ResponsiveCenter(
         child: Scaffold(
       appBar: const WordPreviewerAppBar(),
       backgroundColor: backgroundColor,
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
-          child: AsyncValueWidget(
-            value: wordState,
-            child: (word) {
-              return Column(
+        child: AsyncValueWidget(
+          value: wordState,
+          child: (word) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
                 children: [
                   ImageView(imageList: word.wordImages),
                   const SizedBox(
@@ -53,9 +54,9 @@ class _WordPreviewerScreenState extends ConsumerState<WordPreviewerScreen> {
                   ),
                   NoteView(note: word.wordNote)
                 ],
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     ));

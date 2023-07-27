@@ -7,13 +7,32 @@ import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
 
 class ImagesDashboard extends ConsumerStatefulWidget {
-  const ImagesDashboard({Key? key}) : super(key: key);
+  final List<Uint8List>? currentImg;
+
+  const ImagesDashboard({Key? key, this.currentImg}) : super(key: key);
 
   @override
   ConsumerState<ImagesDashboard> createState() => _ImagePreviewerState();
 }
 
 class _ImagePreviewerState extends ConsumerState<ImagesDashboard> {
+  late List<Uint8List> wordImages;
+
+  @override
+  void initState() {
+    if (widget.currentImg != null) {
+      wordImages = widget.currentImg!;
+      wordImages.map((img) {
+        Future.delayed(Duration.zero, () {
+          ref.read(newWordControllerProvider.notifier).saveWordImage(img);
+        });
+      }).toList();
+    } else {
+      wordImages = [];
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AsyncValueWidget(

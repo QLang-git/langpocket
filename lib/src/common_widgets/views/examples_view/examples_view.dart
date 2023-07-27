@@ -12,32 +12,36 @@ class ExamplesView extends StatelessWidget {
     TextToSpeech tts = TextToSpeech();
     return Column(
       children: examples
-          .where((element) => element.isNotEmpty && element != 'notUsed')
+          .where((element) => element.isNotEmpty)
           .map((example) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 0),
                   elevation: 5,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25.0),
+                    borderRadius: BorderRadius.circular(20.0),
                   ),
-                  margin: const EdgeInsets.all(10),
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const SizedBox(width: 15),
                         Expanded(
-                          child: Text(
-                            example,
-                            style: textStyle.displayLarge
-                                ?.copyWith(color: colorFount),
-                            softWrap: true,
-                            maxLines: 3,
-                            overflow: TextOverflow.fade,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              example,
+                              style: textStyle.displayLarge
+                                  ?.copyWith(color: colorFount),
+                              softWrap: true,
+                              maxLines: 3,
+                              overflow: TextOverflow.fade,
+                            ),
                           ),
                         ),
                         TextButton(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 5),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 9),
                             child: Icon(
                               Icons.volume_up_outlined,
                               color: colorFount,

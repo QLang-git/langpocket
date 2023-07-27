@@ -6,6 +6,7 @@ import 'package:langpocket/src/common_widgets/views/examples_view/examples_view.
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
 import 'package:langpocket/src/common_widgets/views/note_view/note_view.dart';
 import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
+import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/features/word_view/controller/word_view_controller.dart';
 import 'package:langpocket/src/features/word_view/word_view_appbar/word_view_appbar.dart';
 
@@ -24,20 +25,20 @@ class _WordViewScreenState extends ConsumerState<WordViewScreen> {
   @override
   Widget build(BuildContext context) {
     final colorStyle = Theme.of(context).colorScheme;
-    final word = ref.watch(watchWordbyIdProvider(widget.wordId));
+    final word = ref.watch(watchWordByIdProvider(widget.wordId));
 
     return AsyncValueWidget(
       value: word,
       child: (word) {
-        final wordData = wordDecoding([word]).first;
+        final groupId = word.group;
+        final wordData = word.decoding();
         return ResponsiveCenter(
           child: Scaffold(
-            appBar: WordViewAppBar(wordData: wordData),
+            appBar: WordViewAppBar(wordData: wordData, groupId: groupId),
             backgroundColor: colorStyle.background,
             body: SingleChildScrollView(
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   children: [
                     ImageView(imageList: wordData.wordImages),

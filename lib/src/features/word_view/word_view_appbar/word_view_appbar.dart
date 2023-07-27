@@ -5,10 +5,9 @@ import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class WordViewAppBar extends StatelessWidget implements PreferredSizeWidget {
   final WordRecord wordData;
-  const WordViewAppBar({
-    super.key,
-    required this.wordData,
-  });
+  final int groupId;
+  const WordViewAppBar(
+      {super.key, required this.wordData, required this.groupId});
   @override
   Size get preferredSize => const Size.fromHeight(75);
 
@@ -29,9 +28,10 @@ class WordViewAppBar extends StatelessWidget implements PreferredSizeWidget {
             padding: const EdgeInsets.only(right: 6.5),
             child: IconButton(
               onPressed: () {
-                context.pushNamed(AppRoute.editMode.name,
-                    extra: wordData,
-                    pathParameters: {'wordId': wordData.id.toString()});
+                context.pushNamed(AppRoute.editMode.name, pathParameters: {
+                  "groupId": groupId.toString(),
+                  'wordId': wordData.id.toString()
+                });
               },
               icon: const Icon(
                 Icons.edit_document,
@@ -41,6 +41,13 @@ class WordViewAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
         ],
+        leading: IconButton(
+            onPressed: () => context.pop(),
+            icon: const Icon(
+              Icons.arrow_back_outlined,
+              color: Colors.white,
+              size: 30,
+            )),
         title: Text(
           wordData.foreignWord,
           style: Theme.of(context)

@@ -5,7 +5,7 @@ import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
 import 'package:langpocket/src/features/new_word/widgets/form/word_form.dart';
 import 'package:langpocket/src/features/new_word/app_bar/new_word_appbar.dart';
-import 'package:langpocket/src/features/new_word/widgets/image_picker/images_dashboard.dart';
+import 'package:langpocket/src/features/new_word/widgets/form/fields/images_dashboard.dart';
 
 class NewWordScreen extends StatefulWidget {
   const NewWordScreen({super.key});

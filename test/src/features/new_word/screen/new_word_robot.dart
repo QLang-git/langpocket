@@ -5,7 +5,7 @@ import 'package:langpocket/src/data/local/repository/drift_group_repository.dart
 import 'package:langpocket/src/data/local/repository/local_group_repository.dart';
 import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
 import 'package:langpocket/src/features/new_word/screen/new_word_screen.dart';
-import 'package:langpocket/src/features/new_word/widgets/image_picker/images_dashboard.dart';
+import 'package:langpocket/src/features/new_word/widgets/form/fields/images_dashboard.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:mocktail/mocktail.dart';
 

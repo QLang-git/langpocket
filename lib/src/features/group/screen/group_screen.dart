@@ -4,7 +4,6 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/features/group/app_bar/group_appbar.dart';
 import 'package:langpocket/src/features/group/controller/group_controller.dart';
 import 'package:langpocket/src/features/group/widgets/words_list.dart';
@@ -12,13 +11,10 @@ import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class GroupScreen extends ConsumerStatefulWidget {
   final int groupId;
-  final String groupName;
-  final DateTime creatingTime;
-  const GroupScreen(
-      {super.key,
-      required this.groupName,
-      required this.groupId,
-      required this.creatingTime});
+  const GroupScreen({
+    super.key,
+    required this.groupId,
+  });
 
   @override
   ConsumerState<GroupScreen> createState() => _GroupScreenState();
@@ -29,30 +25,30 @@ class _GroupScreenState extends ConsumerState<GroupScreen> {
 
   @override
   void initState() {
-    groupController = GroupController(ref: ref, groupId: widget.groupId);
-    groupController.initial();
+    groupController =
+        ref.read(groupControllerProvider(widget.groupId).notifier);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final data = ref.watch(groupControllerProvider(widget.groupId));
     return ResponsiveCenter(
         child: AsyncValueWidget(
-            value: groupController.getWordsInGroupById(widget.groupId),
-            child: (wordsList) {
-              final wordRecords =
-                  wordsList.map((word) => word.decoding()).toList();
+            value: data,
+            child: (wordsGroup) {
+              final wordsList = wordsGroup.wordsData;
               return Scaffold(
                 appBar: GroupAppBar(
+                  creatingTime: wordsGroup.groupData.creatingTime,
+                  groupName: wordsGroup.groupData.groupName,
                   groupController: groupController,
-                  groupName: widget.groupName,
-                  creatingTime: widget.creatingTime,
                 ),
                 body: Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 15, horizontal: 12),
-                  child: WordsGroups(
-                      groupController: groupController, words: wordRecords),
+                  child: WordsList(
+                      words: wordsList, groupController: groupController),
                 ),
                 floatingActionButton: SpeedDial(
                   animatedIcon: AnimatedIcons.menu_close,
@@ -68,9 +64,11 @@ class _GroupScreenState extends ConsumerState<GroupScreen> {
                       onTap: () => context.pushNamed(
                         AppRoute.audioClip.name,
                         pathParameters: {
-                          'wordId': wordRecords.first.id.toString(),
+                          'wordId': wordsList.first.id.toString(),
                         },
-                        queryParameters: {'groupName': widget.groupName},
+                        queryParameters: {
+                          'groupName': wordsGroup.groupData.groupName
+                        },
                       ),
                     ),
                     SpeedDialChild(
@@ -79,7 +77,7 @@ class _GroupScreenState extends ConsumerState<GroupScreen> {
                         onTap: () {
                           context.pushNamed(AppRoute.spelling.name,
                               pathParameters: {
-                                'wordId': wordRecords.first.id.toString(),
+                                'wordId': wordsList.first.id.toString(),
                                 'groupId': widget.groupId.toString(),
                               },
                               queryParameters: {
@@ -92,7 +90,7 @@ class _GroupScreenState extends ConsumerState<GroupScreen> {
                         onTap: () {
                           context.pushNamed(AppRoute.pronunciation.name,
                               pathParameters: {
-                                'wordId': wordRecords.first.id.toString(),
+                                'wordId': wordsList.first.id.toString(),
                                 'groupId': widget.groupId.toString(),
                               },
                               queryParameters: {

@@ -1,81 +1,44 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
+import 'package:langpocket/src/features/new_word/widgets/form/word_form.dart';
+import 'package:langpocket/src/features/new_word/widgets/form/fields/images_dashboard.dart';
 import 'package:langpocket/src/features/word_edit/app_bar/word_editor_app_bar.dart';
-import 'package:langpocket/src/features/word_edit/widgets/edit_form/edit_word_form.dart';
-import 'package:langpocket/src/features/word_edit/widgets/edit_word_image/edit_word_image.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
+import 'package:langpocket/src/features/word_edit/controller/word_editor_controller.dart';
 
-class EditModeWordScreen extends StatefulWidget {
-  final WordRecord wordData;
+class EditModeWordScreen extends ConsumerStatefulWidget {
+  final int wordId;
 
-  const EditModeWordScreen({super.key, required this.wordData});
+  const EditModeWordScreen({super.key, required this.wordId});
 
   @override
-  State<EditModeWordScreen> createState() => EditModeWordScreenState();
+  ConsumerState<EditModeWordScreen> createState() => _EditModeWordScreenState();
 }
 
-class EditModeWordScreenState extends State<EditModeWordScreen> {
+class _EditModeWordScreenState extends ConsumerState<EditModeWordScreen> {
   final formKey = GlobalKey<FormState>();
-  late String newforeignWord;
-  late List<String> newMeans;
-  late List<Uint8List> newImages;
-  late List<String> newExample;
-  late String newNote;
+  late EditWordController editWordController;
+
   @override
   void initState() {
-    newforeignWord = widget.wordData.foreignWord;
-    newMeans = [
-      ...widget.wordData.wordMeans,
-      ...List.filled(6 - widget.wordData.wordMeans.length, '')
-    ];
-    newImages = widget.wordData.wordImages;
-    newExample = [
-      ...widget.wordData.wordExamples,
-      ...List.filled(6 - widget.wordData.wordExamples.length, '')
-    ];
-    newNote = widget.wordData.wordNote;
+    editWordController = ref.refresh(wordEditorProvider.notifier);
+    editWordController.getWord(widget.wordId);
     super.initState();
-  }
-
-  void updateWordMeans(String means, int targetIndex) {
-    setState(() {
-      newMeans[targetIndex] = means;
-    });
-  }
-
-  void updateWordExample(String example, int targetIndex) {
-    setState(() {
-      newExample[targetIndex] = example;
-    });
-  }
-
-  void updateWordImages(List<Uint8List> images) {
-    setState(() {
-      newImages = images;
-    });
-  }
-
-  void updateForeignWord(String word) {
-    setState(() {
-      newforeignWord = word;
-    });
-  }
-
-  void updateNote(String note) {
-    setState(() {
-      newNote = note;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final word = ref.watch(wordEditorProvider);
     final colorStyle = Theme.of(context).colorScheme;
-
     return ResponsiveCenter(
-        child: Scaffold(
+        child: AsyncValueWidget(
+      value: word,
+      child: (wordData) {
+        return Scaffold(
             appBar: WordEditorAppbar(
-              wordData: widget.wordData,
+              editWordController: editWordController,
+              wordData: wordData,
               formKey: formKey,
             ),
             backgroundColor: colorStyle.background,
@@ -85,17 +48,19 @@ class EditModeWordScreenState extends State<EditModeWordScreen> {
                     const EdgeInsets.symmetric(vertical: 15, horizontal: 19.5),
                 child: Column(
                   children: [
-                    EditWordImage(currentImages: widget.wordData.wordImages),
+                    ImagesDashboard(currentImg: wordData.wordImages),
                     const SizedBox(
                       height: 40,
                     ),
-                    EditWordForm(
-                      wordDataToView: widget.wordData,
+                    NewWordForm(
+                      wordRecord: wordData,
                       formKey: formKey,
                     )
                   ],
                 ),
               ),
-            )));
+            ));
+      },
+    ));
   }
 }

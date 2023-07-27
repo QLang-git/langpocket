@@ -23,9 +23,10 @@ class _WordViewState extends State<WordView> {
     final textStyle = Theme.of(context).textTheme;
     TextToSpeech tts = TextToSpeech();
     return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 0),
       elevation: 3,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(30.0),
+        borderRadius: BorderRadius.circular(20.0),
       ),
       child: Column(
         children: [

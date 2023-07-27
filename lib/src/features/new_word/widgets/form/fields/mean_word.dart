@@ -5,14 +5,33 @@ import 'package:langpocket/src/features/new_word/controller/validation_input.dar
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class MeanWord extends ConsumerStatefulWidget {
-  const MeanWord({Key? key}) : super(key: key);
+  final List<String>? wordMeans;
+  const MeanWord({Key? key, this.wordMeans}) : super(key: key);
 
   @override
   ConsumerState<MeanWord> createState() => _MeanWordState();
 }
 
 class _MeanWordState extends ConsumerState<MeanWord> {
-  final meaningControllers = [TextEditingController()];
+  List<TextEditingController> meaningControllers = [TextEditingController()];
+
+  @override
+  void initState() {
+    if (widget.wordMeans != null) {
+      meaningControllers = [];
+      int index = 0;
+      widget.wordMeans?.map((mean) {
+        meaningControllers.add(TextEditingController(text: mean));
+        Future.delayed(Duration.zero, () {
+          ref
+              .read(newWordControllerProvider.notifier)
+              .saveWordMeans(mean, index);
+          index += 1;
+        });
+      }).toList();
+    }
+    super.initState();
+  }
 
   void addMeaning() {
     setState(() {
@@ -34,6 +53,7 @@ class _MeanWordState extends ConsumerState<MeanWord> {
     return Column(children: [
       for (int i = 0; i < meaningControllers.length; i++)
         MeaningInputField(
+          isUpdating: widget.wordMeans != null,
           controller: meaningControllers[i],
           index: i,
           removeMeaning: removeMeaning,
@@ -64,12 +84,14 @@ class _MeanWordState extends ConsumerState<MeanWord> {
 }
 
 class MeaningInputField extends ConsumerWidget {
+  final bool isUpdating;
   final TextEditingController controller;
   final int index;
   final Function(int) removeMeaning;
 
   const MeaningInputField({
     super.key,
+    required this.isUpdating,
     required this.controller,
     required this.index,
     required this.removeMeaning,
@@ -86,6 +108,11 @@ class MeaningInputField extends ConsumerWidget {
         return TextFormField(
           key: Key('MeanWord$index'),
           controller: controller,
+          onChanged: (value) {
+            if (isUpdating) {
+              newWordController.saveWordMeans(value, index);
+            }
+          },
           style: headline3(primaryFontColor),
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.fromLTRB(12, 12, 12, 0),

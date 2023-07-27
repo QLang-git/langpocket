@@ -121,37 +121,42 @@ class _GroupAppBarState extends State<GroupAppBar> {
         actions: [
           Padding(
               padding: const EdgeInsets.all(8.0),
-              child: editModeActivate
-                  ? Consumer(
-                      builder: (context, ref, child) {
-                        return IconButton(
-                          onPressed: () {
-                            final res = widget.groupController.editGroupName(
-                              widget.groupName,
-                              controller,
-                              context,
-                              inputKey,
-                              setEditMode,
-                            );
-                            showSnackBar(res, context);
-                          },
-                          icon: const Icon(Icons.save_rounded,
-                              size: 25, color: Colors.white),
-                        );
+              child: Consumer(
+                builder: (context, ref, child) {
+                  return IconButton(
+                    onPressed: () async {
+                      if (editModeActivate) {
+                        await widget.groupController
+                            .editGroupName(widget.groupName, controller,
+                                context, inputKey, setEditMode)
+                            .then((res) => showSnackBar(res, context))
+                            .then((_) => setEditMode(false));
+                      } else {
+                        setEditMode(true);
+                      }
+                    },
+                    icon: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      transitionBuilder:
+                          (Widget child, Animation<double> animation) {
+                        return ScaleTransition(scale: animation, child: child);
                       },
-                    )
-                  : IconButton(
-                      onPressed: () => setEditMode(true),
-                      icon:
-                          const Icon(Icons.edit, size: 25, color: Colors.white),
-                    ))
+                      child: editModeActivate
+                          ? Icon(Icons.save_rounded,
+                              size: 25, color: Colors.white, key: UniqueKey())
+                          : Icon(Icons.edit,
+                              size: 25, color: Colors.white, key: UniqueKey()),
+                    ),
+                  );
+                },
+              ))
         ],
       ),
     );
   }
 
-  void showSnackBar(bool? res, BuildContext context) {
-    if (res != null) {
+  void showSnackBar(bool res, BuildContext context) async {
+    if (res) {
       final snackBarContent = res
           ? 'The name of the group has been changed'
           : 'Error: Please try again';

@@ -1,26 +1,28 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/features/group/controller/group_controller.dart';
 import 'package:langpocket/src/features/group/widgets/custom_practice_dialog.dart';
-import 'package:langpocket/src/features/group/widgets/word_info.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:text_to_speech/text_to_speech.dart';
+import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
-class WordsGroups extends ConsumerStatefulWidget {
+class WordsList extends ConsumerStatefulWidget {
   final GroupController groupController;
   final List<WordRecord> words;
-  const WordsGroups({
+
+  const WordsList({
     required this.words,
     required this.groupController,
-    super.key,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
-  ConsumerState<WordsGroups> createState() => WordsGroupsState();
+  ConsumerState<WordsList> createState() => _WordsGroupsState();
 }
 
-class WordsGroupsState extends ConsumerState<WordsGroups> {
+class _WordsGroupsState extends ConsumerState<WordsList> {
   @override
   Widget build(BuildContext context) {
     return widget.words.isEmpty
@@ -39,16 +41,15 @@ class _MyWordList extends ConsumerStatefulWidget {
   const _MyWordList({
     required this.words,
     required this.groupController,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
-  ConsumerState<_MyWordList> createState() => __MyWordListState();
+  _MyWordListState createState() => _MyWordListState();
 }
 
-class __MyWordListState extends ConsumerState<_MyWordList> {
+class _MyWordListState extends ConsumerState<_MyWordList> {
   late List<WordRecord> myWords;
-
-  final tts = TextToSpeech();
 
   @override
   void initState() {
@@ -92,107 +93,225 @@ class __MyWordListState extends ConsumerState<_MyWordList> {
       widget.groupController.deleteWord(wordId);
       // Deletion succeeded
     } catch (error) {
-      // Handle deletion failure
-      print("Failed to delete word: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Failed to delete word: Try again"),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView.builder(
-        itemCount: myWords.length,
-        itemBuilder: (context, index) {
-          final word = myWords[index];
+    return ListView.builder(
+      itemCount: myWords.length,
+      itemBuilder: (context, index) {
+        final word = myWords[index];
+        return DismissibleWordCard(
+          word: word,
+          onDismissed: () => _onDismissed(index, word),
+        );
+      },
+    );
+  }
+}
 
-          return Dismissible(
-            direction: DismissDirection.endToStart,
-            key: ValueKey(word.id),
-            background: Container(
-              color: Colors.red,
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
-                      Text(
-                        'Delete',
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelLarge
-                            ?.copyWith(color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            onDismissed: (_) => _onDismissed(index, word),
-            child: Card(
-              elevation: 7,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25.0),
-              ),
-              child: InkWell(
-                hoverColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                onTap: () {
-                  final groupId =
-                      GoRouterState.of(context).pathParameters["groupId"];
-                  context.pushNamed(AppRoute.word.name, pathParameters: {
-                    "groupId": groupId!,
-                    'wordId': word.id.toString()
-                  });
-                },
-                onLongPress: () {
-                  const double padding = 20;
-                  const double avatarRadius = 45;
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext buildContext) =>
-                        CustomPracticeDialog(
-                      groupId:
-                          GoRouterState.of(context).pathParameters["groupId"]!,
-                      wordData: word,
-                      padding: padding,
-                      avatarRadius: avatarRadius,
-                    ),
-                  );
-                },
-                child: Container(
+class DismissibleWordCard extends StatelessWidget {
+  final WordRecord word;
+  final VoidCallback onDismissed;
+
+  const DismissibleWordCard({
+    required this.word,
+    required this.onDismissed,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Dismissible(
+      direction: DismissDirection.endToStart,
+      key: ValueKey(word.id),
+      background: const DeleteBackground(),
+      onDismissed: (_) => onDismissed(),
+      child: WordCard(
+        word: word,
+      ),
+    );
+  }
+}
+
+class DeleteBackground extends StatelessWidget {
+  const DeleteBackground({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 15),
+      elevation: 7,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(25.0),
+      ),
+      child: Container(
+        color: Colors.red,
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.delete,
                   color: Colors.white,
-                  width: double.infinity,
-                  height: 100,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      WordInfo(word: word),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: IconButton(
-                          onPressed: () {
-                            tts.speak(word.foreignWord);
-                          },
-                          icon: Icon(
-                            Icons.volume_up_outlined,
-                            color: Theme.of(context).colorScheme.outline,
-                            size: 25,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
-              ),
+                Text(
+                  'Delete',
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge
+                      ?.copyWith(color: Colors.white),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class WordCard extends StatelessWidget {
+  final WordRecord word;
+
+  const WordCard({
+    required this.word,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final randomExample = Random().nextInt(word.wordExamples.length);
+    final tts = TextToSpeech();
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 15),
+      elevation: 7,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(25.0),
+      ),
+      child: InkWell(
+        hoverColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        onTap: () {
+          final groupId = GoRouterState.of(context).pathParameters["groupId"];
+          context.pushNamed(AppRoute.word.name, pathParameters: {
+            "groupId": groupId!,
+            'wordId': word.id.toString()
+          });
+        },
+        onLongPress: () {
+          const double padding = 20;
+          const double avatarRadius = 45;
+          showDialog(
+            context: context,
+            builder: (BuildContext buildContext) => CustomPracticeDialog(
+              groupId: GoRouterState.of(context).pathParameters["groupId"]!,
+              wordData: word,
+              padding: padding,
+              avatarRadius: avatarRadius,
             ),
           );
         },
+        child: Container(
+          color: Colors.white,
+          width: double.infinity,
+          height: 100,
+          child: Row(
+            children: [
+              SizedBox(
+                height: double.infinity,
+                width: 90,
+                child: word.wordImages.isNotEmpty
+                    ? Image.memory(
+                        word.wordImages.first,
+                        fit: BoxFit.fill,
+                      )
+                    : Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.onBackground,
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.image_not_supported_outlined,
+                            size: 50,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                // Add this
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 7),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        word.foreignWord,
+                        style: headline3Bold(primaryFontColor),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Row(
+                        children: [
+                          Text('Means: ', style: bodyLarge(primaryFontColor)),
+                          Expanded(
+                            // And this
+                            child: Text(
+                              word.wordMeans.join(','),
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
+                              style: bodyLargeBold(secondaryColor),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text('Example: ', style: bodyLarge(primaryFontColor)),
+                          Expanded(
+                            // And this
+                            child: Text(
+                              word.wordExamples[randomExample],
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
+                              style: bodyLargeBold(secondaryColor),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: IconButton(
+                  onPressed: () {
+                    tts.setRate(1);
+                    tts.speak(word.foreignWord);
+                  },
+                  icon: Icon(
+                    Icons.volume_up_outlined,
+                    color: Theme.of(context).colorScheme.outline,
+                    size: 25,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

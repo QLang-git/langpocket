@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -72,6 +72,36 @@ class WordRecord {
       wordNote: wordNote ?? this.wordNote,
     );
   }
+
+  @override
+  bool operator ==(covariant WordRecord other) {
+    if (identical(this, other)) return true;
+
+    bool isUint8ListEquals(List<Uint8List> list1, List<Uint8List> list2) {
+      if (list1.length != list2.length) return false;
+      for (int i = 0; i < list1.length; i++) {
+        if (!listEquals(list1[i], list2[i])) return false;
+      }
+      return true;
+    }
+
+    return other.id == id &&
+        other.foreignWord == foreignWord &&
+        listEquals(other.wordMeans, wordMeans) &&
+        isUint8ListEquals(other.wordImages, wordImages) &&
+        listEquals(other.wordExamples, wordExamples) &&
+        other.wordNote == wordNote;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        foreignWord.hashCode ^
+        wordMeans.hashCode ^
+        wordImages.hashCode ^
+        wordExamples.hashCode ^
+        wordNote.hashCode;
+  }
 }
 
 final GoRouter goroute = GoRouter(
@@ -117,12 +147,7 @@ final appScreens = [
                   creatingTime != null &&
                   DateTime.tryParse(creatingTime) != null) {
                 return _navGoRight(
-                    GroupScreen(
-                      groupId: int.parse(groupId),
-                      groupName: groupName,
-                      creatingTime: DateTime.parse(creatingTime),
-                    ),
-                    state);
+                    GroupScreen(groupId: int.parse(groupId)), state);
               } else {
                 return _navGoUp(const ErrorNavScreen(), state);
               }
@@ -145,11 +170,12 @@ final appScreens = [
                       path: 'edit-mode',
                       name: AppRoute.editMode.name,
                       pageBuilder: (context, state) {
-                        final word = state.extra as WordRecord?;
-                        if (word is WordRecord) {
+                        final wordId = state.pathParameters['wordId'];
+
+                        if (wordId != null) {
                           return _navGoRight(
                               EditModeWordScreen(
-                                wordData: word,
+                                wordId: int.parse(wordId),
                               ),
                               state);
                         } else {

@@ -24,13 +24,13 @@ void main() {
       overrides: [localGroupRepositoryProvider.overrideWithValue(db)],
     );
     expect(
-      container.read(watchWordbyIdProvider(1)),
+      container.read(watchWordByIdProvider(1)),
       const AsyncValue<WordData>.loading(),
     );
 
     /// Wait for the request to finish
-    await container.read(watchWordbyIdProvider(1).future);
-    expect(container.read(watchWordbyIdProvider(1)).value, word);
+    await container.read(watchWordByIdProvider(1).future);
+    expect(container.read(watchWordByIdProvider(1)).value, word);
     verify(() => db.watchWordById(1)).called(1);
   });
 }

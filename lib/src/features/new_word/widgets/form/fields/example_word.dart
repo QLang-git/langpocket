@@ -5,17 +5,37 @@ import 'package:langpocket/src/features/new_word/controller/validation_input.dar
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class ExampleWord extends ConsumerStatefulWidget {
-  const ExampleWord({Key? key}) : super(key: key);
+  final List<String>? examples;
+  const ExampleWord({Key? key, this.examples}) : super(key: key);
 
   @override
   ConsumerState<ExampleWord> createState() => _ExampleWordState();
 }
 
 class _ExampleWordState extends ConsumerState<ExampleWord> {
-  final exampleControllers = [
+  var exampleControllers = [
     TextEditingController(),
     TextEditingController(),
   ];
+
+  @override
+  void initState() {
+    if (widget.examples != null) {
+      exampleControllers = [];
+      int index = 0;
+      widget.examples?.map((example) {
+        exampleControllers.add(TextEditingController(text: example));
+        Future.delayed(Duration.zero, () {
+          ref
+              .read(newWordControllerProvider.notifier)
+              .saveWordExample(example, index);
+          index += 1;
+        });
+      }).toList();
+    }
+    super.initState();
+  }
+
   @override
   void dispose() {
     for (var controller in exampleControllers) {
@@ -53,6 +73,7 @@ class _ExampleWordState extends ConsumerState<ExampleWord> {
       ),
       for (int i = 0; i < exampleControllers.length; i++)
         ExampleInputField(
+          isUpdating: widget.examples != null,
           controller: exampleControllers[i],
           index: i,
           removeExample: removeExample,
@@ -75,12 +96,14 @@ class _ExampleWordState extends ConsumerState<ExampleWord> {
 }
 
 class ExampleInputField extends ConsumerWidget {
+  final bool isUpdating;
   final TextEditingController controller;
   final int index;
   final Function(int) removeExample;
 
   const ExampleInputField({
     super.key,
+    required this.isUpdating,
     required this.controller,
     required this.index,
     required this.removeExample,
@@ -96,6 +119,11 @@ class ExampleInputField extends ConsumerWidget {
 
         return TextFormField(
           key: Key('ExampleWord$index'),
+          onChanged: (value) {
+            if (isUpdating) {
+              newWordController.saveWordExample(value, index);
+            }
+          },
           controller: controller,
           style: headline3(primaryFontColor),
           decoration: InputDecoration(
