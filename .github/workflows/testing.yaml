@@ -23,4 +23,4 @@ jobs:
       - name: deploy to GitHub
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
-          targetBranch: langPocket-Demo-branch
+          baseHref: /langpocket-beta/
