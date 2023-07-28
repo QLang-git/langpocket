@@ -65,6 +65,7 @@ class _GroupScreenState extends ConsumerState<GroupScreen> {
                         AppRoute.audioClip.name,
                         pathParameters: {
                           'wordId': wordsList.first.id.toString(),
+                          'groupId': widget.groupId.toString()
                         },
                         queryParameters: {
                           'groupName': wordsGroup.groupData.groupName

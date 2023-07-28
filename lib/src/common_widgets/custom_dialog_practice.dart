@@ -23,7 +23,7 @@ class CustomDialogPractice extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
             width: double.infinity,
-            height: reload != null ? 350 : 300,
+            height: reload != null ? 370 : 300,
             decoration: BoxDecoration(
               shape: BoxShape.rectangle,
               color: Colors.white,

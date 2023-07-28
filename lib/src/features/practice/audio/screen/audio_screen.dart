@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/features/practice/audio/controller/audio_controller.dart';
 import 'package:langpocket/src/features/practice/audio/screen/audio_appbar.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class AudioScreen extends StatefulWidget {
   final String groupName;
-  final List<WordRecord> words;
 
-  const AudioScreen({super.key, required this.words, required this.groupName});
+  const AudioScreen({super.key, required this.groupName});
 
   @override
   State<AudioScreen> createState() => AudioScreenState();
@@ -21,7 +19,7 @@ class AudioScreenState extends State<AudioScreen> {
   @override
   void initState() {
     audioController = AudioController(
-      wordRecords: widget.words,
+      wordRecords: [],
       soundPlaying: setSoundPlaying,
     );
     super.initState();

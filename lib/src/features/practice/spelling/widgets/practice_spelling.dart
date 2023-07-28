@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:langpocket/src/common_widgets/views/examples_view/example_view.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
 import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
 import 'package:langpocket/src/features/practice/spelling/controllers/spelling_controller.dart';
@@ -147,28 +148,9 @@ class PracticeSpelling<T extends SpellingStateBase> extends StatelessWidget {
                               ),
                             )),
                       )
-                    : Card(
-                        elevation: 5,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        margin: const EdgeInsets.all(10),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 20, horizontal: 5),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  wordExamples[examplePinter],
-                                  style: textTheme.headlineLarge
-                                      ?.copyWith(color: colorScheme.outline),
-                                  softWrap: true,
-                                  maxLines: 3,
-                                  overflow: TextOverflow.fade,
-                                ),
-                              ]),
-                        ),
+                    : ExampleView(
+                        example: wordExamples[examplePinter],
+                        noVoiceIcon: true,
                       ),
                 const SizedBox(height: 20),
                 Padding(
