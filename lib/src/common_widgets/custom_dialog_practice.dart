@@ -6,13 +6,10 @@ import 'package:langpocket/src/utils/constants/messages.dart';
 
 class CustomDialogPractice extends StatelessWidget {
   final PracticeMessage messages;
-  final Function activateExamples;
-  final Function reload;
+  final Function? activateExamples;
+  final Function? reload;
   const CustomDialogPractice(
-      {super.key,
-      required this.messages,
-      required this.activateExamples,
-      required this.reload});
+      {super.key, required this.messages, this.activateExamples, this.reload});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +23,7 @@ class CustomDialogPractice extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
             width: double.infinity,
-            height: 380,
+            height: reload != null ? 370 : 300,
             decoration: BoxDecoration(
               shape: BoxShape.rectangle,
               color: Colors.white,
@@ -59,53 +56,71 @@ class CustomDialogPractice extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 const Divider(),
-                const SizedBox(height: 5),
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[400],
-                    ),
-                    onPressed: () {
-                      activateExamples();
-                      context.pop();
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            messages.withSentences,
-                            style: const TextStyle(color: Colors.white),
+                messages.withSentences != '' || reload == null
+                    ? const SizedBox(height: 5)
+                    : const SizedBox(height: 0),
+                messages.withSentences != ''
+                    ? ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green[400],
+                        ),
+                        onPressed: () {
+                          activateExamples!();
+                          context.pop();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                messages.withSentences,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              const Icon(Icons.near_me, color: Colors.white)
+                            ],
                           ),
-                          const Icon(Icons.near_me, color: Colors.white)
-                        ],
-                      ),
-                    )),
-                const SizedBox(height: 15),
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber[700],
-                    ),
-                    onPressed: () {
-                      reload();
-                      context.pop();
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            messages.tryAgain,
-                            style: const TextStyle(color: Colors.white),
+                        ))
+                    : Container(),
+                reload != null
+                    ? const SizedBox(height: 15)
+                    : const SizedBox(height: 5),
+                reload != null
+                    ? ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              messages.tryAgain.contains('Move to next one')
+                                  ? Colors.blue
+                                  : Colors.amber[700],
+                        ),
+                        onPressed: reload != null
+                            ? () {
+                                reload!();
+                                context.pop();
+                              }
+                            : null,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                messages.tryAgain,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              messages.tryAgain.contains('Move to next one')
+                                  ? const Icon(
+                                      Icons.skip_next_outlined,
+                                      color: Colors.white,
+                                    )
+                                  : const Icon(
+                                      Icons.refresh,
+                                      color: Colors.white,
+                                    )
+                            ],
                           ),
-                          const Icon(
-                            Icons.refresh,
-                            color: Colors.white,
-                          )
-                        ],
-                      ),
-                    )),
+                        ))
+                    : Container(),
                 const SizedBox(height: 15),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(

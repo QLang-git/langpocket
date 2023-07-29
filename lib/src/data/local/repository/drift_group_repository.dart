@@ -1,4 +1,5 @@
 import 'package:langpocket/src/data/local/entities/word_entity.dart';
+import 'package:langpocket/src/data/local/repository/insert_default_data.dart';
 import 'package:langpocket/src/data/local/repository/local_group_repository.dart';
 import 'package:drift/drift.dart';
 import 'package:langpocket/src/data/local/entities/group_entity.dart';
@@ -7,9 +8,11 @@ part 'drift_group_repository.g.dart';
 @DriftDatabase(tables: [Group, Word])
 class DriftGroupRepository extends _$DriftGroupRepository
     implements LocalGroupRepository {
+  final bool isTesting;
   final QueryExecutor queryExecutor;
   // we tell the database where to store the data with this constructor
-  DriftGroupRepository(this.queryExecutor) : super(queryExecutor);
+  DriftGroupRepository(this.queryExecutor, {this.isTesting = false})
+      : super(queryExecutor);
 
   // you should bump this number whenever you change or add a table definition.
   // Migrations are covered later in the documentation.
@@ -21,6 +24,12 @@ class DriftGroupRepository extends _$DriftGroupRepository
       beforeOpen: (details) async {
         // Make sure that foreign keys are enabled
         await customStatement('PRAGMA foreign_keys = ON');
+        if (details.wasCreated && !isTesting) {
+          await batch((batch) {
+            batch.insertAll(group, defaultGroups);
+            batch.insertAll(word, defaultWords);
+          });
+        }
       },
     );
   }
@@ -46,7 +55,7 @@ class DriftGroupRepository extends _$DriftGroupRepository
   @override
   Future<List<GroupData>> fetchGroups() async => await select(group).get();
   @override
-  Future<WordData> fetchWordbyId(int wordId) async =>
+  Future<WordData> fetchWordById(int wordId) async =>
       await (select(word)..where((word) => word.id.equals(wordId))).getSingle();
 
   @override
@@ -54,7 +63,9 @@ class DriftGroupRepository extends _$DriftGroupRepository
       (select(group)..where((tbl) => tbl.id.equals(groupId))).watchSingle();
 
   @override
-  Stream<List<GroupData>> watchGroups() => select(group).watch();
+  Stream<List<GroupData>> watchGroups() {
+    return select(group).watch();
+  }
 
   @override
   Future<GroupData> fetchGroupByTime(DateTime now) async {
@@ -67,8 +78,9 @@ class DriftGroupRepository extends _$DriftGroupRepository
   }
 
   @override
-  Stream<List<WordData>> watchWordsByGroupId(int groupId) =>
-      (select(word)..where((tbl) => tbl.group.equals(groupId))).watch();
+  Stream<List<WordData>> watchWordsByGroupId(int groupId) {
+    return (select(word)..where((tbl) => tbl.group.equals(groupId))).watch();
+  }
 
   @override
   Future<List<WordData>> fetchWordsByGroupId(int groupId) async =>
@@ -90,7 +102,7 @@ class DriftGroupRepository extends _$DriftGroupRepository
   }
 
   @override
-  Future<void> upadateWordInf(int wordId, WordCompanion wordCompanion) async {
+  Future<void> updateWordInf(int wordId, WordCompanion wordCompanion) async {
     await (update(word)..where((tbl) => tbl.id.equals(wordId)))
         .write(wordCompanion);
   }

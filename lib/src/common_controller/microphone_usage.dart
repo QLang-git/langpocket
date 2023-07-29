@@ -7,20 +7,19 @@ abstract class MicrophoneConst {
 
 class ConstPronMicrophone extends MicrophoneConst {
   @override
-  int get countWordPron => 4;
+  int get countWordPron => 1;
   @override
-  int get countExamplePron => 3;
+  int get countExamplePron => 1;
 
   @override
   String get initialMessage => "Hold to Start Recording ...";
 
   @override
-  // TODO: implement exampleActivationMessage
   String get exampleActivationMessage =>
       "Try to Pronounce the following sentence ";
 }
 
-class ConstIterMicrophone extends MicrophoneConst {
+class ConstListenRepeatMicrophone extends MicrophoneConst {
   @override
   int get countWordPron => 1;
 
@@ -33,4 +32,19 @@ class ConstIterMicrophone extends MicrophoneConst {
   @override
   String get exampleActivationMessage =>
       "Now your turn : Try to Pronounce the sentence ";
+}
+
+class ConstReadSpeakMicrophone extends MicrophoneConst {
+  @override
+  int get countWordPron => 1;
+
+  @override
+  int get countExamplePron => 1;
+
+  @override
+  String get initialMessage => "Read the Word : Hold to Start Recording ...";
+
+  @override
+  String get exampleActivationMessage =>
+      "Read the sentence  : Hold to Start Recording ...";
 }

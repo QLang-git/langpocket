@@ -9,7 +9,7 @@ abstract class RemoteGroupRepository {
   Stream<GroupData> watchGroupById(int groupId, int userId);
   Future<GroupData> createGroup(GroupCompanion newgroup, int userId);
   Future<void> addNewWordInGroup(WordCompanion newWord, int userId);
-  Future<WordData> fetchWordbyId(int groupId);
+  Future<WordData> fetchWordById(int groupId);
   Future<GroupData> fetchGroupByTime(DateTime now, int userId);
   Stream<List<WordData>> watchWordsByGroupId(int groupId);
   Future<List<WordData>> fetchWordsByGroupId(int groupId);

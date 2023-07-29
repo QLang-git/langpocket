@@ -1,8 +1,18 @@
 enum PracticeMessagesType {
+  // spelling
   practiceSpelling,
-  practicePronunciation,
+  practiceSpellingGroup,
+  // with group
   practiceSpellingExampleComplete,
+  practiceSpellingExampleCompleteGroup,
+  //pron
+  practicePronunciation,
   practicePronExampleComplete,
+  // with group
+  practicePronunciationGroup,
+  practicePronExampleCompleteGroup,
+  // PI
+  practiceInteractively
 }
 
 class MyMessages {
@@ -14,6 +24,22 @@ class MyMessages {
             'You wrote " $word " 5 times correctly.\nKeep practicing  spelling several times for better results.',
         withSentences: 'Spell this word with sentences ',
         tryAgain: 'Try spell it again ',
+      );
+    }
+    if (messages == PracticeMessagesType.practiceSpellingGroup) {
+      return PracticeMessage(
+        titleMessage:
+            'You wrote " $word " 5 times correctly.\nKeep practicing  spelling several times for better results.',
+        withSentences: 'Spell " $word " with sentences ',
+        tryAgain: 'Move to next one',
+      );
+    }
+    if (messages == PracticeMessagesType.practiceSpellingExampleCompleteGroup) {
+      return PracticeMessage(
+        titleMessage:
+            'You\'ve completed your spelling practice for this group .\nKeep going...',
+        withSentences: 'Spell " $word " with sentences again ',
+        tryAgain: 'Start over',
       );
     }
     if (messages == PracticeMessagesType.practiceSpellingExampleComplete) {
@@ -33,11 +59,32 @@ class MyMessages {
         tryAgain: 'Try pronounce it again ',
       );
     }
+    if (messages == PracticeMessagesType.practicePronunciationGroup) {
+      return PracticeMessage(
+        titleMessage:
+            'You pronounced " $word " 5 times correctly.\nKeep practicing for better results.',
+        withSentences: 'Pronounce " $word " with sentences ',
+        tryAgain: 'Move to next one',
+      );
+    }
     if (messages == PracticeMessagesType.practicePronExampleComplete) {
       return PracticeMessage(
           titleMessage:
               'You\'ve completed your pronunciation task for this word .\nKeep going...',
           withSentences: 'Pronounce with sentences again ',
+          tryAgain: 'Start over');
+    }
+    if (messages == PracticeMessagesType.practicePronExampleCompleteGroup) {
+      return PracticeMessage(
+          titleMessage:
+              'You\'ve completed your pronunciation task for this word .\nKeep going...',
+          withSentences: 'Pronounce " $word " with sentences ',
+          tryAgain: 'Start over');
+    }
+    if (messages == PracticeMessagesType.practiceInteractively) {
+      return PracticeMessage(
+          titleMessage:
+              'Congratulations on completing your practice session for the word "$word"! \nYou\'ve done a great job! Keep up the momentum and continue to enhance your language skills!',
           tryAgain: 'Start over');
     } else {
       return PracticeMessage(
@@ -56,7 +103,7 @@ class PracticeMessage {
 
   PracticeMessage({
     required this.titleMessage,
-    required this.withSentences,
+    this.withSentences = '',
     required this.tryAgain,
   });
 }

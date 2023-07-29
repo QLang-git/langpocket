@@ -25,10 +25,9 @@ DatabaseConnection connect({bool isInWebWorker = false}) {
       // https://drift.simonbinder.eu/web/ instead.
 
       final response = await http.get(Uri.parse('sqlite3.wasm'));
-      final fs = await IndexedDbFileSystem.open(dbName: 'my_app');
+      await IndexedDbFileSystem.open(dbName: 'my_app');
       final sqlite3 = await WasmSqlite3.load(
         response.bodyBytes,
-        SqliteEnvironment(fileSystem: fs),
       );
 
       final databaseImpl = WasmDatabase(sqlite3: sqlite3, path: 'langdb.db');

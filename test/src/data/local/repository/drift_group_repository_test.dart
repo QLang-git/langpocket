@@ -17,7 +17,7 @@ void main() {
     wordDate: Value(DateTime.now()),
   );
   setUp(() {
-    database = DriftGroupRepository(NativeDatabase.memory());
+    database = DriftGroupRepository(NativeDatabase.memory(), isTesting: true);
   });
   tearDown(() async {
     await database.close();
@@ -32,7 +32,7 @@ void main() {
   test('add new word in group fetch the group', () async {
     await database.createGroup(group);
     await database.addNewWordInGroup(word);
-    final getWord = await database.fetchWordbyId(1);
+    final getWord = await database.fetchWordById(1);
 
     expect(getWord.id, 1);
     expect(getWord.foreignWord, 'test');
@@ -91,7 +91,7 @@ void main() {
     await database.addNewWordInGroup(word);
     await database.deleteWordById(1, 1);
 
-    expect(() async => await database.fetchWordbyId(1), throwsStateError);
+    expect(() async => await database.fetchWordById(1), throwsStateError);
   });
   test('update word info ', () async {
     // setup
@@ -107,9 +107,9 @@ void main() {
       wordDate: Value(DateTime.now()),
     );
 
-    await database.upadateWordInf(1, newWord);
+    await database.updateWordInf(1, newWord);
 
-    final getWord = await database.fetchWordbyId(1);
+    final getWord = await database.fetchWordById(1);
 
     expect(getWord.foreignWord, 'test2');
     expect(getWord.wordMeans, 'test2-test2');
