@@ -20,7 +20,3 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: coverage/lcov.info
-      - name: deploy to GitHub
-        uses: bluefireteam/flutter-gh-pages@v7
-        with:
-          baseHref: /langpocket-beta/
