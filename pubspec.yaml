@@ -13,20 +13,20 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   flutter_riverpod: ^2.3.6
-  go_router: ^9.0.3
+  go_router: ^10.0.0
   riverpod_annotation: ^2.1.1
-  card_swiper: ^2.0.4
+  card_swiper: ^3.0.1
   rxdart: ^0.27.7
   flutter_layout_grid: ^2.0.1
   path_provider: ^2.0.11
-  google_fonts: ^4.0.4
+  google_fonts: ^5.1.0
   image_picker: ^1.0.0
   text_to_speech: ^0.2.3
-  drift: ^2.5.0
+  drift: ^2.10.0
   sqlite3_flutter_libs: ^0.5.12
   path: ^1.8.2
-  sqlite3: ^1.9.1
-  http: ^0.13.5
+  sqlite3: ^2.1.0
+  http: ^1.1.0
   progress_indicators: ^1.0.0
   flutter_speed_dial: ^7.0.0
   flutter_slidable: ^3.0.0

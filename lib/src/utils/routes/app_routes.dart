@@ -140,8 +140,8 @@ final appScreens = [
             name: AppRoute.group.name,
             pageBuilder: (context, state) {
               final groupId = state.pathParameters['groupId'];
-              final groupName = state.queryParameters['name'];
-              final creatingTime = state.queryParameters['time'];
+              final groupName = state.uri.queryParameters['name'];
+              final creatingTime = state.uri.queryParameters['time'];
               if (groupId != null &&
                   int.tryParse(groupId) != null &&
                   groupName != null &&
@@ -189,7 +189,7 @@ final appScreens = [
                   path: 'spelling/:wordId',
                   name: AppRoute.spelling.name,
                   pageBuilder: (context, state) {
-                    final groupId = state.queryParameters['groupId'];
+                    final groupId = state.uri.queryParameters['groupId'];
                     final wordId = state.pathParameters['wordId'];
 
                     if (_validatePath(wordId, groupId)) {
@@ -212,7 +212,7 @@ final appScreens = [
                   path: 'pron/:wordId',
                   name: AppRoute.pronunciation.name,
                   pageBuilder: (context, state) {
-                    final groupId = state.queryParameters['groupId'];
+                    final groupId = state.uri.queryParameters['groupId'];
                     final wordId = state.pathParameters['wordId'];
 
                     if (_validatePath(wordId, groupId)) {
@@ -249,7 +249,7 @@ final appScreens = [
                   name: AppRoute.audioClip.name,
                   pageBuilder: (context, state) {
                     // final wordId = state.pathParameters['wordId'];
-                    final groupName = state.queryParameters['groupName'];
+                    final groupName = state.uri.queryParameters['groupName'];
                     if (groupName != null) {
                       return _navGoUp(AudioScreen(groupName: groupName), state);
                     } else {
