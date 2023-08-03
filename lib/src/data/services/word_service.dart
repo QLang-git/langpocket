@@ -112,6 +112,14 @@ class WordServices {
       return localGroupRepository.fetchGroupById(groupId);
     }
   }
+
+  Future<List<WordData>> fetchAllWords() {
+    if (user) {
+      return remoteGroupRepository.fetchAllWords();
+    } else {
+      return localGroupRepository.fetchAllWords();
+    }
+  }
 }
 
 final wordsServicesProvider = Provider<WordServices>((ref) {

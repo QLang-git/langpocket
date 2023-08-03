@@ -86,5 +86,11 @@ class RemoteDb implements RemoteGroupRepository {
     throw UnimplementedError();
   }
 
+  @override
+  Future<List<WordData>> fetchAllWords() {
+    // TODO: implement fetchAllWords
+    throw UnimplementedError();
+  }
+
   // we tell the database where to store the data with this constructor
 }

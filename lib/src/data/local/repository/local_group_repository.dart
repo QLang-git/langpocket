@@ -16,6 +16,7 @@ abstract class LocalGroupRepository {
   Future<List<WordData>> fetchWordsByGroupId(int groupId);
   Future<void> updateGroupName(int groupId, String newName);
   Future<void> deleteWordById(int wordId, int groupId);
+  Future<List<WordData>> fetchAllWords();
   Stream<WordData> watchWordById(int wordId);
   Future<void> updateWordInf(int wordId, WordCompanion wordCompanion);
 }

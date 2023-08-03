@@ -111,4 +111,9 @@ class DriftGroupRepository extends _$DriftGroupRepository
   Stream<WordData> watchWordById(int wordId) {
     return (select(word)..where((tbl) => tbl.id.equals(wordId))).watchSingle();
   }
+
+  @override
+  Future<List<WordData>> fetchAllWords() async {
+    return await select(word).get();
+  }
 }

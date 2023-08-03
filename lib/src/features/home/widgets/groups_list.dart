@@ -48,6 +48,7 @@ class _GroupsListState extends ConsumerState<GroupsList> {
               reverse: true,
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: groups.length,
               itemBuilder: (BuildContext context, int index) {
                 final wordsInGroup =
