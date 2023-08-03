@@ -75,7 +75,10 @@ class _PracticePronScreenState extends ConsumerState<PracticePronGroupScreen> {
                   child: Stack(children: [
                     Column(
                       children: [
-                        ImageView(imageList: wordImages),
+                        ImageView(
+                          imageList: wordImages,
+                          meanings: wordMeans,
+                        ),
                         const SizedBox(
                           height: 15,
                         ),

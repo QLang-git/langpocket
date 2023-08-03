@@ -2,10 +2,12 @@ import 'dart:typed_data';
 
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ImageView extends StatelessWidget {
   final List<Uint8List> imageList;
-  const ImageView({super.key, required this.imageList});
+  final List<String> meanings;
+  const ImageView({super.key, required this.imageList, required this.meanings});
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +28,18 @@ class ImageView extends StatelessWidget {
             : Padding(
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 child: Container(
-                  color: Theme.of(context).colorScheme.onBackground,
-                  child: const Center(
-                    child: Icon(
-                      Icons.image_not_supported_outlined,
-                      size: 80,
-                      color: Colors.white,
+                  decoration: BoxDecoration(color: Colors.indigo[600]),
+                  child: Padding(
+                    padding: const EdgeInsets.all(3),
+                    child: Center(
+                      child: Text(meanings.first,
+                          overflow: TextOverflow.fade,
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.rubik(
+                              fontWeight: FontWeight.normal,
+                              fontSize: 15,
+                              letterSpacing: 1.5,
+                              color: Colors.white)),
                     ),
                   ),
                 ),

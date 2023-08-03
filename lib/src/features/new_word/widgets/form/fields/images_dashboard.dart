@@ -129,14 +129,24 @@ class ImageAddButton extends StatelessWidget {
                 ?.copyWith(color: Colors.white)),
         onPressed: wordImages.length < 5
             ? () async {
-                final image =
-                    await ImagePicker().pickImage(source: ImageSource.gallery);
-                if (image == null) return;
-                final bytes = await image.readAsBytes();
-
-                ref
-                    .read(newWordControllerProvider.notifier)
-                    .saveWordImage(bytes);
+                try {
+                  final image = await ImagePicker()
+                      .pickImage(source: ImageSource.gallery);
+                  if (image == null) return;
+                  final bytes = await image.readAsBytes();
+                  ref
+                      .read(newWordControllerProvider.notifier)
+                      .saveWordImage(bytes);
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Oops! Something went wrong. Please try again.',
+                        style: TextStyle(color: Colors.red[300]),
+                      ),
+                    ),
+                  );
+                }
               }
             : null,
         child: Row(

@@ -41,7 +41,9 @@ class _WordViewScreenState extends ConsumerState<WordViewScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   children: [
-                    ImageView(imageList: wordData.wordImages),
+                    ImageView(
+                        imageList: wordData.wordImages,
+                        meanings: wordData.wordMeans),
                     const SizedBox(
                       height: 15,
                     ),

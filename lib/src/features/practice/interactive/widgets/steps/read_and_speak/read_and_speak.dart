@@ -78,7 +78,10 @@ class _ReadSpeakState extends ConsumerState<ReadSpeak> {
             children: [
               const StepMessage(message: 'Vocal Voyage: Read and Speak'),
               const SizedBox(height: 30),
-              ImageView(imageList: wordImages),
+              ImageView(
+                imageList: wordImages,
+                meanings: wordMeans,
+              ),
               activateExample
                   ? ExampleView(
                       example: wordExamples[examplePinter],

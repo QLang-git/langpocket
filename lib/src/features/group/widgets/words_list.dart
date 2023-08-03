@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:langpocket/src/features/group/controller/group_controller.dart';
 import 'package:langpocket/src/features/group/widgets/custom_practice_dialog.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
@@ -237,14 +238,18 @@ class WordCard extends StatelessWidget {
                         fit: BoxFit.fill,
                       )
                     : Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.onBackground,
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.image_not_supported_outlined,
-                            size: 50,
-                            color: Colors.white,
+                        decoration: BoxDecoration(color: Colors.indigo[600]),
+                        child: Padding(
+                          padding: const EdgeInsets.all(3),
+                          child: Center(
+                            child: Text(word.wordMeans.first,
+                                overflow: TextOverflow.fade,
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.rubik(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 15,
+                                    letterSpacing: 1.5,
+                                    color: Colors.white)),
                           ),
                         ),
                       ),

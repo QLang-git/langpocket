@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/common_widgets/custom_text_form_field.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/features/group/controller/group_controller.dart';
 
@@ -77,7 +78,7 @@ class _GroupAppBarState extends State<GroupAppBar> {
               key: inputKey,
               child: SizedBox(
                 width: sizeWith * 0.5,
-                child: TextFormField(
+                child: CustomTextField(
                   readOnly: !editModeActivate,
                   cursorColor: Colors.white,
                   maxLength: 20,
@@ -104,8 +105,8 @@ class _GroupAppBarState extends State<GroupAppBar> {
                   controller: controller,
                   style: Theme.of(context)
                       .textTheme
-                      .headlineLarge
-                      ?.copyWith(color: Colors.white),
+                      .headlineLarge!
+                      .copyWith(color: Colors.white),
                 ),
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/common_widgets/custom_text_form_field.dart';
 import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
 import 'package:langpocket/src/features/new_word/controller/validation_input.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
@@ -44,7 +45,7 @@ class _ForeignWordState extends ConsumerState<ForeignWord> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
-      child: TextFormField(
+      child: CustomTextField(
         key: const Key('ForeignWord'),
         controller: inputController,
         onChanged: (value) {

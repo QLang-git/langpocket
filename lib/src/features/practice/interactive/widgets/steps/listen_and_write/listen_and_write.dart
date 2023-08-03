@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/custom_dialog_practice.dart';
+import 'package:langpocket/src/common_widgets/custom_text_form_field.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
 import 'package:langpocket/src/features/practice/interactive/widgets/practice_stepper/step_message.dart';
 import 'package:langpocket/src/features/practice/interactive/widgets/steps/listen_and_write/listen_write_controller.dart';
@@ -91,7 +92,9 @@ class _ListenWriteState extends ConsumerState<ListenWrite>
                 children: [
                   const StepMessage(
                       message: 'Whisper Challenge: Listen and Write'),
-                  ImageView(imageList: wordRecord.wordImages),
+                  ImageView(
+                      imageList: wordRecord.wordImages,
+                      meanings: wordRecord.wordMeans),
                   const SizedBox(height: 25),
                   Container(
                     padding: const EdgeInsets.all(10.0),
@@ -163,7 +166,7 @@ class _ListenWriteState extends ConsumerState<ListenWrite>
                         ],
                       )),
                   const SizedBox(height: 25),
-                  TextField(
+                  CustomTextField(
                     readOnly: correctness,
                     enableIMEPersonalizedLearning: false,
                     enableSuggestions: false,

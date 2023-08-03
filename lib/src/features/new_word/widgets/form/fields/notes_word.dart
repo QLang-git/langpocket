@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/common_widgets/custom_text_form_field.dart';
 import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
 import 'package:langpocket/src/features/new_word/controller/validation_input.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
@@ -29,41 +30,37 @@ class _NotesWordState extends ConsumerState<NotesWord> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-      child: TextFormField(
-        controller: inputController,
-        onChanged: (value) {
-          if (widget.note != null) {
-            ref
-                .read(newWordControllerProvider.notifier)
-                .saveWordNote(inputController.text);
-          }
-        },
-        key: const Key('NotesWord'),
-        style: headline3(primaryFontColor),
-        maxLines: 5,
-        decoration: InputDecoration(
-          labelStyle: bodyLarge(primaryColor),
-          hintText: 'write some notes for your new words optional',
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(width: 2, color: secondaryColor),
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20.0),
-          ),
+    return CustomTextField(
+      controller: inputController,
+      onChanged: (value) {
+        if (widget.note != null) {
+          ref
+              .read(newWordControllerProvider.notifier)
+              .saveWordNote(inputController.text);
+        }
+      },
+      key: const Key('NotesWord'),
+      style: headline3(primaryFontColor),
+      maxLines: 5,
+      decoration: InputDecoration(
+        labelStyle: bodyLarge(primaryColor),
+        hintText: 'write some notes for your new words optional',
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(width: 2, color: secondaryColor),
+          borderRadius: BorderRadius.circular(20.0),
         ),
-        validator: (value) {
-          final (:status, :message) =
-              validate.notesWordsValidation(value ?? '');
-          if (!status) {
-            return message;
-          }
-          ref.read(newWordControllerProvider.notifier).saveWordNote(value!);
-          return null;
-        },
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
       ),
+      validator: (value) {
+        final (:status, :message) = validate.notesWordsValidation(value ?? '');
+        if (!status) {
+          return message;
+        }
+        ref.read(newWordControllerProvider.notifier).saveWordNote(value!);
+        return null;
+      },
     );
   }
 }

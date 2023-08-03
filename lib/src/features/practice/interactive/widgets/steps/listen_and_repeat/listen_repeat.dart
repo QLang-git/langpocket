@@ -74,7 +74,7 @@ class _ListenRepeatState extends ConsumerState<ListenRepeat> {
       child: AsyncValueWidget(
         value: mic,
         child: (micStates) {
-          final WordRecord(:wordImages) = micStates.wordRecord;
+          final WordRecord(:wordImages, :wordMeans) = micStates.wordRecord;
 
           return Stack(
             children: [
@@ -82,7 +82,10 @@ class _ListenRepeatState extends ConsumerState<ListenRepeat> {
                 children: [
                   const StepMessage(message: 'Echo Mastery: Listen and Repeat'),
                   const SizedBox(height: 50),
-                  ImageView(imageList: wordImages),
+                  ImageView(
+                    imageList: wordImages,
+                    meanings: wordMeans,
+                  ),
                   AnimatedSoundIcon(micActivation: lRs.micState),
                   const SizedBox(height: 50),
                   Container(

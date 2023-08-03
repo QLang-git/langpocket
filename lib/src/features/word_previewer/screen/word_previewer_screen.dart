@@ -37,7 +37,10 @@ class _WordPreviewerScreenState extends ConsumerState<WordPreviewerScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
-                  ImageView(imageList: word.wordImages),
+                  ImageView(
+                    imageList: word.wordImages,
+                    meanings: word.wordMeans,
+                  ),
                   const SizedBox(
                     height: 15,
                   ),

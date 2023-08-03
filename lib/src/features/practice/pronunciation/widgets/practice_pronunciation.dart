@@ -25,7 +25,7 @@ class PracticePronunciation<T extends MicStateBase> extends StatelessWidget {
         child: Stack(children: [
           Column(
             children: [
-              ImageView(imageList: wordImages),
+              ImageView(imageList: wordImages, meanings: wordMeans),
               const SizedBox(
                 height: 15,
               ),
