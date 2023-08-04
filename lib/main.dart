@@ -10,7 +10,7 @@ void main() async {
   await runZonedGuarded(runAppSafely, errorHandle);
 }
 
-//! if the app run succesfuly
+//! if the app run successfully
 Future<void> runAppSafely() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   // turn off the # in the URLs on the web
@@ -40,7 +40,7 @@ void errorScreen() {
   };
 }
 
-//! if there is an error while app runing
+//! if there is an error while app running
 void errorHandle(Object error, StackTrace stack) async {
   // * Log any errors to console
   debugPrint(error.toString());

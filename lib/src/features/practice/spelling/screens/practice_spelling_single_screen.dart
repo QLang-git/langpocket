@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/common_widgets/custom_dialog_practice.dart';
 import 'package:langpocket/src/features/practice/spelling/app_bar/spelling_appbar.dart';
 import 'package:langpocket/src/features/practice/spelling/controllers/spelling_word_controller.dart';
 import 'package:langpocket/src/features/practice/spelling/controllers/spelling_controller.dart';
+import 'package:langpocket/src/features/practice/spelling/dialogs/spelling_single_dialog.dart';
 import 'package:langpocket/src/features/practice/spelling/widgets/practice_spelling.dart';
 import 'package:langpocket/src/utils/constants/messages.dart';
 
@@ -171,14 +171,10 @@ class PracticeSpellingScreenState
             context: context,
             barrierDismissible: false,
             builder: (BuildContext context) {
-              return CustomDialogPractice(
-                messages: myMessage.getPracticeMessage(
-                  PracticeMessagesType.practiceSpelling,
-                  foreignWord,
-                ),
-                reload: spellingController.startOver,
-                activateExamples: spellingController.exampleActivation,
-              );
+              return SpellingSingleWordDialog(
+                  word: foreignWord,
+                  reload: spellingController.startOver,
+                  activateExamples: spellingController.exampleActivation);
             }).then((value) => isDialogShowing = false);
       } else if (countSpelling == 0 && activateExample) {
         if (pointer < examplesList.length - 1) {
@@ -189,11 +185,7 @@ class PracticeSpellingScreenState
               context: context,
               barrierDismissible: false,
               builder: (BuildContext context) {
-                return CustomDialogPractice(
-                  messages: myMessage.getPracticeMessage(
-                    PracticeMessagesType.practiceSpellingExampleComplete,
-                    foreignWord,
-                  ),
+                return SpellingSingleWordExampleDialog(
                   reload: spellingController.startOver,
                   activateExamples: spellingController.exampleActivation,
                 );

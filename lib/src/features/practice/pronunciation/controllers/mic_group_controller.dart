@@ -36,10 +36,13 @@ class MicGroupController extends StateNotifier<AsyncValue<MicGroupState>>
   final speechToText = SpeechToText();
 
   @override
-  void setWordRecords(
-      {int? countPron,
-      int? countExamplePron,
-      required String initialMessage}) async {
+  void setWordRecords({
+    int? countPron,
+    int? countExamplePron,
+    String? exampleActivationMessage,
+    required String initialMessage,
+    required int wordId,
+  }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() {
       _initializeSpeechToText();
@@ -174,7 +177,6 @@ class MicGroupController extends StateNotifier<AsyncValue<MicGroupState>>
   }
 
   void _resultListener(SpeechRecognitionResult result) {
-    print(result.recognizedWords);
     if (state.hasValue && result.finalResult) {
       if (state.value!.activateExample) {
         _comparingWords(

@@ -36,49 +36,51 @@ class PracticeSpelling<T extends SpellingStateBase> extends StatelessWidget {
     ) = wordRecord;
     final T(:activateExample, :correctness, :countSpelling, :examplePinter) =
         spellingState;
-    return Column(
-      children: [
-        ImageView(
-          imageList: wordImages,
-          meanings: wordMeans,
-        ),
-        const SizedBox(
-          height: 15,
-        ),
-        countSpelling > 3 || activateExample
-            ? WordView(
-                foreignWord: foreignWord,
-                means: wordMeans,
-                noVoiceIcon: true,
-              )
-            : Card(
-                elevation: 3,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          ImageView(
+            imageList: wordImages,
+            meanings: wordMeans,
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          countSpelling > 3 || activateExample
+              ? WordView(
+                  foreignWord: foreignWord,
+                  means: wordMeans,
+                  noVoiceIcon: true,
+                )
+              : Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 0,
+                  ),
+                  elevation: 3,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: SizedBox(
+                        width: double.infinity,
+                        child: Icon(
+                          Ionicons.eye_off,
+                          size: 30,
+                        )),
+                  ),
                 ),
-                margin: const EdgeInsets.all(10),
-                child: const SizedBox(
-                    width: double.infinity,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Icon(
-                        Ionicons.eye_off,
-                        size: 40,
-                      ),
-                    )),
-              ),
-        const SizedBox(
-          height: 20,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Row(
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                   flex: 6,
-                  child: TextField(
+                  child: CustomTextField(
                     enableIMEPersonalizedLearning: false,
                     enableSuggestions: false,
                     autocorrect: false,
@@ -90,6 +92,7 @@ class PracticeSpelling<T extends SpellingStateBase> extends StatelessWidget {
                     style: textTheme.headlineMedium
                         ?.copyWith(color: colorScheme.outline),
                     decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
                       filled: true,
                       fillColor: correctness || activateExample
                           ? const Color.fromARGB(255, 104, 198, 107)
@@ -108,64 +111,71 @@ class PracticeSpelling<T extends SpellingStateBase> extends StatelessWidget {
                     ),
                     // The validator receives the text that the user has entered.
                   )),
-              Card(
-                  elevation: 5,
-                  margin: const EdgeInsets.all(10),
-                  shape: const CircleBorder(),
-                  color: Colors.indigo[400],
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
+              Expanded(
+                flex: 1,
+                child: Card(
+                    elevation: 5,
+                    shape: const CircleBorder(),
+                    color: Colors.indigo[400],
                     child: !activateExample
-                        ? Text(
-                            countSpelling.toString(),
-                            style: textTheme.labelLarge
-                                ?.copyWith(color: Colors.white),
+                        ? Padding(
+                            padding: const EdgeInsets.all(9.0),
+                            child: Text(
+                              countSpelling.toString(),
+                              textAlign: TextAlign.center,
+                              style: textTheme.labelLarge
+                                  ?.copyWith(color: Colors.white),
+                            ),
                           )
-                        : Text(
-                            0.toString(),
-                            style: textTheme.labelLarge
-                                ?.copyWith(color: Colors.white),
-                          ),
-                  )),
+                        : Padding(
+                            padding: const EdgeInsets.all(9.0),
+                            child: Text(
+                              0.toString(),
+                              style: textTheme.labelLarge
+                                  ?.copyWith(color: Colors.white),
+                              textAlign: TextAlign.center,
+                            ),
+                          )),
+              ),
             ],
           ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        activateExample
-            ? Column(children: [
-                countSpelling < 2
-                    ? Card(
-                        elevation: 3,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
+          const SizedBox(
+            height: 20,
+          ),
+          activateExample
+              ? Column(children: [
+                  countSpelling < 2
+                      ? Card(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 0,
+                          ),
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: SizedBox(
+                                width: double.infinity,
+                                child: Icon(
+                                  Ionicons.eye_off,
+                                  size: 30,
+                                )),
+                          ),
+                        )
+                      : ExampleView(
+                          example: wordExamples[examplePinter],
+                          noVoiceIcon: true,
                         ),
-                        margin: const EdgeInsets.all(10),
-                        child: const SizedBox(
-                            width: double.infinity,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 10),
-                              child: Icon(
-                                Ionicons.eye_off,
-                                size: 40,
-                              ),
-                            )),
-                      )
-                    : ExampleView(
-                        example: wordExamples[examplePinter],
-                        noVoiceIcon: true,
-                      ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Row(
+                  const SizedBox(height: 20),
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
                           flex: 6,
                           child: CustomTextField(
+                            enableIMEPersonalizedLearning: false,
                             enableSuggestions: false,
                             autocorrect: false,
                             readOnly: readOnlyExample,
@@ -176,6 +186,8 @@ class PracticeSpelling<T extends SpellingStateBase> extends StatelessWidget {
                                 ?.copyWith(color: colorScheme.outline),
                             decoration: InputDecoration(
                               filled: true,
+                              contentPadding:
+                                  const EdgeInsets.fromLTRB(12, 12, 12, 0),
                               fillColor: correctness
                                   ? const Color.fromARGB(255, 104, 198, 107)
                                   : null,
@@ -193,25 +205,28 @@ class PracticeSpelling<T extends SpellingStateBase> extends StatelessWidget {
                             ),
                             // The validator receives the text that the user has entered.
                           )),
-                      Card(
-                          elevation: 5,
-                          margin: const EdgeInsets.all(10),
-                          shape: const CircleBorder(),
-                          color: Colors.indigo[400],
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Text(
-                              countSpelling.toString(),
-                              style: textTheme.labelLarge
-                                  ?.copyWith(color: Colors.white),
-                            ),
-                          )),
+                      Expanded(
+                        flex: 1,
+                        child: Card(
+                            elevation: 5,
+                            shape: const CircleBorder(),
+                            color: Colors.indigo[400],
+                            child: Padding(
+                              padding: const EdgeInsets.all(9.0),
+                              child: Text(
+                                countSpelling.toString(),
+                                textAlign: TextAlign.center,
+                                style: textTheme.labelLarge
+                                    ?.copyWith(color: Colors.white),
+                              ),
+                            )),
+                      ),
                     ],
-                  ),
-                )
-              ])
-            : Container()
-      ],
+                  )
+                ])
+              : Container()
+        ],
+      ),
     );
   }
 }

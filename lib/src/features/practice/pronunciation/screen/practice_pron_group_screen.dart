@@ -35,6 +35,8 @@ class _PracticePronScreenState extends ConsumerState<PracticePronGroupScreen> {
     microphoneController =
         ref.read(micGroupControllerProvider(widget.groupId).notifier);
     microphoneController.setWordRecords(
+        // todo : error here
+        wordId: 0,
         initialMessage: 'Hold to Start Recording ...');
 
     super.initState();

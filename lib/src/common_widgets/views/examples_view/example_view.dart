@@ -13,10 +13,10 @@ class ExampleView extends StatelessWidget {
     final textStyle = Theme.of(context).textTheme;
     TextToSpeech tts = TextToSpeech();
     return Card(
-      margin: const EdgeInsets.all(10),
-      elevation: 5,
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 7),
+      elevation: 3,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(30.0),
+        borderRadius: BorderRadius.circular(20.0),
       ),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         const SizedBox(width: 15),
@@ -39,7 +39,7 @@ class ExampleView extends StatelessWidget {
                   tts.speak(example);
                 },
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 13),
+            padding: const EdgeInsets.symmetric(vertical: 5),
             child: noVoiceIcon
                 ? Icon(
                     Icons.edit_note_outlined,

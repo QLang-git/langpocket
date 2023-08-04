@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/common_widgets/views/examples_view/examples_view.dart';
+import 'package:langpocket/src/common_widgets/views/examples_view/example_view.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
 import 'package:langpocket/src/common_widgets/views/note_view/note_view.dart';
 import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
@@ -51,7 +51,13 @@ class _WordPreviewerScreenState extends ConsumerState<WordPreviewerScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  ExamplesView(examples: word.wordExamples),
+                  Column(
+                    children: word.wordExamples
+                        .map((example) => ExampleView(
+                              example: example,
+                            ))
+                        .toList(),
+                  ),
                   const SizedBox(
                     height: 20,
                   ),

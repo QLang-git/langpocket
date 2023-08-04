@@ -21,53 +21,54 @@ class PracticePronunciation<T extends MicStateBase> extends StatelessWidget {
     ) = wordRecord;
     final T(:activateExample, :examplePinter, :countPron) = micState;
     return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 5),
         child: Stack(children: [
-          Column(
-            children: [
-              ImageView(imageList: wordImages, meanings: wordMeans),
-              const SizedBox(
-                height: 15,
-              ),
-              countPron > 2 || activateExample
-                  ? WordView(
-                      foreignWord: foreignWord,
-                      means: wordMeans,
-                    )
-                  : Card(
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                ImageView(imageList: wordImages, meanings: wordMeans),
+                const SizedBox(
+                  height: 15,
+                ),
+                countPron > 2 || activateExample
+                    ? WordView(
+                        foreignWord: foreignWord,
+                        means: wordMeans,
+                      )
+                    : Card(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 0,
+                        ),
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: SizedBox(
+                              width: double.infinity,
+                              child: Icon(
+                                Ionicons.eye_off,
+                                size: 30,
+                              )),
+                        ),
                       ),
-                      margin: const EdgeInsets.all(10),
-                      child: const SizedBox(
-                          width: double.infinity,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10),
-                            child: Icon(
-                              Ionicons.eye_off,
-                              size: 40,
+                activateExample
+                    ? Column(
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 25),
+                            child: Divider(
+                              height: 20,
                             ),
-                          )),
-                    ),
-              activateExample
-                  ? Column(
-                      children: [
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 20, horizontal: 25),
-                          child: Divider(
-                            height: 20,
                           ),
-                        ),
-                        ExampleView(example: wordExamples[examplePinter])
-                      ],
-                    )
-                  : Container()
-            ],
+                          ExampleView(example: wordExamples[examplePinter])
+                        ],
+                      )
+                    : Container()
+              ],
+            ),
           ),
         ]));
   }

@@ -15,15 +15,18 @@ class ImageView extends StatelessWidget {
         width: double.infinity,
         height: 250,
         child: imageList.isNotEmpty
-            ? Swiper(
-                loop: false,
-                itemCount: imageList.length,
-                itemBuilder: (context, index) => Image.memory(
-                  imageList[index],
-                  fit: BoxFit.fill,
+            ? Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Swiper(
+                  loop: false,
+                  itemCount: imageList.length,
+                  itemBuilder: (context, index) => Image.memory(
+                    imageList[index],
+                    fit: BoxFit.cover,
+                  ),
+                  viewportFraction: 0.8,
+                  scale: 0.9,
                 ),
-                viewportFraction: 0.8,
-                scale: 0.9,
               )
             : Padding(
                 padding: const EdgeInsets.symmetric(vertical: 15),

@@ -32,7 +32,7 @@ class _SpellingAppBarState extends State<SpellingAppBar> {
           Padding(
               padding: const EdgeInsets.only(right: 20, left: 15),
               child: IconButton(
-                  onPressed: () => widget.spellingController.startOver,
+                  onPressed: () => widget.spellingController.startOver(),
                   icon: const Icon(
                     Icons.refresh_rounded,
                     size: 35,
@@ -42,7 +42,7 @@ class _SpellingAppBarState extends State<SpellingAppBar> {
         title: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Text(
-            'Practice Spelling',
+            'Pr. Spelling',
             style: textStyle.headlineLarge?.copyWith(color: Colors.white),
           ),
         ),
