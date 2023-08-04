@@ -7,7 +7,6 @@ import 'package:langpocket/src/features/practice/spelling/controllers/spelling_w
 import 'package:langpocket/src/features/practice/spelling/controllers/spelling_controller.dart';
 import 'package:langpocket/src/features/practice/spelling/dialogs/spelling_single_dialog.dart';
 import 'package:langpocket/src/features/practice/spelling/widgets/practice_spelling.dart';
-import 'package:langpocket/src/utils/constants/messages.dart';
 
 class PracticeSpellingSingleScreen extends ConsumerStatefulWidget {
   final int wordId;
@@ -63,7 +62,6 @@ class PracticeSpellingScreenState
     final spellingState =
         ref.watch(spellingWordControllerProvider(widget.wordId));
 
-    final myMessage = MyMessages();
     if (spellingState.hasValue) {
       final SpellingWordState(
         :activateExample,
@@ -74,7 +72,6 @@ class PracticeSpellingScreenState
       WidgetsBinding.instance.addPostFrameCallback((_) {
         popUpDialogSingle(
             context,
-            myMessage,
             wordRecord.foreignWord,
             wordRecord.wordExamples,
             countSpelling,
@@ -87,11 +84,7 @@ class PracticeSpellingScreenState
 
     return ResponsiveCenter(
         child: Scaffold(
-      appBar: spellingState.hasValue
-          ? SpellingAppBar(
-              spellingController: spellingController,
-            )
-          : null,
+      appBar: spellingState.hasValue ? const SpellingAppBar() : null,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
@@ -155,7 +148,6 @@ class PracticeSpellingScreenState
 
   void popUpDialogSingle(
     BuildContext context,
-    MyMessages myMessage,
     String foreignWord,
     List<String> examplesList,
     int countSpelling,

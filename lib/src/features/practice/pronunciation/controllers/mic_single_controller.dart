@@ -30,11 +30,11 @@ class MicSingleController extends StateNotifier<AsyncValue<MicWordState>>
     int? countExamplePron,
     String? exampleActivationMessage,
     required String initialMessage,
-    required int wordId,
+    required int id,
   }) async {
     state = const AsyncLoading();
 
-    final word = await services.fetchWordById(wordId);
+    final word = await services.fetchWordById(id);
 
     _countExampleMic = countExamplePron ?? _countExampleMic;
     _countPron = countPron ?? _countPron;
@@ -107,6 +107,7 @@ class MicSingleController extends StateNotifier<AsyncValue<MicWordState>>
   /// microphone after a timeout, [cancel] or [stop] call.
   /// * `done` when all results have been delivered.
   bool noVoice = true;
+  @override
   void statusListener(String status) {
     if (status == 'listening') {
       if (mounted) {
@@ -134,6 +135,7 @@ class MicSingleController extends StateNotifier<AsyncValue<MicWordState>>
     }
   }
 
+  @override
   void errorListener(String errorMsg) {
     if (errorMsg == 'error_no_match') {
       state = state.whenData((pron) => pron.copyWith(

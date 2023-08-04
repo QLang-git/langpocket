@@ -28,7 +28,7 @@ class _PracticePronScreenState extends ConsumerState<PracticePronSingleScreen> {
   void initState() {
     microphoneController = ref.read(micSingleControllerProvider.notifier);
     microphoneController.setWordRecords(
-        wordId: widget.wordId, initialMessage: 'Hold to Start Recording ...');
+        id: widget.wordId, initialMessage: 'Hold to Start Recording ...');
 
     super.initState();
   }

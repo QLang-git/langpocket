@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/common_widgets/views/examples_view/example_view.dart';
-import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
-import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
 import 'package:langpocket/src/features/practice/pronunciation/app_bar/pron_appbar.dart';
 import 'package:langpocket/src/features/practice/pronunciation/controllers/mic_group_controller.dart';
+import 'package:langpocket/src/features/practice/pronunciation/dialogs/pron_group_dialog.dart';
 import 'package:langpocket/src/features/practice/pronunciation/widgets/microphone_button.dart';
-import 'package:langpocket/src/common_widgets/custom_dialog_practice.dart';
-import 'package:langpocket/src/utils/constants/messages.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
+import 'package:langpocket/src/features/practice/pronunciation/widgets/practice_pronunciation.dart';
 
 class PracticePronGroupScreen extends ConsumerStatefulWidget {
   final int groupId;
@@ -27,132 +22,68 @@ class PracticePronGroupScreen extends ConsumerStatefulWidget {
 
 class _PracticePronScreenState extends ConsumerState<PracticePronGroupScreen> {
   late MicGroupController microphoneController;
-  late MyMessages myMessages;
 
   @override
   void initState() {
-    myMessages = MyMessages();
-    microphoneController =
-        ref.read(micGroupControllerProvider(widget.groupId).notifier);
+    microphoneController = ref.read(micGroupControllerProvider.notifier);
     microphoneController.setWordRecords(
-        // todo : error here
-        wordId: 0,
-        initialMessage: 'Hold to Start Recording ...');
+        id: widget.groupId, initialMessage: 'Hold to Start Recording ...');
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final micState = ref.watch(micGroupControllerProvider(widget.groupId));
+    final micState = ref.watch(micGroupControllerProvider);
+    final ThemeData(:textTheme) = Theme.of(context);
 
-    final textStyle = Theme.of(context).textTheme;
     if (micState.hasValue) {
-      addPostFrameCallback(context, myMessages, micState.value!);
+      addPostFrameCallback(context, micState.value!);
     }
 
     return ResponsiveCenter(
       child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.background,
         appBar: const PronAppBar(),
         body: SingleChildScrollView(
           child: AsyncValueWidget(
             value: micState,
             child: (micWordState) {
-              final MicGroupState(
-                :indexWord,
-                :countPron,
-                :activateExample,
-                :examplePinter
-              ) = micWordState;
-
-              final WordRecord(
-                :foreignWord,
-                :wordImages,
-                :wordMeans,
-                :wordExamples
-              ) = micWordState.wordsRecord[indexWord];
-              return Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
-                  child: Stack(children: [
-                    Column(
-                      children: [
-                        ImageView(
-                          imageList: wordImages,
-                          meanings: wordMeans,
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        countPron > 2 || activateExample
-                            ? WordView(
-                                foreignWord: foreignWord,
-                                means: wordMeans,
-                              )
-                            : Card(
-                                elevation: 3,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                margin: const EdgeInsets.all(10),
-                                child: const SizedBox(
-                                    width: double.infinity,
-                                    child: Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 10),
-                                      child: Icon(
-                                        Ionicons.eye_off,
-                                        size: 40,
-                                      ),
-                                    )),
-                              ),
-                        activateExample
-                            ? Column(
-                                children: [
-                                  const SizedBox(
-                                    height: 15,
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 20, horizontal: 25),
-                                    child: Divider(
-                                      height: 20,
-                                    ),
-                                  ),
-                                  ExampleView(
-                                      example: wordExamples[examplePinter])
-                                ],
-                              )
-                            : Container()
-                      ],
-                    ),
-                  ]));
+              final words = micWordState.wordsRecord;
+              return PracticePronunciation<MicGroupState>(
+                wordRecord: words[micWordState.indexWord],
+                micState: micWordState,
+              );
             },
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: SizedBox(
-          height: 230,
+          height: 190,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Align(
                 alignment: Alignment.bottomCenter,
-                child: Container(
-                  padding: const EdgeInsets.all(7),
-                  margin: const EdgeInsets.symmetric(vertical: 5),
-                  decoration: BoxDecoration(
-                    color: Colors.blueGrey,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    micState.hasValue
-                        ? micState.value!.micMessage
-                        : 'Loading..',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  child: Container(
+                    padding: const EdgeInsets.all(7),
+                    decoration: BoxDecoration(
+                      color: Colors.blue[700],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      micState.hasValue
+                          ? micState.value!.micMessage
+                          : 'Loading..',
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 3,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ),
@@ -185,7 +116,7 @@ class _PracticePronScreenState extends ConsumerState<PracticePronGroupScreen> {
                           micState.hasValue
                               ? micState.value!.countPron.toString()
                               : '0',
-                          style: textStyle.displayLarge
+                          style: textTheme.displayLarge
                               ?.copyWith(color: Colors.white),
                         ),
                       ),
@@ -200,20 +131,13 @@ class _PracticePronScreenState extends ConsumerState<PracticePronGroupScreen> {
     );
   }
 
-  void addPostFrameCallback(
-      BuildContext context, MyMessages myMessage, MicGroupState micWordsState) {
+  void addPostFrameCallback(BuildContext context, MicGroupState micWordsState) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      popUpDialogGroup(context, myMessage, micWordsState);
-      // if (widget.groupId != null) {
-      //   popUpDialogGroup(context, myMessage, foreignWord, wordExamples);
-      // } else {
-      //   popUpDialogSingle(context, myMessage, foreignWord, wordExamples);
-      // }
+      popUpDialogGroup(context, micWordsState);
     });
   }
 
-  void popUpDialogGroup(
-      BuildContext context, MyMessages myMessage, MicGroupState micGroupState) {
+  void popUpDialogGroup(BuildContext context, MicGroupState micGroupState) {
     final MicGroupState(
       :countPron,
       :examplePinter,
@@ -231,12 +155,9 @@ class _PracticePronScreenState extends ConsumerState<PracticePronGroupScreen> {
           context: context,
           barrierDismissible: false,
           builder: (BuildContext context) {
-            return CustomDialogPractice(
-              messages: myMessage.getPracticeMessage(
-                PracticeMessagesType.practicePronunciationGroup,
-                wordRecord.foreignWord,
-              ),
-              reload: microphoneController.isThereNextWord
+            return PronGroupWordDialog(
+              word: wordRecord.foreignWord,
+              moveNext: microphoneController.isThereNextWord
                   ? microphoneController.moveToNextWord
                   : null,
               activateExamples: microphoneController.exampleActivation,
@@ -253,11 +174,7 @@ class _PracticePronScreenState extends ConsumerState<PracticePronGroupScreen> {
           context: context,
           barrierDismissible: false,
           builder: (BuildContext context) {
-            return CustomDialogPractice(
-              messages: myMessage.getPracticeMessage(
-                PracticeMessagesType.practicePronExampleCompleteGroup,
-                wordRecord.foreignWord,
-              ),
+            return PronGroupWordExampleDialog(
               reload: microphoneController.startOver,
               activateExamples: microphoneController.exampleActivation,
             );

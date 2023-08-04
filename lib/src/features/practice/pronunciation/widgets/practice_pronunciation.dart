@@ -63,7 +63,27 @@ class PracticePronunciation<T extends MicStateBase> extends StatelessWidget {
                               height: 20,
                             ),
                           ),
-                          ExampleView(example: wordExamples[examplePinter])
+                          countPron > 1
+                              ? ExampleView(
+                                  example: wordExamples[examplePinter])
+                              : Card(
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 0,
+                                  ),
+                                  elevation: 3,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 10),
+                                    child: SizedBox(
+                                        width: double.infinity,
+                                        child: Icon(
+                                          Ionicons.eye_off,
+                                          size: 30,
+                                        )),
+                                  ),
+                                )
                         ],
                       )
                     : Container()

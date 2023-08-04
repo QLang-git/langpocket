@@ -44,7 +44,7 @@ class _ListenRepeatState extends ConsumerState<ListenRepeat> {
     listenRepeatController = ref.read(listenRepeatControllerProvider.notifier);
     stepperController = ref.read(practiceStepperControllerProvider.notifier);
     microphoneController.setWordRecords(
-        wordId: widget.wordId,
+        id: widget.wordId,
         countPron: 1,
         countExamplePron: 1,
         exampleActivationMessage:

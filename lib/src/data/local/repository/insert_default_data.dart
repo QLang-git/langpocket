@@ -77,7 +77,7 @@ List<WordCompanion> get defaultWords {
         group: 2,
         foreignWord: 'Decency',
         wordMeans:
-            'Behaviour that conforms to accepted standards of morality-honest behavior and attitudes that show respect for other people',
+            'Behavior that conforms to accepted standards of morality-honest behavior and attitudes that show respect for other people',
         wordImages: '',
         wordExamples:
             'she had the decency to come and confess-Their behavior goes beyond the bounds of decency-Sending aid to the victims was simply a matter of common decency-Have you no sense of decency?',

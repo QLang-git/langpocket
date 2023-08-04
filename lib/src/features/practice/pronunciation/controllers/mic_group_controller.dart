@@ -1,35 +1,24 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/data/services/word_service.dart';
 import 'package:langpocket/src/features/practice/pronunciation/controllers/mic_controller.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
-import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 const bool _activateExampleState = false;
 const int _examplePinter = 0;
-final micGroupControllerProvider = StateNotifierProvider.autoDispose
-    .family<MicGroupController, AsyncValue<MicGroupState>, int>((ref, groupId) {
-  final currentWords =
-      ref.watch(wordsServicesProvider).fetchWordsByGroupId(groupId);
+final micGroupControllerProvider = StateNotifierProvider.autoDispose<
+    MicGroupController, AsyncValue<MicGroupState>>((ref) {
+  final service = ref.watch(wordsServicesProvider);
 
-  return MicGroupController(currentWords);
+  return MicGroupController(service);
 });
 
 class MicGroupController extends StateNotifier<AsyncValue<MicGroupState>>
     implements MicController {
-  final Future<List<WordData>> wordDataFuture;
-  MicGroupController(this.wordDataFuture) : super(const AsyncValue.loading());
-
-  @override
-  void dispose() {
-    // Stop speech recognition if it's currently active.
-    stopRecording();
-
-    super.dispose();
-  }
+  final WordServices service;
+  MicGroupController(this.service) : super(const AsyncValue.loading());
 
   int _countPron = 3;
   int _countExampleMic = 2;
@@ -41,12 +30,11 @@ class MicGroupController extends StateNotifier<AsyncValue<MicGroupState>>
     int? countExamplePron,
     String? exampleActivationMessage,
     required String initialMessage,
-    required int wordId,
+    required int id,
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() {
-      _initializeSpeechToText();
-      return wordDataFuture.then((words) {
+      return service.fetchWordsByGroupId(id).then((words) {
         _countExampleMic = countExamplePron ?? _countExampleMic;
         _countPron = countPron ?? _countPron;
         return MicGroupState(
@@ -70,12 +58,18 @@ class MicGroupController extends StateNotifier<AsyncValue<MicGroupState>>
         }
       });
     }
+    Future.delayed(const Duration(seconds: 5), () {
+      if (speechToText.isListening && mounted) {
+        speechToText.stop();
+      }
+    });
   }
 
   @override
   void stopRecording() async {
     if (speechToText.isListening) {
-      await speechToText.stop();
+      await Future.delayed(
+          const Duration(seconds: 2), () => speechToText.stop());
     }
   }
 
@@ -122,57 +116,41 @@ class MicGroupController extends StateNotifier<AsyncValue<MicGroupState>>
   get isThereNextWord =>
       state.value!.indexWord < state.value!.wordsRecord.length - 1;
 
-  void _initializeSpeechToText() async {
-    final permission = await speechToText.initialize(
-      onError: ((errorNotification) {
-        if (mounted) {
-          _errorListener(errorNotification);
-        }
-      }),
-      onStatus: ((status) {
-        if (mounted) {
-          _statusListener(status);
-        }
-      }),
-    );
-    if (permission) {
-      state = state.whenData((pron) => pron.copyWith(
-          micMessage: "Permission denied. Please enable microphone access."));
-    }
-  }
-
   /// * `listening` when speech recognition begins after calling the [listen]
   /// method.
   /// * `notListening` when speech recognition is no longer listening to the
   /// microphone after a timeout, [cancel] or [stop] call.
   /// * `done` when all results have been delivered.
-
-  void _statusListener(String status) {
+  bool noVoice = true;
+  @override
+  void statusListener(String status) {
     if (status == 'listening') {
-      state =
-          state.whenData((pron) => pron.copyWith(micMessage: "listening..."));
-
-      return;
+      if (mounted) {
+        noVoice = true;
+        state = state.whenData((pron) =>
+            pron.copyWith(micMessage: "listening...", isAnalyzing: false));
+        return;
+      }
     }
     if (status == 'notListening') {
       state = state.whenData((pron) => pron.copyWith(
           micMessage: "Analyzing your pronunciation...", isAnalyzing: true));
       return;
     }
-    if (status == 'done') {
+    if (status == 'done' && noVoice) {
       state = state.whenData((pron) => pron.copyWith(isAnalyzing: false));
       return;
     }
   }
 
-  void _errorListener(SpeechRecognitionError errorNotification) {
-    if (errorNotification.permanent) {
+  @override
+  void errorListener(String errorMsg) {
+    if (errorMsg == 'error_no_match') {
       state = state.whenData((pron) => pron.copyWith(
-          micMessage:
-              "Microphone is unavailable. Check permissions and try again later."));
+          micMessage: "No voice detected. Please try again.",
+          isAnalyzing: false));
     } else {
-      state = state.whenData(
-          (pron) => pron.copyWith(micMessage: errorNotification.errorMsg));
+      state = AsyncError(errorMsg, StackTrace.current);
     }
   }
 
@@ -203,9 +181,6 @@ class MicGroupController extends StateNotifier<AsyncValue<MicGroupState>>
           state = state.whenData((value) => value.copyWith(
               micMessage:
                   "Oops! \"$recognizedText\" doesn't match. Try again."));
-        } else {
-          state = state.whenData((pron) => pron.copyWith(
-              micMessage: "No voice detected. Please try again."));
         }
       }
     }

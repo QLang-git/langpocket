@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/features/practice/pronunciation/controllers/mic_controller.dart';
+import 'package:langpocket/src/features/practice/pronunciation/controllers/mic_group_controller.dart';
 import 'package:langpocket/src/features/practice/pronunciation/controllers/mic_single_controller.dart';
 import 'package:langpocket/src/styles/light_mode.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
@@ -26,24 +28,37 @@ class App extends ConsumerWidget {
 
 void _initializeSpeechToText(WidgetRef ref) async {
   final speechToText = SpeechToText();
-  final permission = await speechToText.initialize(
+  MicController activeProvider;
+
+  await speechToText.initialize(
     onError: (errorNotification) {
-      ref
-          .read(micSingleControllerProvider.notifier)
-          .errorListener(errorNotification.errorMsg);
+      final isGroupActive = ref.read(micGroupControllerProvider).value;
+      if (isGroupActive != null) {
+        activeProvider = ref.read(micGroupControllerProvider.notifier);
+      } else {
+        activeProvider = ref.read(micSingleControllerProvider.notifier);
+      }
+      activeProvider.errorListener(errorNotification.errorMsg);
     },
     onStatus: (status) {
-      ref.read(micSingleControllerProvider.notifier).statusListener(status);
+      final isGroupActive = ref.read(micGroupControllerProvider).value;
+      if (isGroupActive != null) {
+        activeProvider = ref.read(micGroupControllerProvider.notifier);
+      } else {
+        activeProvider = ref.read(micSingleControllerProvider.notifier);
+      }
+
+      activeProvider.statusListener(status);
     },
   );
-
-  if (!permission) {
-    ref
-        .read(micSingleControllerProvider.notifier)
-        .errorListener('Permission denied. Please enable microphone access.');
-  }
-  if (!speechToText.isAvailable) {
-    ref.read(micSingleControllerProvider.notifier).errorListener(
-        'Microphone is unavailable. Check permissions and try again later.');
-  }
+  // if (activeProvider != null) {
+  //   if (!permission) {
+  //     activeProvider?.errorListener(
+  //         'Permission denied. Please enable microphone access.');
+  //   }
+  //   if (!speechToText.isAvailable) {
+  //     activeProvider?.errorListener(
+  //         'Microphone is unavailable. Check permissions and try again later.');
+  //   }
+  // }
 }

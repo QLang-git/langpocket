@@ -30,7 +30,7 @@ class _ReadSpeakState extends ConsumerState<ReadSpeak> {
     micSingleController = ref.refresh(micSingleControllerProvider.notifier);
     readSpeakController = ref.refresh(readSpeakControllerProvider.notifier);
     micSingleController.setWordRecords(
-        wordId: widget.wordId,
+        id: widget.wordId,
         countPron: 1,
         countExamplePron: 1,
         exampleActivationMessage:

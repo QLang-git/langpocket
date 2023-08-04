@@ -5,7 +5,7 @@ abstract class MicController<T extends MicStateBase> {
     int? countExamplePron,
     String? exampleActivationMessage,
     required String initialMessage,
-    required int wordId,
+    required int id,
   });
   void startOver();
   void exampleActivation();
@@ -13,6 +13,9 @@ abstract class MicController<T extends MicStateBase> {
   void stopRecording();
   void moveToNextExamples(int examplePinter);
   get isThereNextWord => null;
+
+  void errorListener(String errorMsg);
+  void statusListener(String status);
 }
 
 abstract class MicStateBase {

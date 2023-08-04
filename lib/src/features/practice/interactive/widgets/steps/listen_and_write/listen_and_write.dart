@@ -7,7 +7,6 @@ import 'package:langpocket/src/features/practice/interactive/dialogs/inter_dialo
 import 'package:langpocket/src/features/practice/interactive/widgets/practice_stepper/step_message.dart';
 import 'package:langpocket/src/features/practice/interactive/widgets/steps/listen_and_write/listen_write_controller.dart';
 import 'package:langpocket/src/features/practice/spelling/controllers/spelling_word_controller.dart';
-import 'package:langpocket/src/utils/constants/messages.dart';
 
 class ListenWrite extends ConsumerStatefulWidget {
   final int wordId;
@@ -58,8 +57,7 @@ class _ListenWriteState extends ConsumerState<ListenWrite> {
         //     countSpelling, activateExample, pointer);
         if (countSpelling == 0 &&
             examplePinter >= wordRecord.wordExamples.length - 1) {
-          popUpDialog(context, MyMessages(), wordRecord.foreignWord,
-              wordRecord.wordExamples);
+          popUpDialog(context, wordRecord.foreignWord, wordRecord.wordExamples);
         }
       });
     }
@@ -191,8 +189,8 @@ class _ListenWriteState extends ConsumerState<ListenWrite> {
     );
   }
 
-  void popUpDialog(BuildContext context, MyMessages myMessage,
-      String foreignWord, List<String> examplesList) {
+  void popUpDialog(
+      BuildContext context, String foreignWord, List<String> examplesList) {
     if (!isDialogShowing) {
       isDialogShowing = true;
       showDialog(
