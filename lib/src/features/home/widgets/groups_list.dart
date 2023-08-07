@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
+import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/features/home/controller/home_controller.dart';
+import 'package:langpocket/src/utils/constants/globule_constants.dart';
+import 'package:langpocket/src/utils/notifications.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 class GroupsList extends ConsumerStatefulWidget {
   const GroupsList({super.key});
@@ -36,6 +41,7 @@ class _GroupsListState extends ConsumerState<GroupsList> {
     return AsyncValueWidget(
         value: groups,
         child: (groups) {
+          _initializeNewGroupNotification(groups);
           if (groups.isEmpty) {
             return SizedBox(
                 width: double.infinity,
@@ -186,5 +192,18 @@ class _GroupsListState extends ConsumerState<GroupsList> {
                 );
               });
         });
+  }
+
+  void _initializeNewGroupNotification(List<GroupData> groups) {
+    tz.initializeTimeZones();
+    final tz.TZDateTime(:day, :month, :year, :weekday) =
+        tz.TZDateTime.now(tz.local);
+    final hasGroup = groups.any((g) =>
+        g.creatingTime.day == day &&
+        g.creatingTime.month == month &&
+        g.creatingTime.year == year);
+    if (hasGroup) {
+      AppNotification().removeNewGroupNotification(weekday * DEFAULT_DAY_ID);
+    }
   }
 }

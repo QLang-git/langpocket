@@ -10,19 +10,40 @@ void main() {
   });
   group('HomeController', () {
     final group1 = GroupData(
-        id: 1, groupName: 'Sun_Group', creatingTime: DateTime(2023, 07, 23));
+        id: 1,
+        groupName: 'Sun_Group',
+        creatingTime: DateTime(2023, 07, 23),
+        level: 0);
     final group2 = GroupData(
-        id: 2, groupName: 'Sat_Group', creatingTime: DateTime(2023, 07, 22));
+        id: 2,
+        groupName: 'Sat_Group',
+        creatingTime: DateTime(2023, 07, 22),
+        level: 0);
     final group3 = GroupData(
-        id: 3, groupName: 'Fri_Group', creatingTime: DateTime(2023, 07, 21));
+        id: 3,
+        groupName: 'Fri_Group',
+        creatingTime: DateTime(2023, 07, 21),
+        level: 0);
     final group4 = GroupData(
-        id: 4, groupName: 'Thu_Group', creatingTime: DateTime(2023, 07, 20));
+        id: 4,
+        groupName: 'Thu_Group',
+        creatingTime: DateTime(2023, 07, 20),
+        level: 0);
     final group5 = GroupData(
-        id: 5, groupName: 'Web_Group', creatingTime: DateTime(2023, 07, 19));
+        id: 5,
+        groupName: 'Web_Group',
+        creatingTime: DateTime(2023, 07, 19),
+        level: 0);
     final group6 = GroupData(
-        id: 6, groupName: 'Tue_Group', creatingTime: DateTime(2023, 07, 18));
+        id: 6,
+        groupName: 'Tue_Group',
+        creatingTime: DateTime(2023, 07, 18),
+        level: 0);
     final group7 = GroupData(
-        id: 7, groupName: 'Mon_Group', creatingTime: DateTime(2023, 07, 17));
+        id: 7,
+        groupName: 'Mon_Group',
+        creatingTime: DateTime(2023, 07, 17),
+        level: 0);
 
     test('formatTime should return formatted time', () {
       final res1 = homeController.formatTime(group1);

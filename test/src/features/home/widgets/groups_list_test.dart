@@ -15,12 +15,13 @@ void main() {
         id: 1,
         groupName: 'first',
         creatingTime: DateTime.now(),
+        level: 0,
       ),
       GroupData(
-        id: 2,
-        groupName: 'second',
-        creatingTime: DateTime(2023, 1, 30),
-      )
+          id: 2,
+          groupName: 'second',
+          creatingTime: DateTime(2023, 1, 30),
+          level: 0)
     ];
     words = [
       WordData(

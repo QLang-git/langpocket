@@ -6,15 +6,18 @@ import 'drift_group_repository.dart';
 List<GroupCompanion> get defaultGroups {
   return [
     GroupCompanion.insert(
+      level: const Value(0),
       id: const Value(1),
       groupName: 'My first Day',
       creatingTime: DateTime.parse('2023-07-11 13:27:00'),
     ),
     GroupCompanion.insert(
+      level: const Value(0),
       groupName: 'My second Day',
       creatingTime: DateTime.parse('2023-07-10 13:27:00'),
     ),
     GroupCompanion.insert(
+      level: const Value(0),
       groupName: 'Nice words for my third day',
       creatingTime: DateTime.parse('2023-07-09 13:27:00'),
     )

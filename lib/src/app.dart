@@ -4,6 +4,7 @@ import 'package:langpocket/src/features/practice/pronunciation/controllers/mic_c
 import 'package:langpocket/src/features/practice/pronunciation/controllers/mic_group_controller.dart';
 import 'package:langpocket/src/features/practice/pronunciation/controllers/mic_single_controller.dart';
 import 'package:langpocket/src/styles/light_mode.dart';
+import 'package:langpocket/src/utils/notifications.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -13,6 +14,7 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _initializeSpeechToText(ref);
+    _initializeAppNotifications();
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
@@ -23,6 +25,12 @@ class App extends ConsumerWidget {
       theme: lightMode,
       themeMode: ThemeMode.light,
     );
+  }
+
+  void _initializeAppNotifications() {
+    final notification = AppNotification();
+    notification.initializations();
+    notification.newGroupNotification();
   }
 }
 
@@ -51,14 +59,4 @@ void _initializeSpeechToText(WidgetRef ref) async {
       activeProvider.statusListener(status);
     },
   );
-  // if (activeProvider != null) {
-  //   if (!permission) {
-  //     activeProvider?.errorListener(
-  //         'Permission denied. Please enable microphone access.');
-  //   }
-  //   if (!speechToText.isAvailable) {
-  //     activeProvider?.errorListener(
-  //         'Microphone is unavailable. Check permissions and try again later.');
-  //   }
-  // }
 }

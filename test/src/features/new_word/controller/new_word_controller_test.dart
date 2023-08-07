@@ -147,7 +147,8 @@ void main() {
 
       // set up saving
       final now = DateTime.now();
-      final group = GroupData(id: 1, groupName: 'test', creatingTime: now);
+      final group =
+          GroupData(id: 1, groupName: 'test', creatingTime: now, level: 0);
       when(() => mockWordServices.fetchGroupByTime(now))
           .thenAnswer((_) => Future.value(group));
       when(() => mockWordServices.addNewWordInGroup(any()))
@@ -186,7 +187,8 @@ void main() {
 
       // set up saving
       final now = DateTime.now();
-      final group = GroupData(id: 1, groupName: 'test', creatingTime: now);
+      final group =
+          GroupData(id: 1, groupName: 'test', creatingTime: now, level: 0);
 
       when(() => mockWordServices.createGroup(any()))
           .thenAnswer((_) => Future.value(group));
