@@ -15,6 +15,8 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
+![architecture](https://github.com/QLang-git/langpocket/assets/76897266/5ebcee06-9006-4696-b367-d15ae60664a6)
+
 ```
 langpocket
 ├─ .git
