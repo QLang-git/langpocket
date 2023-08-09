@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/features/practice/spelling/controllers/spelling_controller.dart';
 
 class SpellingAppBar extends StatefulWidget implements PreferredSizeWidget {
-  final SpellingController spellingController;
-  const SpellingAppBar({super.key, required this.spellingController});
+  const SpellingAppBar({super.key});
 
   @override
   State<SpellingAppBar> createState() => _SpellingAppBarState();
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(80);
 }
 
 class _SpellingAppBarState extends State<SpellingAppBar> {
@@ -28,21 +26,10 @@ class _SpellingAppBarState extends State<SpellingAppBar> {
         centerTitle: true,
         elevation: 0,
         toolbarHeight: 70,
-        actions: [
-          Padding(
-              padding: const EdgeInsets.only(right: 20, left: 15),
-              child: IconButton(
-                  onPressed: () => widget.spellingController.startOver,
-                  icon: const Icon(
-                    Icons.refresh_rounded,
-                    size: 35,
-                    color: Colors.white,
-                  )))
-        ],
         title: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Text(
-            'Practice Spelling',
+            'Pr. Spelling',
             style: textStyle.headlineLarge?.copyWith(color: Colors.white),
           ),
         ),

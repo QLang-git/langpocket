@@ -1,53 +1,40 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/data/services/word_service.dart';
 import 'package:langpocket/src/features/practice/pronunciation/controllers/mic_controller.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
-import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 const bool _activateExampleState = false;
 const int _examplePinter = 0;
-final micSingleControllerProvider = StateNotifierProvider.family
-    .autoDispose<MicSingleController, AsyncValue<MicWordState>, int>(
-        (ref, wordId) {
-  final currentWord = ref.watch(wordsServicesProvider).fetchWordById(wordId);
-
-  return MicSingleController(currentWord);
+final micSingleControllerProvider = StateNotifierProvider.autoDispose<
+    MicSingleController, AsyncValue<MicWordState>>((ref) {
+  final services = ref.watch(wordsServicesProvider);
+  return MicSingleController(services);
 });
 
 class MicSingleController extends StateNotifier<AsyncValue<MicWordState>>
     implements MicController {
-  final Future<WordData> wordDataFuture;
-  MicSingleController(this.wordDataFuture) : super(const AsyncValue.loading());
+  WordServices services;
 
-  @override
-  void dispose() {
-    speechToText.cancel();
-    speechToText.stop();
-    // Stop speech recognition if it's currently active.
-
-    super.dispose();
-  }
-
+  MicSingleController(this.services) : super(const AsyncValue.loading());
   int _countPron = 3;
   int _countExampleMic = 2;
   final speechToText = SpeechToText();
   String exampleMessage = 'Try to Pronounce the following sentence ';
-  String initialMess = 'start over';
+  String initialMess = 'Hold to Start Recording ...';
   @override
-  void setWordRecords(
-      {int? countPron,
-      int? countExamplePron,
-      String? exampleActivationMessage,
-      required String initialMessage}) async {
+  void setWordRecords({
+    int? countPron,
+    int? countExamplePron,
+    String? exampleActivationMessage,
+    required String initialMessage,
+    required int id,
+  }) async {
     state = const AsyncLoading();
 
-    await _initializeSpeechToText();
-
-    final word = await wordDataFuture;
+    final word = await services.fetchWordById(id);
 
     _countExampleMic = countExamplePron ?? _countExampleMic;
     _countPron = countPron ?? _countPron;
@@ -63,21 +50,25 @@ class MicSingleController extends StateNotifier<AsyncValue<MicWordState>>
 
   @override
   void startRecording() async {
-    state = state.whenData((pron) => pron.copyWith(micMessage: "listening..."));
-
     if (speechToText.isNotListening && mounted) {
       await speechToText.listen(onResult: (speech) {
         if (mounted) {
           _resultListener(speech);
         }
       });
-    } else {}
+    }
+    Future.delayed(const Duration(seconds: 5), () {
+      if (speechToText.isListening && mounted) {
+        speechToText.stop();
+      }
+    });
   }
 
   @override
   void stopRecording() async {
     if (speechToText.isListening) {
-      await speechToText.stop();
+      await Future.delayed(
+          const Duration(seconds: 2), () => speechToText.stop());
     }
   }
 
@@ -110,67 +101,53 @@ class MicSingleController extends StateNotifier<AsyncValue<MicWordState>>
         micMessage: exampleMessage));
   }
 
-  Future<void> _initializeSpeechToText() async {
-    final permission = await speechToText.initialize(
-      onError: (errorNotification) {
-        if (mounted) {
-          _errorListener(errorNotification);
-        }
-      },
-      onStatus: (status) {
-        if (mounted) {
-          _statusListener(status);
-        }
-      },
-    );
-
-    if (!mounted) {
-      return;
-    }
-
-    if (!permission) {
-      state = state.whenData((pron) => pron.copyWith(
-          micMessage: "Permission denied. Please enable microphone access."));
-    }
-  }
-
   /// * `listening` when speech recognition begins after calling the [listen]
   /// method.
   /// * `notListening` when speech recognition is no longer listening to the
   /// microphone after a timeout, [cancel] or [stop] call.
   /// * `done` when all results have been delivered.
-
-  void _statusListener(String status) {
+  bool noVoice = true;
+  @override
+  void statusListener(String status) {
     if (status == 'listening') {
-      state = state.whenData((pron) =>
-          pron.copyWith(micMessage: "listening...", isAnalyzing: false));
+      if (mounted) {
+        noVoice = true;
+        state = state.whenData((pron) =>
+            pron.copyWith(micMessage: "listening...", isAnalyzing: false));
 
-      return;
+        return;
+      }
     }
     if (status == 'notListening') {
-      state = state.whenData((pron) => pron.copyWith(
-          micMessage: "Analyzing your pronunciation...", isAnalyzing: true));
-      return;
+      if (mounted) {
+        state = state.whenData((pron) => pron.copyWith(
+            micMessage: "Analyzing your pronunciation...", isAnalyzing: true));
+        return;
+      }
     }
-    if (status == 'done') {
-      state = state.whenData((pron) => pron.copyWith(isAnalyzing: false));
-      return;
+    if (status == 'done' && noVoice) {
+      if (mounted) {
+        state = state.whenData((pron) => pron.copyWith(
+            micMessage: "No voice detected. Please try again.",
+            isAnalyzing: false));
+        return;
+      }
     }
   }
 
-  void _errorListener(SpeechRecognitionError errorNotification) {
-    if (errorNotification.permanent) {
+  @override
+  void errorListener(String errorMsg) {
+    if (errorMsg == 'error_no_match') {
       state = state.whenData((pron) => pron.copyWith(
-          micMessage:
-              "Microphone is unavailable. Check permissions and try again later."));
+          micMessage: "No voice detected. Please try again.",
+          isAnalyzing: false));
     } else {
-      state = state.whenData(
-          (pron) => pron.copyWith(micMessage: errorNotification.errorMsg));
+      state = AsyncError(errorMsg, StackTrace.current);
     }
   }
 
   void _resultListener(SpeechRecognitionResult result) {
-    print(result.recognizedWords);
+    noVoice = false;
     if (state.hasValue && result.finalResult) {
       if (state.value!.activateExample) {
         _comparingWords(result.recognizedWords,
@@ -179,9 +156,6 @@ class MicSingleController extends StateNotifier<AsyncValue<MicWordState>>
         _comparingWords(
             result.recognizedWords, state.value!.wordRecord.foreignWord);
       }
-    } else {
-      state = state.whenData((pron) => pron.copyWith(
-          micMessage: "Analyzing your pronunciation...", isAnalyzing: true));
     }
   }
 
@@ -199,9 +173,6 @@ class MicSingleController extends StateNotifier<AsyncValue<MicWordState>>
               isAnalyzing: false,
               micMessage:
                   "Oops! \"$recognizedText\" doesn't match. Try again."));
-        } else {
-          state = state.whenData((pron) => pron.copyWith(
-              micMessage: "No voice detected. Please try again."));
         }
       }
     }

@@ -57,38 +57,51 @@ class _StepsMicrophoneButtonState extends State<StepsMicrophoneButton>
         widget.microphoneController.stopRecording();
         isRecording = false;
       },
-      child: FloatingActionButton(
-        onPressed: null, // Disabled regular tap
-        backgroundColor: !widget.activation ? Colors.grey : Colors.indigo[500],
-        elevation: 0,
-        child: wordAnalyze && widget.activation
-            ? Container(
-                child: LoadingAnimationWidget.bouncingBall(
-                    color: Colors.white, size: 40))
-            : widget.activation
-                ? Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      AnimatedBuilder(
-                        animation: _animation,
-                        builder: (BuildContext context, Widget? child) {
-                          return Container(
-                            width:
-                                isRecording ? 150.0 : 150.0 * _animation.value,
-                            height:
-                                isRecording ? 150.0 : 150.0 * _animation.value,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border:
-                                  Border.all(color: Colors.white, width: 2.0),
-                            ),
-                          );
-                        },
-                      ),
-                      const Icon(Icons.mic),
-                    ],
-                  )
-                : const Icon(Icons.mic),
+      child: SizedBox(
+        width: 70,
+        height: 100,
+        child: FloatingActionButton(
+          onPressed: null, // Disabled regular tap
+          backgroundColor:
+              !widget.activation ? Colors.grey : Colors.indigo[500],
+          elevation: 0,
+          child: wordAnalyze && widget.activation
+              ? Container(
+                  child: LoadingAnimationWidget.bouncingBall(
+                      color: Colors.white, size: 40))
+              : widget.activation
+                  ? Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        AnimatedBuilder(
+                          animation: _animation,
+                          builder: (BuildContext context, Widget? child) {
+                            return Container(
+                              width: isRecording
+                                  ? 170.0
+                                  : 170.0 * _animation.value,
+                              height: isRecording
+                                  ? 170.0
+                                  : 170.0 * _animation.value,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border:
+                                    Border.all(color: Colors.white, width: 2.0),
+                              ),
+                            );
+                          },
+                        ),
+                        const Icon(
+                          Icons.mic,
+                          size: 40,
+                        ),
+                      ],
+                    )
+                  : const Icon(
+                      Icons.mic,
+                      size: 40,
+                    ),
+        ),
       ),
     );
   }

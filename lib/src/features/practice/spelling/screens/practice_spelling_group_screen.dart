@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/common_widgets/custom_dialog_practice.dart';
 import 'package:langpocket/src/features/practice/spelling/app_bar/spelling_appbar.dart';
 import 'package:langpocket/src/features/practice/spelling/controllers/spelling_group_controller.dart';
 import 'package:langpocket/src/features/practice/spelling/controllers/spelling_controller.dart';
+import 'package:langpocket/src/features/practice/spelling/dialogs/spelling_group_dialog.dart';
 import 'package:langpocket/src/features/practice/spelling/widgets/practice_spelling.dart';
-import 'package:langpocket/src/utils/constants/messages.dart';
 
 class PracticeSpellingGroupScreen extends ConsumerStatefulWidget {
   final int groupId;
@@ -33,6 +32,8 @@ class PracticeSpellingScreenState
 
   @override
   void initState() {
+    inputController = TextEditingController();
+    exampleInputController = TextEditingController();
     isDialogShowing = false;
     spellingController =
         ref.read(spellingGroupControllerProvider(widget.groupId).notifier);
@@ -40,14 +41,6 @@ class PracticeSpellingScreenState
     spellingController.setWordRecords();
 
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    inputController.dispose();
-    exampleInputController.dispose();
-
-    super.dispose();
   }
 
   void setReadOnlyWord(({bool status, String text}) record) {
@@ -69,8 +62,6 @@ class PracticeSpellingScreenState
     final spellingState =
         ref.watch(spellingGroupControllerProvider(widget.groupId));
 
-    final myMessage = MyMessages();
-
     if (spellingState.hasValue) {
       final SpellingGroupState(
         :activateExample,
@@ -82,7 +73,6 @@ class PracticeSpellingScreenState
       WidgetsBinding.instance.addPostFrameCallback((_) {
         popUpDialogGroup(
             context,
-            myMessage,
             wordsRecord[wordIndex].foreignWord,
             wordsRecord[wordIndex].wordExamples,
             countSpelling,
@@ -95,30 +85,24 @@ class PracticeSpellingScreenState
 
     return ResponsiveCenter(
         child: Scaffold(
-      appBar: spellingState.hasValue
-          ? SpellingAppBar(
-              spellingController: spellingController,
-            )
-          : null,
+      appBar: const SpellingAppBar(),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
-          child: AsyncValueWidget(
-            value: spellingState,
-            child: (spellingGroupState) {
-              final wordIndex = spellingGroupState.wordIndex;
-              final word = spellingGroupState.wordsRecord[wordIndex];
+        child: AsyncValueWidget(
+          value: spellingState,
+          child: (spellingGroupState) {
+            final wordIndex = spellingGroupState.wordIndex;
+            final word = spellingGroupState.wordsRecord[wordIndex];
 
-              return PracticeSpelling<SpellingGroupState>(
-                  wordRecord: word,
-                  readOnlyWord: readOnlyWord,
-                  inputController: inputController,
-                  spellingController: spellingController,
-                  spellingState: spellingGroupState,
-                  readOnlyExample: readOnlyExample,
-                  exampleInputController: exampleInputController);
-            },
-          ),
+            return PracticeSpelling<SpellingGroupState>(
+              inputController: inputController,
+              exampleInputController: exampleInputController,
+              wordRecord: word,
+              spellingState: spellingGroupState,
+              readOnlyWord: readOnlyWord,
+              spellingController: spellingController,
+              readOnlyExample: readOnlyExample,
+            );
+          },
         ),
       ),
     ));
@@ -168,7 +152,6 @@ class PracticeSpellingScreenState
 
   void popUpDialogGroup(
       BuildContext context,
-      MyMessages myMessage,
       String foreignWord,
       List<String> examplesList,
       int countSpelling,
@@ -185,12 +168,9 @@ class PracticeSpellingScreenState
             context: context,
             barrierDismissible: false,
             builder: (BuildContext context) {
-              return CustomDialogPractice(
-                messages: myMessage.getPracticeMessage(
-                  PracticeMessagesType.practiceSpellingGroup,
-                  foreignWord,
-                ),
-                reload: spellingController.isThereNextWord
+              return SpellingGroupDialog(
+                word: foreignWord,
+                moveNext: spellingController.isThereNextWord
                     ? spellingController.moveToNextWord
                     : null,
                 activateExamples: spellingController.exampleActivation,
@@ -208,11 +188,7 @@ class PracticeSpellingScreenState
             context: context,
             barrierDismissible: false,
             builder: (BuildContext context) {
-              return CustomDialogPractice(
-                messages: myMessage.getPracticeMessage(
-                  PracticeMessagesType.practiceSpellingExampleCompleteGroup,
-                  foreignWord,
-                ),
+              return SpellingGroupExampleDialog(
                 reload: spellingController.startOver,
                 activateExamples: spellingController.exampleActivation,
               );

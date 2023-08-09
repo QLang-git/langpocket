@@ -1,13 +1,21 @@
 abstract class MicController<T extends MicStateBase> {
   void moveToNextWord();
-  void setWordRecords(
-      {int? countPron, int? countExamplePron, required String initialMessage});
+  void setWordRecords({
+    int? countPron,
+    int? countExamplePron,
+    String? exampleActivationMessage,
+    required String initialMessage,
+    required int id,
+  });
   void startOver();
   void exampleActivation();
   void startRecording();
   void stopRecording();
   void moveToNextExamples(int examplePinter);
   get isThereNextWord => null;
+
+  void errorListener(String errorMsg);
+  void statusListener(String status);
 }
 
 abstract class MicStateBase {

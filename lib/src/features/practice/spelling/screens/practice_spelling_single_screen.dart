@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/common_widgets/custom_dialog_practice.dart';
 import 'package:langpocket/src/features/practice/spelling/app_bar/spelling_appbar.dart';
 import 'package:langpocket/src/features/practice/spelling/controllers/spelling_word_controller.dart';
 import 'package:langpocket/src/features/practice/spelling/controllers/spelling_controller.dart';
+import 'package:langpocket/src/features/practice/spelling/dialogs/spelling_single_dialog.dart';
 import 'package:langpocket/src/features/practice/spelling/widgets/practice_spelling.dart';
-import 'package:langpocket/src/utils/constants/messages.dart';
 
 class PracticeSpellingSingleScreen extends ConsumerStatefulWidget {
   final int wordId;
@@ -63,7 +62,6 @@ class PracticeSpellingScreenState
     final spellingState =
         ref.watch(spellingWordControllerProvider(widget.wordId));
 
-    final myMessage = MyMessages();
     if (spellingState.hasValue) {
       final SpellingWordState(
         :activateExample,
@@ -74,7 +72,6 @@ class PracticeSpellingScreenState
       WidgetsBinding.instance.addPostFrameCallback((_) {
         popUpDialogSingle(
             context,
-            myMessage,
             wordRecord.foreignWord,
             wordRecord.wordExamples,
             countSpelling,
@@ -87,11 +84,7 @@ class PracticeSpellingScreenState
 
     return ResponsiveCenter(
         child: Scaffold(
-      appBar: spellingState.hasValue
-          ? SpellingAppBar(
-              spellingController: spellingController,
-            )
-          : null,
+      appBar: spellingState.hasValue ? const SpellingAppBar() : null,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 5),
@@ -155,7 +148,6 @@ class PracticeSpellingScreenState
 
   void popUpDialogSingle(
     BuildContext context,
-    MyMessages myMessage,
     String foreignWord,
     List<String> examplesList,
     int countSpelling,
@@ -171,14 +163,10 @@ class PracticeSpellingScreenState
             context: context,
             barrierDismissible: false,
             builder: (BuildContext context) {
-              return CustomDialogPractice(
-                messages: myMessage.getPracticeMessage(
-                  PracticeMessagesType.practiceSpelling,
-                  foreignWord,
-                ),
-                reload: spellingController.startOver,
-                activateExamples: spellingController.exampleActivation,
-              );
+              return SpellingSingleWordDialog(
+                  word: foreignWord,
+                  reload: spellingController.startOver,
+                  activateExamples: spellingController.exampleActivation);
             }).then((value) => isDialogShowing = false);
       } else if (countSpelling == 0 && activateExample) {
         if (pointer < examplesList.length - 1) {
@@ -189,11 +177,7 @@ class PracticeSpellingScreenState
               context: context,
               barrierDismissible: false,
               builder: (BuildContext context) {
-                return CustomDialogPractice(
-                  messages: myMessage.getPracticeMessage(
-                    PracticeMessagesType.practiceSpellingExampleComplete,
-                    foreignWord,
-                  ),
+                return SpellingSingleWordExampleDialog(
                   reload: spellingController.startOver,
                   activateExamples: spellingController.exampleActivation,
                 );

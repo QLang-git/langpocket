@@ -28,17 +28,6 @@ class _PracticeInteractiveAppBarState extends State<PracticeInteractiveAppBar> {
         centerTitle: true,
         elevation: 0,
         toolbarHeight: 70,
-        actions: [
-          Padding(
-              padding: const EdgeInsets.only(right: 20, left: 15),
-              child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.refresh_rounded,
-                    size: 35,
-                    color: Colors.white,
-                  )))
-        ],
         title: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Text(

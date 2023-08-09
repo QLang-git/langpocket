@@ -18,6 +18,7 @@ class _TodoScreenState extends State<TodoScreen> {
       body: Column(
         children: [
           Card(
+            color: Colors.blue,
               margin: const EdgeInsets.all(30),
               elevation: 3,
               shape: RoundedRectangleBorder(
@@ -25,7 +26,7 @@ class _TodoScreenState extends State<TodoScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(30.0),
                 child: Text(
-                  'This feature is currently under development and is not part of our beta version.\nIts purpose is to provide you with helpful reminders and guidance on the next steps to take towards achieving your language learning goals.\nWhether it\'s adding new words to your vocabulary, practicing listening skills with yesterday\'s words, or engaging in spelling practice, this feature will assist you by sending notifications directly to you.\nThese notifications will serve as reminders for the tasks and activities you have lined up, acting as your personal language learning assistant.',
+                  '',
                   style: textTheme.headlineMedium
                       ?.copyWith(color: colorScheme.outline),
                 ),

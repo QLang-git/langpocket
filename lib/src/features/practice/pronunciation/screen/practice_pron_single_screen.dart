@@ -5,10 +5,9 @@ import 'package:langpocket/src/features/practice/pronunciation/controllers/mic_s
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/features/practice/pronunciation/app_bar/pron_appbar.dart';
+import 'package:langpocket/src/features/practice/pronunciation/dialogs/pron_single_dialog.dart';
 import 'package:langpocket/src/features/practice/pronunciation/widgets/microphone_button.dart';
-import 'package:langpocket/src/common_widgets/custom_dialog_practice.dart';
 import 'package:langpocket/src/features/practice/pronunciation/widgets/practice_pronunciation.dart';
-import 'package:langpocket/src/utils/constants/messages.dart';
 
 class PracticePronSingleScreen extends ConsumerStatefulWidget {
   final int wordId;
@@ -24,30 +23,28 @@ class PracticePronSingleScreen extends ConsumerStatefulWidget {
 
 class _PracticePronScreenState extends ConsumerState<PracticePronSingleScreen> {
   late MicController microphoneController;
-  late MyMessages myMessages;
 
   @override
   void initState() {
-    myMessages = MyMessages();
-    microphoneController =
-        ref.read(micSingleControllerProvider(widget.wordId).notifier);
+    microphoneController = ref.read(micSingleControllerProvider.notifier);
     microphoneController.setWordRecords(
-        initialMessage: 'Hold to Start Recording ...');
+        id: widget.wordId, initialMessage: 'Hold to Start Recording ...');
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final micState = ref.watch(micSingleControllerProvider(widget.wordId));
+    final micState = ref.watch(micSingleControllerProvider);
     final ThemeData(:textTheme) = Theme.of(context);
 
     if (micState.hasValue) {
-      addPostFrameCallback(context, myMessages, micState.value!);
+      addPostFrameCallback(context, micState.value!);
     }
 
     return ResponsiveCenter(
       child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.background,
         appBar: const PronAppBar(),
         body: SingleChildScrollView(
           child: AsyncValueWidget(
@@ -63,27 +60,31 @@ class _PracticePronScreenState extends ConsumerState<PracticePronSingleScreen> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: SizedBox(
-          height: 230,
+          height: 190,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Align(
                 alignment: Alignment.bottomCenter,
-                child: Container(
-                  padding: const EdgeInsets.all(7),
-                  margin: const EdgeInsets.symmetric(vertical: 5),
-                  decoration: BoxDecoration(
-                    color: Colors.blueGrey,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    micState.hasValue
-                        ? micState.value!.micMessage
-                        : 'Loading..',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  child: Container(
+                    padding: const EdgeInsets.all(7),
+                    decoration: BoxDecoration(
+                      color: Colors.blue[700],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      micState.hasValue
+                          ? micState.value!.micMessage
+                          : 'Loading..',
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 3,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ),
@@ -131,30 +132,20 @@ class _PracticePronScreenState extends ConsumerState<PracticePronSingleScreen> {
     );
   }
 
-  void addPostFrameCallback(
-      BuildContext context, MyMessages myMessage, MicWordState micWordState) {
+  void addPostFrameCallback(BuildContext context, MicWordState micWordState) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      popUpDialogSingle(context, myMessage, micWordState);
-      // if (widget.groupId != null) {
-      //   popUpDialogGroup(context, myMessage, foreignWord, wordExamples);
-      // } else {
-      //   popUpDialogSingle(context, myMessage, foreignWord, wordExamples);
-      // }
+      popUpDialogSingle(context, micWordState);
     });
   }
 
-  void popUpDialogSingle(
-      BuildContext context, MyMessages myMessage, MicWordState micWordState) {
+  void popUpDialogSingle(BuildContext context, MicWordState micWordState) {
     if (micWordState.countPron == 0 && !micWordState.activateExample) {
       showDialog(
           context: context,
           barrierDismissible: false,
           builder: (BuildContext context) {
-            return CustomDialogPractice(
-              messages: myMessage.getPracticeMessage(
-                PracticeMessagesType.practicePronunciation,
-                micWordState.wordRecord.foreignWord,
-              ),
+            return PronSingleWordDialog(
+              word: micWordState.wordRecord.foreignWord,
               reload: microphoneController.startOver,
               activateExamples: microphoneController.exampleActivation,
             );
@@ -168,11 +159,7 @@ class _PracticePronScreenState extends ConsumerState<PracticePronSingleScreen> {
             context: context,
             barrierDismissible: false,
             builder: (BuildContext context) {
-              return CustomDialogPractice(
-                messages: myMessage.getPracticeMessage(
-                  PracticeMessagesType.practicePronExampleComplete,
-                  micWordState.wordRecord.foreignWord,
-                ),
+              return PronSingleWordExampleDialog(
                 reload: microphoneController.startOver,
                 activateExamples: microphoneController.exampleActivation,
               );

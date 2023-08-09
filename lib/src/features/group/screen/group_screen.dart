@@ -53,28 +53,11 @@ class _GroupScreenState extends ConsumerState<GroupScreen> {
                 floatingActionButton: SpeedDial(
                   animatedIcon: AnimatedIcons.menu_close,
                   backgroundColor: Theme.of(context).colorScheme.primary,
-                  buttonSize: const Size(70.0, 70.0),
+                  buttonSize: const Size(70.0, 75.0),
                   children: [
                     SpeedDialChild(
-                      child: const Icon(
-                        Icons.play_arrow_rounded,
-                        size: 30,
-                      ),
-                      label: ' Listen to the Audio Clips : Group Practice',
-                      onTap: () => context.pushNamed(
-                        AppRoute.audioClip.name,
-                        pathParameters: {
-                          'wordId': wordsList.first.id.toString(),
-                          'groupId': widget.groupId.toString()
-                        },
-                        queryParameters: {
-                          'groupName': wordsGroup.groupData.groupName
-                        },
-                      ),
-                    ),
-                    SpeedDialChild(
                         child: const Icon(Icons.spellcheck_rounded, size: 30),
-                        label: 'Master Your Spelling: Group Practice',
+                        label: 'Master Your Spelling',
                         onTap: () {
                           context.pushNamed(AppRoute.spelling.name,
                               pathParameters: {
@@ -87,7 +70,7 @@ class _GroupScreenState extends ConsumerState<GroupScreen> {
                         }),
                     SpeedDialChild(
                         child: const Icon(Icons.record_voice_over, size: 30),
-                        label: 'Perfect Your Pronunciation: Group Practice',
+                        label: 'Perfect Your Pronunciation',
                         onTap: () {
                           context.pushNamed(AppRoute.pronunciation.name,
                               pathParameters: {

@@ -120,7 +120,7 @@ class CustomPracticeDialog extends StatelessWidget {
                     width: 200,
                     height: 150,
                     child: Image.asset(
-                      'images/books_stack.png',
+                      'assets/images/books_stack.png',
                       fit: BoxFit.fill,
                     ),
                   ))

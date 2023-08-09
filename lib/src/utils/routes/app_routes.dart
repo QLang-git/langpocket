@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/features/group/screen/group_screen.dart';
 import 'package:langpocket/src/features/home/screen/home_screen.dart';
 import 'package:langpocket/src/features/new_word/screen/new_word_screen.dart';
-import 'package:langpocket/src/features/practice/audio/screen/audio_screen.dart';
 import 'package:langpocket/src/features/practice/interactive/screen/practice_interactive_screen.dart';
 import 'package:langpocket/src/features/practice/pronunciation/screen/practice_pron_group_screen.dart';
 import 'package:langpocket/src/features/practice/pronunciation/screen/practice_pron_single_screen.dart';
@@ -30,7 +29,6 @@ enum AppRoute {
   spelling,
   pronunciation,
   interactive,
-  audioClip,
   todo
 }
 
@@ -244,18 +242,6 @@ final appScreens = [
                       return _navGoUp(const ErrorNavScreen(), state);
                     }
                   }),
-              GoRoute(
-                  path: 'audio/:wordId',
-                  name: AppRoute.audioClip.name,
-                  pageBuilder: (context, state) {
-                    // final wordId = state.pathParameters['wordId'];
-                    final groupName = state.uri.queryParameters['groupName'];
-                    if (groupName != null) {
-                      return _navGoUp(AudioScreen(groupName: groupName), state);
-                    } else {
-                      return _navGoUp(const ErrorNavScreen(), state);
-                    }
-                  })
             ]),
       ]),
 ];

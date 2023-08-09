@@ -27,10 +27,10 @@ class _ReadSpeakState extends ConsumerState<ReadSpeak> {
   @override
   void initState() {
     super.initState();
-    micSingleController =
-        ref.refresh(micSingleControllerProvider(widget.wordId).notifier);
+    micSingleController = ref.refresh(micSingleControllerProvider.notifier);
     readSpeakController = ref.refresh(readSpeakControllerProvider.notifier);
     micSingleController.setWordRecords(
+        id: widget.wordId,
         countPron: 1,
         countExamplePron: 1,
         exampleActivationMessage:
@@ -44,7 +44,7 @@ class _ReadSpeakState extends ConsumerState<ReadSpeak> {
   @override
   Widget build(BuildContext context) {
     final rsc = ref.watch(readSpeakControllerProvider);
-    final mic = ref.watch(micSingleControllerProvider(widget.wordId));
+    final mic = ref.watch(micSingleControllerProvider);
 
     final ThemeData(:colorScheme, :textTheme) = Theme.of(context);
 
@@ -77,8 +77,13 @@ class _ReadSpeakState extends ConsumerState<ReadSpeak> {
           return Column(
             children: [
               const StepMessage(message: 'Vocal Voyage: Read and Speak'),
-              const SizedBox(height: 30),
-              ImageView(imageList: wordImages),
+              SizedBox(
+                height: 150,
+                child: ImageView(
+                  imageList: wordImages,
+                  meanings: wordMeans,
+                ),
+              ),
               activateExample
                   ? ExampleView(
                       example: wordExamples[examplePinter],
@@ -89,75 +94,100 @@ class _ReadSpeakState extends ConsumerState<ReadSpeak> {
                       means: wordMeans,
                       noVoiceIcon: true,
                     ),
-              const SizedBox(height: 50),
-              rsc
-                  ? Container(
-                      padding: const EdgeInsets.all(10.0),
-                      decoration: BoxDecoration(
-                        color: colorScheme.onSurface,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(20.0),
-                          topRight: Radius.circular(20.0),
-                          bottomRight: Radius.circular(20.0),
-                          bottomLeft: Radius.circular(20.0),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 135,
+                child: Stack(children: [
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 80,
+                    // adjust this value to your requirements
+                    child: AnimatedOpacity(
+                      opacity: rsc ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Container(
+                        padding: const EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                          color: colorScheme.onSurface,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(20.0),
+                            topRight: Radius.circular(20.0),
+                            bottomRight: Radius.circular(20.0),
+                            bottomLeft: Radius.circular(20.0),
+                          ),
+                        ),
+                        child: Text(
+                          micMessage,
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            overflow: TextOverflow.ellipsis,
+                            color: Colors.white,
+                            fontSize: textTheme.labelLarge?.fontSize,
+                          ),
                         ),
                       ),
-                      child: Text(
-                        micMessage,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: textTheme.labelLarge?.fontSize,
-                        ),
-                      ),
-                    )
-                  : Container(),
-              const SizedBox(height: 5),
-              Container(
-                  alignment: Alignment.bottomLeft,
-                  height: 60,
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0),
-                    color: colorScheme.onSecondary,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        spreadRadius: 2,
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
+                    ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      GestureDetector(
-                          child: FloatingActionButton(
-                        onPressed: () {
-                          practiceStepperController.goToPrevious();
-                        }, // Disabled regular tap
-                        backgroundColor: Colors.indigo[500],
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                        height: 75,
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.0),
+                          color: colorScheme.onSecondary,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            GestureDetector(
+                                child: FloatingActionButton(
+                              onPressed: () {
+                                practiceStepperController.goToPrevious();
+                              }, // Disabled regular tap
+                              backgroundColor: Colors.indigo[500],
 
-                        elevation: 0,
-                        child: const Icon(Icons.arrow_back),
-                      )),
-                      StepsMicrophoneButton(
-                        isAnalyzing: micState.isAnalyzing,
-                        microphoneController: micSingleController,
-                        activation: rsc,
-                      ),
-                      GestureDetector(
-                        child: FloatingActionButton(
-                            onPressed: () {
-                              readSpeakController.reset(micSingleController,
-                                  practiceStepperController);
-                            }, // Disabled regular tap
-                            backgroundColor: Colors.indigo[500],
-                            elevation: 0,
-                            child: const Icon(Icons.repeat_outlined)),
-                      )
-                    ],
-                  )),
+                              elevation: 0,
+                              child: const Icon(
+                                Icons.arrow_back,
+                                size: 40,
+                              ),
+                            )),
+                            StepsMicrophoneButton(
+                              isAnalyzing: micState.isAnalyzing,
+                              microphoneController: micSingleController,
+                              activation: rsc,
+                            ),
+                            GestureDetector(
+                              child: FloatingActionButton(
+                                onPressed: () {
+                                  readSpeakController.reset(micSingleController,
+                                      practiceStepperController);
+                                }, // Disabled regular tap
+                                backgroundColor: Colors.indigo[500],
+                                elevation: 0,
+                                child:
+                                    const Icon(Icons.repeat_outlined, size: 30),
+                              ),
+                            )
+                          ],
+                        )),
+                  ),
+                ]),
+              )
             ],
           );
         },

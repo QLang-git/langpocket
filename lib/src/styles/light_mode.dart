@@ -38,18 +38,18 @@ ThemeData lightMode = ThemeData(
       //headline 2 bold
       headlineLarge: GoogleFonts.rubik(
         fontWeight: FontWeight.bold,
-        fontSize: 24,
+        fontSize: 20,
       ),
       // headline 3
       displayMedium: GoogleFonts.rubik(
         fontWeight: FontWeight.normal,
-        fontSize: 20,
+        fontSize: 18,
         letterSpacing: 0.15,
       ),
       // headline 3 bold
       displayLarge: GoogleFonts.rubik(
         fontWeight: FontWeight.bold,
-        fontSize: 20,
+        fontSize: 18,
         letterSpacing: 0.15,
       ),
       // Body Large

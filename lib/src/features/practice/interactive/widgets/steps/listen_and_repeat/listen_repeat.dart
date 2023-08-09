@@ -40,11 +40,11 @@ class _ListenRepeatState extends ConsumerState<ListenRepeat> {
   void initState() {
     super.initState();
     stepperController = ref.read(practiceStepperControllerProvider.notifier);
-    microphoneController =
-        ref.refresh(micSingleControllerProvider(widget.wordId).notifier);
+    microphoneController = ref.refresh(micSingleControllerProvider.notifier);
     listenRepeatController = ref.read(listenRepeatControllerProvider.notifier);
     stepperController = ref.read(practiceStepperControllerProvider.notifier);
     microphoneController.setWordRecords(
+        id: widget.wordId,
         countPron: 1,
         countExamplePron: 1,
         exampleActivationMessage:
@@ -55,10 +55,9 @@ class _ListenRepeatState extends ConsumerState<ListenRepeat> {
   @override
   Widget build(BuildContext context) {
     final lRs = ref.watch(listenRepeatControllerProvider);
-    final mic = ref.watch(micSingleControllerProvider(widget.wordId));
+    final mic = ref.watch(micSingleControllerProvider);
 
     final ThemeData(:colorScheme, :textTheme) = Theme.of(context);
-    final screenWidth = MediaQuery.of(context).size.width;
 
     if (mounted && mic.hasValue) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -74,144 +73,137 @@ class _ListenRepeatState extends ConsumerState<ListenRepeat> {
       child: AsyncValueWidget(
         value: mic,
         child: (micStates) {
-          final WordRecord(:wordImages) = micStates.wordRecord;
+          final WordRecord(:wordImages, :wordMeans) = micStates.wordRecord;
 
-          return Stack(
+          return Column(
             children: [
-              Column(
-                children: [
-                  const StepMessage(message: 'Echo Mastery: Listen and Repeat'),
-                  const SizedBox(height: 50),
-                  ImageView(imageList: wordImages),
-                  AnimatedSoundIcon(micActivation: lRs.micState),
-                  const SizedBox(height: 50),
-                  Container(
-                      alignment: Alignment.bottomLeft,
-                      height: 60,
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        color: colorScheme.onSecondary,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          StepsMicrophoneButton(
-                            isAnalyzing: micStates.isAnalyzing,
-                            microphoneController: microphoneController,
-                            activation: lRs.micState,
-                          ),
-                          GestureDetector(
-                              child: FloatingActionButton(
-                            onPressed: lRs.micState || lRs.stage == 5
-                                ? () {
-                                    ref
-                                        .read(listenRepeatControllerProvider
-                                            .notifier)
-                                        .playNormal(micStates);
-                                  }
-                                : null, // Disabled regular tap
-                            backgroundColor: lRs.micState || lRs.stage == 5
-                                ? Colors.indigo[500]
-                                : Colors.grey,
-                            elevation: 0,
-                            child: const Icon(Icons.play_arrow),
-                          )),
-                          GestureDetector(
-                            child: FloatingActionButton(
-                                onPressed: lRs.stage != _listStep
-                                    ? null
-                                    : () {
-                                        ref
-                                            .read(listenRepeatControllerProvider
-                                                .notifier)
-                                            .reset(microphoneController,
-                                                stepperController);
-                                      }, // Disabled regular tap
-                                backgroundColor: lRs.stage == _listStep
-                                    ? Colors.indigo[500]
-                                    : Colors.grey,
-                                elevation: 0,
-                                child: const Icon(Icons.repeat_outlined)),
-                          )
-                        ],
-                      )),
-                ],
+              const StepMessage(message: 'Echo Mastery: Listen and Repeat'),
+              SizedBox(
+                height: 150,
+                child: ImageView(
+                  imageList: wordImages,
+                  meanings: wordMeans,
+                ),
               ),
-              Positioned(
-                top: 0,
-                bottom: 54.5,
-                left: _adjustMessageLocation(
-                    screenWidth), // Adjust the value as needed
-                right: 0,
-                child: AnimatedOpacity(
-                  opacity: lRs.micState ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 200),
-                  child: Container(
-                    alignment: Alignment.bottomLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 82, right: 5),
-                      child: Container(
-                        padding: const EdgeInsets.all(10.0),
-                        decoration: BoxDecoration(
-                          color: colorScheme.onSurface,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(20.0),
-                            topRight: Radius.circular(20.0),
-                            bottomRight: Radius.circular(20.0),
-                          ),
-                        ),
-                        child: Text(
-                          mic.value != null
-                              ? mic.value!.micMessage
-                              : 'Loading...',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: textTheme.labelLarge?.fontSize,
+              AnimatedSoundIcon(micActivation: lRs.micState),
+              SizedBox(
+                width: double.infinity,
+                height: 160,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 70, // adjust this value to your requirements
+                      child: AnimatedOpacity(
+                        opacity: lRs.micState ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 200),
+                        child: Container(
+                          alignment: Alignment.bottomLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 60),
+                            child: Container(
+                              padding: const EdgeInsets.all(10.0),
+                              decoration: BoxDecoration(
+                                color: colorScheme.onSurface,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(20.0),
+                                  topRight: Radius.circular(20.0),
+                                  bottomRight: Radius.circular(20.0),
+                                ),
+                              ),
+                              child: Text(
+                                micStates.micMessage,
+                                maxLines: 3,
+                                style: TextStyle(
+                                  overflow: TextOverflow.ellipsis,
+                                  color: Colors.white,
+                                  fontSize: textTheme.labelLarge?.fontSize,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          height: 70,
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              StepsMicrophoneButton(
+                                isAnalyzing: micStates.isAnalyzing,
+                                microphoneController: microphoneController,
+                                activation: lRs.micState,
+                              ),
+                              GestureDetector(
+                                  child: FloatingActionButton(
+                                onPressed: lRs.micState || lRs.stage == 5
+                                    ? () {
+                                        ref
+                                            .read(listenRepeatControllerProvider
+                                                .notifier)
+                                            .playNormal(micStates);
+                                      }
+                                    : null, // Disabled regular tap
+                                backgroundColor: lRs.micState || lRs.stage == 5
+                                    ? Colors.indigo[500]
+                                    : Colors.grey,
+                                elevation: 0,
+                                child: const Icon(Icons.play_arrow, size: 40),
+                              )),
+                              GestureDetector(
+                                child: FloatingActionButton(
+                                    onPressed: lRs.stage != _listStep
+                                        ? null
+                                        : () {
+                                            ref
+                                                .read(
+                                                    listenRepeatControllerProvider
+                                                        .notifier)
+                                                .reset(microphoneController,
+                                                    stepperController);
+                                          }, // Disabled regular tap
+                                    backgroundColor: lRs.stage == _listStep
+                                        ? Colors.indigo[500]
+                                        : Colors.grey,
+                                    elevation: 0,
+                                    child: const Icon(
+                                      Icons.repeat_outlined,
+                                      size: 30,
+                                    )),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+              )
             ],
           );
         },
       ),
     );
-  }
-
-  double _adjustMessageLocation(double screenWidth) {
-    // Find the two nearest known data points
-    double lowerScreenSize = 0;
-    double upperScreenSize = 1840;
-
-    knownData.forEach((screenSize, position) {
-      if (screenSize <= screenWidth && screenSize > lowerScreenSize) {
-        lowerScreenSize = screenSize;
-      }
-      if (screenSize >= screenWidth && screenSize < upperScreenSize) {
-        upperScreenSize = screenSize;
-      }
-    });
-    if (lowerScreenSize != upperScreenSize) {
-      final lowerPosition = knownData[lowerScreenSize]!;
-      final upperPosition = knownData[upperScreenSize]!;
-
-      final factor =
-          (screenWidth - lowerScreenSize) / (upperScreenSize - lowerScreenSize);
-      return lowerPosition + (upperPosition - lowerPosition) * factor;
-    } else {
-      return knownData[lowerScreenSize]!;
-    }
   }
 }

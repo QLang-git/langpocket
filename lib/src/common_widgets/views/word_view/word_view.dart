@@ -42,9 +42,9 @@ class _WordViewState extends State<WordView> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  TextButton(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                  Expanded(
+                    flex: 1,
+                    child: TextButton(
                       child: Icon(
                         !_showContent
                             ? Icons.arrow_drop_down_circle_outlined
@@ -52,37 +52,41 @@ class _WordViewState extends State<WordView> {
                         color: colorFount,
                         size: 30,
                       ),
+                      onPressed: () {
+                        setState(() {
+                          _showContent = !_showContent;
+                        });
+                      },
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _showContent = !_showContent;
-                      });
-                    },
                   ),
-                  Text(
-                    widget.foreignWord,
-                    style: textStyle.headlineLarge?.copyWith(color: colorFount),
-                    textAlign: TextAlign.right,
-                    softWrap: true,
-                    maxLines: 1,
-                    overflow: TextOverflow.fade,
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      widget.foreignWord,
+                      style:
+                          textStyle.headlineLarge?.copyWith(color: colorFount),
+                      textAlign: TextAlign.center,
+                      softWrap: true,
+                      maxLines: 1,
+                      overflow: TextOverflow.fade,
+                    ),
                   ),
-                  TextButton(
-                    onPressed: !widget.noVoiceIcon
-                        ? () {
-                            tts.speak(widget.foreignWord);
-                          }
-                        : null,
-                    child: !widget.noVoiceIcon
-                        ? Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Icon(
+                  Expanded(
+                    flex: 1,
+                    child: TextButton(
+                      onPressed: !widget.noVoiceIcon
+                          ? () {
+                              tts.speak(widget.foreignWord);
+                            }
+                          : null,
+                      child: !widget.noVoiceIcon
+                          ? Icon(
                               Icons.volume_up_outlined,
                               color: colorFount,
                               size: 30,
-                            ),
-                          )
-                        : Container(),
+                            )
+                          : Container(),
+                    ),
                   )
                 ],
               ),

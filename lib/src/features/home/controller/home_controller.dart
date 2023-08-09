@@ -10,6 +10,10 @@ class HomeController {
     return watchGroups.watchGroups();
   });
 
+  final searchControllerProvider = FutureProvider<List<WordData>>((ref) async {
+    final service = ref.watch(wordsServicesProvider);
+    return service.fetchAllWords();
+  });
   final wordsListStreamProvider =
       StreamProvider.family<List<WordData>, int>((ref, groupId) {
     final watchWords = ref.watch(wordsServicesProvider);

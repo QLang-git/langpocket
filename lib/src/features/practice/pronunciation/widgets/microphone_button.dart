@@ -39,9 +39,9 @@ class _MicrophoneButtonState extends State<MicrophoneButton>
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 170,
-      width: 150,
-      padding: const EdgeInsets.only(bottom: 10),
+      height: 120,
+      width: 100,
+      padding: const EdgeInsets.only(bottom: 3),
       child: GestureDetector(
         onLongPressStart:
             widget.isAnalyzing != null && widget.isAnalyzing == true
@@ -64,7 +64,7 @@ class _MicrophoneButtonState extends State<MicrophoneButton>
           child: widget.isAnalyzing != null && widget.isAnalyzing == true
               ? Container(
                   child: LoadingAnimationWidget.inkDrop(
-                      color: const Color(0xFF3F51B5), size: 70))
+                      color: const Color(0xFF3F51B5), size: 50))
               : Stack(
                   alignment: Alignment.center,
                   children: [
@@ -72,9 +72,9 @@ class _MicrophoneButtonState extends State<MicrophoneButton>
                       animation: _animation,
                       builder: (BuildContext context, Widget? child) {
                         return Container(
-                          width: isRecording ? 150.0 : 150.0 * _animation.value,
+                          width: isRecording ? 100.0 : 100.0 * _animation.value,
                           height:
-                              isRecording ? 150.0 : 150.0 * _animation.value,
+                              isRecording ? 100.0 : 100.0 * _animation.value,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(color: Colors.white, width: 2.0),
@@ -82,7 +82,7 @@ class _MicrophoneButtonState extends State<MicrophoneButton>
                         );
                       },
                     ),
-                    const Icon(Icons.mic, size: 70.0),
+                    const Icon(Icons.mic, size: 50.0),
                   ],
                 ),
         ),
