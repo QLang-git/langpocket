@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
+import 'package:langpocket/src/features/home/controller/home_controller.dart';
 import 'package:langpocket/src/features/home/widgets/groups_list.dart';
 import 'package:langpocket/src/features/home/app_bar/home_appbar.dart';
+import 'package:langpocket/src/features/todo/controller/todo_controller.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:go_router/go_router.dart';
+import 'package:badges/badges.dart' as badges;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -40,11 +46,7 @@ class HomeScreen extends StatelessWidget {
                             backgroundColor: colorScheme.onPrimary,
                           ),
                           onPressed: () => context.goNamed(AppRoute.todo.name),
-                          child: Text(
-                            'Todo',
-                            style: textTheme.labelMedium
-                                ?.copyWith(color: Colors.white),
-                          ))
+                          child: const TodoStyleButton())
                     ],
                   ),
                 ),
@@ -67,6 +69,56 @@ class HomeScreen extends StatelessWidget {
           onPressed: () => context.goNamed(AppRoute.newWord.name),
         ),
       ),
+    );
+  }
+}
+
+class TodoStyleButton extends StatelessWidget {
+  const TodoStyleButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData(:textTheme) = Theme.of(context);
+    return Consumer(
+      builder: (context, ref, child) {
+        return AsyncValueWidget(
+          value: ref.watch(todoControllerProvider),
+          child: (todos) {
+            final countTodo = todos.first.activeTodos;
+            print(countTodo);
+            return badges.Badge(
+              position: badges.BadgePosition.topEnd(top: -25, end: 43),
+              showBadge: countTodo != 0,
+              ignorePointer: false,
+              badgeContent: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Text(
+                  countTodo.toString(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              badgeAnimation: const badges.BadgeAnimation.rotation(
+                loopAnimation: true,
+                animationDuration: Duration(seconds: 5),
+                disappearanceFadeAnimationDuration: Duration(seconds: 3),
+              ),
+              badgeStyle: badges.BadgeStyle(
+                shape: badges.BadgeShape.circle,
+                badgeColor: const Color.fromARGB(255, 150, 44, 37),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                'Todo',
+                style: textTheme.labelMedium?.copyWith(color: Colors.white),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

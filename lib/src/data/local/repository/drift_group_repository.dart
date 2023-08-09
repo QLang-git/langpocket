@@ -116,4 +116,18 @@ class DriftGroupRepository extends _$DriftGroupRepository
   Future<List<WordData>> fetchAllWords() async {
     return await select(word).get();
   }
+
+  @override
+  Future<List<GroupData>> fetchAllGroups() async {
+    return await select(group).get();
+  }
+
+  @override
+  Future<void> updateGroupLevel(int groupId, int increaseBy) async {
+    final targetGroup = await (select(group)
+          ..where((tbl) => tbl.id.equals(groupId)))
+        .getSingle();
+    await (update(group))
+        .write(GroupCompanion(level: Value(targetGroup.level + increaseBy)));
+  }
 }

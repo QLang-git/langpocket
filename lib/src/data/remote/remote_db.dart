@@ -92,5 +92,17 @@ class RemoteDb implements RemoteGroupRepository {
     throw UnimplementedError();
   }
 
+  @override
+  Future<List<GroupData>> fetchAllGroups() {
+    // TODO: implement fetchAllGroups
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> updateGroupLevel(int groupId, int newLevel) {
+    // TODO: implement updateGroupLevel
+    throw UnimplementedError();
+  }
+
   // we tell the database where to store the data with this constructor
 }

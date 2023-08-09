@@ -120,6 +120,22 @@ class WordServices {
       return localGroupRepository.fetchAllWords();
     }
   }
+
+  Future<List<GroupData>> fetchAllGroups() {
+    if (user) {
+      return remoteGroupRepository.fetchAllGroups();
+    } else {
+      return localGroupRepository.fetchAllGroups();
+    }
+  }
+
+  Future<void> updateGroupLevel(int groupId, int newLevel) {
+    if (user) {
+      return remoteGroupRepository.updateGroupLevel(groupId, newLevel);
+    } else {
+      return localGroupRepository.updateGroupLevel(groupId, newLevel);
+    }
+  }
 }
 
 final wordsServicesProvider = Provider<WordServices>((ref) {

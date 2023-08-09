@@ -19,6 +19,8 @@ abstract class LocalGroupRepository {
   Future<List<WordData>> fetchAllWords();
   Stream<WordData> watchWordById(int wordId);
   Future<void> updateWordInf(int wordId, WordCompanion wordCompanion);
+  Future<List<GroupData>> fetchAllGroups();
+  Future<void> updateGroupLevel(int groupId, int newLevel);
 }
 
 // ignore: non_constant_identifier_names

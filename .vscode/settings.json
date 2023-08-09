@@ -14,7 +14,9 @@
     "LTRB",
     "microtask",
     "mipmap",
+    "prefs",
     "rxdart",
-    "Swiper"
+    "Swiper",
+    "todos"
   ]
 }
