@@ -2,6 +2,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:langpocket/src/utils/constants/globule_constants.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/utils/permissions.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -25,22 +26,24 @@ class AppNotification {
           requestSoundPermission: true);
       const initializationSettings =
           InitializationSettings(android: android, iOS: ios);
+
       await notification.initialize(initializationSettings);
     }
   }
 
   // 1 make new group notification
-  void newGroupNotification() {
-    final today = tz.TZDateTime.now(tz.local);
-    // final notificationTime = TZDateTime(
-    //     tz.local, today.year, today.month, today.day, Default_STUDY_HOUR);
+  void newGroupNotification() async {
     const titleMessage = 'Boost Your Vocabulary Today!';
-    const bodyMessage =
-        "Hey there! Ready to learn something new? Add a fresh word to your collection and keep growing your language skills. Tap here to get started!";
+    const bodyMessage = "Hey there! Ready to learn new words?";
     int dayCount = 0;
+    final localTime = await getLocalTimeZone();
+    final localTimeZone = tz.getLocation(localTime);
     notificationDays.forEach((key, value) {
-      final notificationTime =
-          today.add(Duration(days: dayCount, hours: Default_STUDY_HOUR));
+      final now = DateTime.now();
+      final scheduleTime =
+          DateTime(now.year, now.month, now.day, DEFAULT_DAY_ID)
+              .add(Duration(days: dayCount));
+      final notificationTime = tz.TZDateTime.from(scheduleTime, localTimeZone);
       _scheduleNotification(
         value,
         notificationTime,
@@ -51,12 +54,19 @@ class AppNotification {
     });
   }
 
+  Future<String> getLocalTimeZone() async {
+    final String timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation(timeZoneName));
+    return timeZoneName;
+  }
+
   void removeNewGroupNotification(int id) {
     notification.cancel(id);
   }
 
-  void notificationMapper(GroupData group, String wordToDisplay) {
-    final today = tz.TZDateTime.now(tz.local);
+  void notificationMapper(GroupData group, String wordToDisplay) async {
+    final localTime = await getLocalTimeZone();
+    final today = tz.TZDateTime.now(tz.getLocation(localTime));
 
     if (group.level == 1) {
       _practiceGroupTomorrow(group.id, today, wordToDisplay);
@@ -104,18 +114,15 @@ class AppNotification {
       channelDescription:
           'Reminders about the words you\'ve added and tasks in your to-do list.',
       importance: Importance.max,
-      priority: Priority.high,
+      priority: Priority.max,
     );
     const ios = DarwinNotificationDetails();
-
     const platformChannelSpecifics =
         NotificationDetails(android: android, iOS: ios);
-
-    await notification.zonedSchedule(id, taskTitle, taskBody,
-        scheduledTime.toLocal(), platformChannelSpecifics,
+    await notification.zonedSchedule(
+        id, taskTitle, taskBody, scheduledTime, platformChannelSpecifics,
         uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-        matchDateTimeComponents: DateTimeComponents.time);
+            UILocalNotificationDateInterpretation.absoluteTime);
   }
 
   // 2 practice words tomorrow  Lever 1

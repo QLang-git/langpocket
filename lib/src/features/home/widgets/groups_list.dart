@@ -196,14 +196,13 @@ class _GroupsListState extends ConsumerState<GroupsList> {
 
   void _initializeNewGroupNotification(List<GroupData> groups) {
     tz.initializeTimeZones();
-    final tz.TZDateTime(:day, :month, :year, :weekday) =
-        tz.TZDateTime.now(tz.local);
+    final tz.TZDateTime(:day, :month, :year) = tz.TZDateTime.now(tz.local);
     final hasGroup = groups.any((g) =>
         g.creatingTime.day == day &&
         g.creatingTime.month == month &&
         g.creatingTime.year == year);
     if (hasGroup) {
-      AppNotification().removeNewGroupNotification(weekday * DEFAULT_DAY_ID);
+      AppNotification().removeNewGroupNotification(DEFAULT_DAY_ID);
     }
   }
 }
