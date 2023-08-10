@@ -50,37 +50,6 @@ extension DateT on DateTime {
     }
   }
 
-  DateTime? whenToStudy(DateTime o) {
-    if (studyToday(o)) {
-      return o;
-    }
-    if (withDays(1).compareDayMonthYearTo(o.withDays(1))) {
-      return o.withDays(1);
-    }
-    if (withDays(3).compareDayMonthYearTo(o.withDays(3))) {
-      return o.withDays(3);
-    }
-    if (withDays(7).compareDayMonthYearTo(o.withDays(7))) {
-      return o.withDays(7);
-    }
-    if (withDays(14).compareDayMonthYearTo(o.withDays(14))) {
-      return o.withDays(14);
-    }
-    if (withDays(30).compareDayMonthYearTo(o.withDays(30))) {
-      return o.withDays(30);
-    }
-    if (withDays(90).compareDayMonthYearTo(o.withDays(90))) {
-      return o.withDays(90);
-    }
-    if (withDays(180).compareDayMonthYearTo(o.withDays(180))) {
-      return o.withDays(180);
-    }
-    if (withDays(360).compareDayMonthYearTo(o.withDays(360))) {
-      return o.withDays(360);
-    }
-    return null;
-  }
-
   DateTime withDays(int days) => add(Duration(days: day));
 
   bool compareDayMonthYearTo(DateTime o) {

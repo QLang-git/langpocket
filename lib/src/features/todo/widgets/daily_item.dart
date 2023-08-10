@@ -57,8 +57,8 @@ class DailyItem extends StatelessWidget {
                   builder: (context, ref, child) => Checkbox(
                     activeColor: colorScheme.primary,
                     value: isChecked,
-                    onChanged: (status) {
-                      ref
+                    onChanged: (status) async {
+                      await ref
                           .read(todoControllerProvider.notifier)
                           .checkController('x');
                     },

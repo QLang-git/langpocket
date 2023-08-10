@@ -10,40 +10,47 @@ void main() {
   });
   group('HomeController', () {
     final group1 = GroupData(
+        level: 1,
         id: 1,
         groupName: 'Sun_Group',
         creatingTime: DateTime(2023, 07, 23),
-        level: 0);
+        studyTime: DateTime(2023, 07, 23));
     final group2 = GroupData(
         id: 2,
+        level: 1,
         groupName: 'Sat_Group',
         creatingTime: DateTime(2023, 07, 22),
-        level: 0);
+        studyTime: DateTime(2023, 07, 23));
     final group3 = GroupData(
+        level: 1,
         id: 3,
         groupName: 'Fri_Group',
         creatingTime: DateTime(2023, 07, 21),
-        level: 0);
+        studyTime: DateTime(2023, 07, 23));
     final group4 = GroupData(
+        level: 1,
         id: 4,
         groupName: 'Thu_Group',
         creatingTime: DateTime(2023, 07, 20),
-        level: 0);
+        studyTime: DateTime(2023, 07, 23));
     final group5 = GroupData(
+        level: 1,
         id: 5,
         groupName: 'Web_Group',
         creatingTime: DateTime(2023, 07, 19),
-        level: 0);
+        studyTime: DateTime(2023, 07, 23));
     final group6 = GroupData(
+        level: 1,
         id: 6,
         groupName: 'Tue_Group',
         creatingTime: DateTime(2023, 07, 18),
-        level: 0);
+        studyTime: DateTime(2023, 07, 23));
     final group7 = GroupData(
+        level: 1,
         id: 7,
         groupName: 'Mon_Group',
         creatingTime: DateTime(2023, 07, 17),
-        level: 0);
+        studyTime: DateTime(2023, 07, 23));
 
     test('formatTime should return formatted time', () {
       final res1 = homeController.formatTime(group1);

@@ -56,15 +56,14 @@ class _TodoAppBarState extends State<TodoAppBar> {
 
 class CustomUnderlineTabIndicator extends Decoration {
   @override
-  _CustomUnderlinePainter createBoxPainter([VoidCallback? onChanged]) {
-    return _CustomUnderlinePainter(this, onChanged);
-  }
+  CustomUnderlinePainter createBoxPainter([VoidCallback? onChanged]) =>
+      CustomUnderlinePainter(this, onChanged);
 }
 
-class _CustomUnderlinePainter extends BoxPainter {
+class CustomUnderlinePainter extends BoxPainter {
   final CustomUnderlineTabIndicator decoration;
 
-  _CustomUnderlinePainter(this.decoration, VoidCallback? onChanged)
+  CustomUnderlinePainter(this.decoration, VoidCallback? onChanged)
       : super(onChanged);
 
   @override

@@ -12,16 +12,17 @@ void main() {
   setUp(() {
     groups = [
       GroupData(
-        id: 1,
-        groupName: 'first',
-        creatingTime: DateTime.now(),
-        level: 0,
-      ),
+          level: 1,
+          id: 1,
+          groupName: 'first',
+          creatingTime: DateTime.now(),
+          studyTime: DateTime(2023, 07, 23)),
       GroupData(
+          level: 1,
           id: 2,
           groupName: 'second',
           creatingTime: DateTime(2023, 1, 30),
-          level: 0)
+          studyTime: DateTime(2023, 07, 23))
     ];
     words = [
       WordData(

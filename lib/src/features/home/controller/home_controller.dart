@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/services/word_service.dart';
-import 'package:langpocket/src/features/todo/controller/todo_controller.dart';
 
 class HomeController {
   final groupsListStreamProvider = StreamProvider<List<GroupData>>((ref) {
@@ -21,11 +20,6 @@ class HomeController {
     return watchWords.watchWordsGroupId(groupId);
   });
 
-  // final getNumberOfTodoProvider =
-  final countTodoProvider = FutureProvider.autoDispose<int>((ref) {
-    final todoController = ref.watch(todoControllerProvider.notifier);
-    return todoController.getCurrentTodoNumbers();
-  });
   String formatTime(GroupData groupData) {
     final DateTime(:day, :month, :year) = groupData.creatingTime;
     return 'Date: $day/$month/$year';

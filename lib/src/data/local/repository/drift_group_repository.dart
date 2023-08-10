@@ -123,11 +123,8 @@ class DriftGroupRepository extends _$DriftGroupRepository
   }
 
   @override
-  Future<void> updateGroupLevel(int groupId, int increaseBy) async {
-    final targetGroup = await (select(group)
-          ..where((tbl) => tbl.id.equals(groupId)))
-        .getSingle();
-    await (update(group))
-        .write(GroupCompanion(level: Value(targetGroup.level + increaseBy)));
+  Future<void> updateGroupLevel(int groupId, GroupCompanion newGroup) async {
+    await (update(group)..where((tbl) => tbl.id.equals(groupId)))
+        .write(newGroup);
   }
 }

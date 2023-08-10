@@ -4,6 +4,7 @@ import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/features/todo/appbar/todo_appbar.dart';
 import 'package:langpocket/src/features/todo/controller/todo_controller.dart';
+import 'package:langpocket/src/features/todo/widgets/todo_later.dart';
 import 'package:langpocket/src/features/todo/widgets/todo_today.dart';
 
 class TodoScreen extends StatefulWidget {
@@ -38,17 +39,18 @@ class _TodoScreenState extends State<TodoScreen> {
                         final forOtherDay = <TodoContents>[];
 
                         for (var todo in todos) {
-                          if (todo.isToday) {
+                          if (todo.isToday || todo.isLate) {
                             forToday.add(todo);
                           } else {
                             forOtherDay.add(todo);
                           }
                         }
+
                         return TabBarView(children: [
                           TodoToday(
                             todoContents: forToday,
                           ),
-                          Text(forOtherDay.length.toString())
+                          TodoLater(todoContents: forOtherDay)
                         ]);
                       });
                 },

@@ -129,11 +129,11 @@ class WordServices {
     }
   }
 
-  Future<void> updateGroupLevel(int groupId, int newLevel) {
+  Future<void> updateGroupLevel(int groupId, GroupCompanion groupCompanion) {
     if (user) {
-      return remoteGroupRepository.updateGroupLevel(groupId, newLevel);
+      return remoteGroupRepository.updateGroupLevel(0, 0);
     } else {
-      return localGroupRepository.updateGroupLevel(groupId, newLevel);
+      return localGroupRepository.updateGroupLevel(groupId, groupCompanion);
     }
   }
 }

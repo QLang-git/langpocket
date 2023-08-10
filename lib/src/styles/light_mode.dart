@@ -16,7 +16,7 @@ ThemeData lightMode = ThemeData(
       onSurface: Color(0xff1C4B82), // font 2
       outline: Color(0xFF040E32), // scond 01 //,font 1
       onBackground: Color(0xFF646464), // disabled
-      error: Colors.red,
+      error: Color.fromARGB(255, 184, 73, 65),
       onError: Colors.red,
     ),
     textTheme: TextTheme(

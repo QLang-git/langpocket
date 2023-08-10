@@ -10,6 +10,7 @@ import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:badges/badges.dart' as badges;
 
 class GroupsList extends ConsumerStatefulWidget {
   const GroupsList({super.key});
@@ -62,123 +63,152 @@ class _GroupsListState extends ConsumerState<GroupsList> {
                 final iconDay = getLogoDay(groups[index]);
                 return Padding(
                   padding: const EdgeInsets.only(left: 9, right: 8),
-                  child: Card(
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    child: InkWell(
-                      key: Key('group-${groups[index].id}'),
-                      onTap: () => context.goNamed(
-                        AppRoute.group.name,
-                        pathParameters: {
-                          'groupId': groups[index].id.toString()
-                        },
-                        queryParameters: {
-                          'name': groups[index].groupName,
-                          'time': groups[index].creatingTime.toString()
-                        },
-                      ),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 100,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(10),
-                                      bottomLeft: Radius.circular(10)),
-                                  color: iconDay.dayColor,
-                                ),
-                                height: double.infinity,
-                                width: 90,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      iconDay.dayIcon,
-                                      color: Colors.white,
-                                      size: 35,
-                                    ),
-                                    Text(
-                                      iconDay.dayName,
-                                      style: textTheme.headlineSmall
-                                          ?.copyWith(color: Colors.white),
-                                      softWrap: true,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.fade,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      groups[index].groupName,
-                                      style: textTheme.displayLarge?.copyWith(
-                                        color: colorScheme.outline,
-                                      ),
-                                      softWrap: true,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.fade,
-                                    ),
-                                    wordsInGroup.when(
-                                      data: (words) {
-                                        String text = words
-                                            .map((word) => word.foreignWord)
-                                            .join(", ");
-                                        return RichText(
-                                          text: TextSpan(
-                                            style: textTheme.bodyLarge
-                                                ?.copyWith(
-                                                    color: colorScheme.outline),
-                                            children: [
-                                              TextSpan(
-                                                text: 'Words: ',
-                                                style: textTheme.bodyMedium
-                                                    ?.copyWith(
-                                                  color: colorScheme.outline,
-                                                ),
-                                              ),
-                                              TextSpan(
-                                                text: text,
-                                              ),
-                                            ],
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                          softWrap: false,
-                                        );
-                                      },
-                                      loading: () =>
-                                          LoadingAnimationWidget.waveDots(
-                                              color: colorScheme.outline,
-                                              size: 20),
-                                      error: (error, stackTrace) => const Text(
-                                        'Failed Loading the words',
-                                        style: TextStyle(color: Colors.red),
-                                      ),
-                                    ),
-                                    Text(
-                                      formatTime(groups[index]),
-                                      style: textTheme.labelSmall?.copyWith(
-                                        color: colorScheme.outline,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                  child: badges.Badge(
+                    position: badges.BadgePosition.topStart(top: 3, start: 0),
+                    badgeContent: Padding(
+                      padding: const EdgeInsets.all(0.0),
+                      child: groups[index].level > 7
+                          ? Icon(
+                              Icons.celebration,
+                              color: colorScheme.primaryContainer,
                             )
-                          ],
+                          : Text(
+                              'Level : ${groups[index].level}',
+                              style: textTheme.titleSmall!
+                                  .copyWith(color: Colors.white),
+                            ),
+                    ),
+                    showBadge: true,
+                    badgeStyle: badges.BadgeStyle(
+                      shape: badges.BadgeShape.square,
+                      badgeColor: groups[index].level > 7
+                          ? colorScheme.primary
+                          : colorScheme.secondary,
+                      borderRadius: groups[index].level > 7
+                          ? BorderRadius.circular(15)
+                          : BorderRadius.circular(5),
+                    ),
+                    child: Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      child: InkWell(
+                        key: Key('group-${groups[index].id}'),
+                        onTap: () => context.goNamed(
+                          AppRoute.group.name,
+                          pathParameters: {
+                            'groupId': groups[index].id.toString()
+                          },
+                          queryParameters: {
+                            'name': groups[index].groupName,
+                            'time': groups[index].creatingTime.toString()
+                          },
+                        ),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 100,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(10),
+                                        bottomLeft: Radius.circular(10)),
+                                    color: iconDay.dayColor,
+                                  ),
+                                  height: double.infinity,
+                                  width: 90,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        iconDay.dayIcon,
+                                        color: Colors.white,
+                                        size: 35,
+                                      ),
+                                      Text(
+                                        iconDay.dayName,
+                                        style: textTheme.headlineSmall
+                                            ?.copyWith(color: Colors.white),
+                                        softWrap: true,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.fade,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 5,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        groups[index].groupName,
+                                        style: textTheme.displayLarge?.copyWith(
+                                          color: colorScheme.outline,
+                                        ),
+                                        softWrap: true,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.fade,
+                                      ),
+                                      wordsInGroup.when(
+                                        data: (words) {
+                                          String text = words
+                                              .map((word) => word.foreignWord)
+                                              .join(", ");
+                                          return RichText(
+                                            text: TextSpan(
+                                              style: textTheme.bodyLarge
+                                                  ?.copyWith(
+                                                      color:
+                                                          colorScheme.outline),
+                                              children: [
+                                                TextSpan(
+                                                  text: 'Words: ',
+                                                  style: textTheme.bodyMedium
+                                                      ?.copyWith(
+                                                    color: colorScheme.outline,
+                                                  ),
+                                                ),
+                                                TextSpan(
+                                                  text: text,
+                                                ),
+                                              ],
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          );
+                                        },
+                                        loading: () =>
+                                            LoadingAnimationWidget.waveDots(
+                                                color: colorScheme.outline,
+                                                size: 20),
+                                        error: (error, stackTrace) =>
+                                            const Text(
+                                          'Failed Loading the words',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ),
+                                      Text(
+                                        formatTime(groups[index]),
+                                        style: textTheme.labelSmall?.copyWith(
+                                          color: colorScheme.outline,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),

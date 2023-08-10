@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image/image.dart' as img;
 
@@ -124,7 +125,9 @@ class NewWordController extends StateNotifier<AsyncValue<WordRecord>> {
       return todayGroup.id;
     } catch (e) {
       final newGroup = await wordsServices.createGroup(GroupCompanion.insert(
-          groupName: 'Group ${now.day}/${now.month}', creatingTime: now));
+          groupName: 'Group ${now.day}/${now.month}',
+          creatingTime: now,
+          studyTime: now));
       return newGroup.id;
     }
   }
