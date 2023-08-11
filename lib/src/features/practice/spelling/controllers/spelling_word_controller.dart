@@ -1,9 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/modules/extensions.dart';
+import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:langpocket/src/data/services/word_service.dart';
 import 'package:langpocket/src/features/practice/spelling/controllers/spelling_controller.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
+
 import 'package:text_to_speech/text_to_speech.dart';
 
 final spellingWordControllerProvider = StateNotifierProvider.autoDispose

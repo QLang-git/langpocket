@@ -3,8 +3,8 @@ import 'package:ionicons/ionicons.dart';
 import 'package:langpocket/src/common_widgets/views/examples_view/example_view.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
 import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
+import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:langpocket/src/features/practice/pronunciation/controllers/mic_controller.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class PracticePronunciation<T extends MicStateBase> extends StatelessWidget {
   final WordRecord wordRecord;

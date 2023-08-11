@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
+import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class CustomPracticeDialog extends StatelessWidget {

@@ -6,9 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image/image.dart' as img;
 
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
+import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:langpocket/src/data/services/word_service.dart';
 import 'package:langpocket/src/features/new_word/controller/validation_input.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 final newWordControllerProvider = StateNotifierProvider.autoDispose<
         NewWordController, AsyncValue<WordRecord>>(

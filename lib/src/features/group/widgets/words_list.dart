@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:langpocket/src/features/group/controller/group_controller.dart';
 import 'package:langpocket/src/features/group/widgets/custom_practice_dialog.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';

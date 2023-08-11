@@ -4,8 +4,8 @@ import 'package:langpocket/src/common_widgets/custom_text_form_field.dart';
 import 'package:langpocket/src/common_widgets/views/examples_view/example_view.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
 import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
+import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:langpocket/src/features/practice/spelling/controllers/spelling_controller.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class PracticeSpelling<T extends SpellingStateBase> extends StatelessWidget {
   final TextEditingController exampleInputController;
