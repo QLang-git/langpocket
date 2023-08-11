@@ -1,8 +1,6 @@
 import 'dart:convert';
-
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/modules/word_module.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 extension WordExt on WordData {
   List<String> examplesList() {

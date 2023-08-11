@@ -1,0 +1,23 @@
+# This "input" configures a global authorization rule to enable public access to
+# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
+type Group
+  @model(timestamps: { createdAt: "creatingTime" })
+  @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  groupName: String!
+  level: Int! @default(value: "0")
+  studyTime: AWSDateTime!
+  words: [Word] @hasMany
+}
+
+type Word
+  @model(timestamps: { createdAt: "creatingTime" })
+  @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  group: Group @hasOne
+  foreignWord: String!
+  wordMeans: [String!]!
+  wordImages: [String!]!
+  wordExamples: [String!]!
+  wordNote: String!
+}
