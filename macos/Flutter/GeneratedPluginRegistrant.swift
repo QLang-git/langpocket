@@ -10,7 +10,7 @@ import amplify_secure_storage
 import device_info_plus
 import file_selector_macos
 import flutter_local_notifications
-import flutter_native_timezone
+import flutter_native_timezone_updated_gradle
 import package_info_plus
 import path_provider_foundation
 import shared_preferences_foundation

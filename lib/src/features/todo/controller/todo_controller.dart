@@ -28,8 +28,7 @@ class TodoController extends StateNotifier<AsyncValue<List<TodoContents>>> {
       final prefs = await SharedPreferences.getInstance();
       var groups = await wordServices.fetchAllGroups();
       final localTime = await getLocalTimeZone();
-      final today = tz.TZDateTime.now(tz.getLocation(localTime))
-          .add(const Duration(days: 5));
+      final today = tz.TZDateTime.now(tz.getLocation(localTime));
       groups = await _updateForNewDay(prefs, today.weekday, groups, today);
 
       final myGroups = _getGroupsToStudy(groups, today, prefs);

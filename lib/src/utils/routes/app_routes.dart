@@ -3,7 +3,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:amplify_authenticator/amplify_authenticator.dart';
 
 import 'package:langpocket/src/features/group/screen/group_screen.dart';
 import 'package:langpocket/src/features/home/screen/home_screen.dart';
@@ -14,10 +16,12 @@ import 'package:langpocket/src/features/practice/pronunciation/screen/practice_p
 import 'package:langpocket/src/features/practice/spelling/screens/practice_spelling_group_screen.dart';
 import 'package:langpocket/src/features/practice/spelling/screens/practice_spelling_single_screen.dart';
 import 'package:langpocket/src/features/todo/screen/todo_screen.dart';
+import 'package:langpocket/src/features/welcome/screen/welcome_screen.dart';
 import 'package:langpocket/src/features/word_edit/screen/edit_mode_word_screen.dart';
 import 'package:langpocket/src/features/word_previewer/screen/word_previewer_screen.dart';
 import 'package:langpocket/src/features/word_view/screen/word_view_screen.dart';
 import 'package:langpocket/src/utils/routes/error_nav_screen.dart';
+import 'package:langpocket/src/utils/routes/router_controller.dart';
 
 enum AppRoute {
   home,
@@ -32,12 +36,33 @@ enum AppRoute {
   todo
 }
 
-final GoRouter goroute = GoRouter(
-  initialLocation: '/',
-  routes: appScreens,
-);
+final goRouterProvider = Provider<GoRouter>((ref) {
+  final controller = ref.watch(routerControllerProvider);
+  return controller.when(
+      data: (routing) => GoRouter(
+          initialLocation: '/',
+          routes: appRouting,
+          redirect: ((context, state) {
+            if (routing.isFirstTime) {
+              return '/welcome';
+            } else {
+              return null;
+            }
+          })),
+      error: (_, st) => GoRouter(routes: []),
+      loading: () => GoRouter(routes: [
+            GoRoute(
+              path: '/error',
+              builder: (context, state) => const ErrorNavScreen(),
+            )
+          ]));
+});
 
-final appScreens = [
+List<RouteBase> appRouting = [
+  GoRoute(
+    path: '/welcome',
+    builder: (context, state) => const WelcomeScreen(),
+  ),
   GoRoute(
       path: '/',
       name: AppRoute.home.name,

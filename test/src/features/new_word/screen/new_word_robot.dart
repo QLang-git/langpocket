@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/local/repository/local_group_repository.dart';
 import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
@@ -97,15 +98,17 @@ class NewWordRobot {
       [DriftGroupRepository? db, NewWordController? newWordController]) async {
     // simulate a larger screen size
     // await tester.binding.setSurfaceSize(const Size(1280, 720));
-
+    final goRouter = GoRouter(routes: appRouting);
     await tester.pumpWidget(ProviderScope(
       overrides: [
+        goRouterProvider.overrideWithValue(goRouter),
         if (db != null) localGroupRepositoryProvider.overrideWithValue(db),
         if (newWordController != null)
           newWordControllerProvider.overrideWith((ref) => newWordController)
       ],
       child: MaterialApp.router(
-        routerConfig: goroute,
+        routerDelegate: goRouter.routerDelegate,
+        routeInformationParser: goRouter.routeInformationParser,
       ),
     ));
 

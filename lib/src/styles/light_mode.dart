@@ -12,9 +12,9 @@ ThemeData lightMode = ThemeData(
       secondary: Color.fromARGB(255, 25, 14, 39), // search field
       onSecondary: Colors.white, // white text
       background: Color(0xFFD9D9D9),
-      surface: Color(0xFF7858A6),
+      surface: Color.fromARGB(255, 39, 4, 79),
       onSurface: Color(0xff1C4B82), // font 2
-      outline: Color(0xFF040E32), // scond 01 //,font 1
+      outline: Color(0xFF040E32), // second 01 //,font 1
       onBackground: Color(0xFF646464), // disabled
       error: Color.fromARGB(255, 184, 73, 65),
       onError: Colors.red,

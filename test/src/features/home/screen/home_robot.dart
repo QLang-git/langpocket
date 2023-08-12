@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/local/repository/local_group_repository.dart';
 import 'package:langpocket/src/features/group/screen/group_screen.dart';
@@ -11,20 +12,25 @@ class HomeRobot {
   final WidgetTester tester;
   HomeRobot(this.tester);
   Future<void> pumpHomeScreen([DriftGroupRepository? db]) async {
-    // // simulate a larger screen size
-    // await tester.binding.setSurfaceSize(const Size(1280, 720));
+    final goRouter = GoRouter(routes: appRouting); // Define your GoRouter here
+
     if (db != null) {
       await tester.pumpWidget(ProviderScope(
-        overrides: [localGroupRepositoryProvider.overrideWithValue(db)],
+        overrides: [
+          localGroupRepositoryProvider.overrideWithValue(db),
+          goRouterProvider.overrideWithValue(goRouter)
+        ],
         child: MaterialApp.router(
-          routerConfig: goroute,
+          routerDelegate: goRouter.routerDelegate,
+          routeInformationParser: goRouter.routeInformationParser,
         ),
       ));
     } else {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp.router(
-            routerConfig: goroute,
+            routerDelegate: goRouter.routerDelegate,
+            routeInformationParser: goRouter.routeInformationParser,
           ),
         ),
       );
