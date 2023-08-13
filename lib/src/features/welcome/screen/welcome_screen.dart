@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:langpocket/src/utils/routes/router_controller.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -14,6 +13,54 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
+  bool isLoading = false;
+  OverlayEntry? loadingOverlay;
+  void loginWithGoogle(WidgetRef ref) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    setState(() => isLoading = true);
+    showLoadingOverlay();
+
+    // handle Google login
+    final success =
+        await ref.read(routerControllerProvider.notifier).continueWithGoogle();
+
+    setState(() => isLoading = false);
+    hideLoadingOverlay();
+
+    if (success) {
+      scaffoldMessenger.showSnackBar(SnackBar(
+        backgroundColor: Colors.green[800],
+        content: const Text('Login successful!'),
+      ));
+
+      ref.read(routerControllerProvider.notifier).setFirstTimeToFalse();
+    } else {
+      scaffoldMessenger.showSnackBar(SnackBar(
+        backgroundColor: Colors.red[900],
+        content: const Text('Login Failed, please try again..'),
+      ));
+    }
+  }
+
+  void showLoadingOverlay() {
+    loadingOverlay = OverlayEntry(
+      builder: (context) => Container(
+        color: Colors.black54, // Shadow effect
+        child: const Center(
+          child: CircularProgressIndicator(), // Loading indicator
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(loadingOverlay!);
+  }
+
+  void hideLoadingOverlay() {
+    loadingOverlay?.remove();
+    loadingOverlay = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData(:colorScheme, :textTheme) = Theme.of(context);
@@ -127,12 +174,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   height:
                                       MediaQuery.of(context).size.height * 0.08,
                                   child: ElevatedButton.icon(
-                                    onPressed: () async {
-                                      ref
-                                          .read(
-                                              routerControllerProvider.notifier)
-                                          .continueWithGoogle();
-                                    },
+                                    onPressed: () => loginWithGoogle(ref),
                                     icon: const Icon(
                                       Ionicons.logo_google,
                                       color: Colors.white,

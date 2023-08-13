@@ -1,12 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:amplify_authenticator/amplify_authenticator.dart';
-
 import 'package:langpocket/src/features/group/screen/group_screen.dart';
 import 'package:langpocket/src/features/home/screen/home_screen.dart';
 import 'package:langpocket/src/features/new_word/screen/new_word_screen.dart';
@@ -49,11 +46,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               return null;
             }
           })),
+      // todo: handle Error
       error: (_, st) => GoRouter(routes: []),
-      loading: () => GoRouter(routes: [
+      loading: () => GoRouter(initialLocation: '/', routes: [
             GoRoute(
-              path: '/error',
-              builder: (context, state) => const ErrorNavScreen(),
+              path: '/',
+              builder: (context, state) {
+                print('loading....');
+                return const LinearProgressIndicator();
+              },
             )
           ]));
 });
