@@ -1,21 +1,18 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
-import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image/image.dart' as img;
+import 'package:langpocket/src/common_controller/helper_functions.dart';
 
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
+import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:langpocket/src/data/services/word_service.dart';
 import 'package:langpocket/src/features/new_word/controller/validation_input.dart';
 
-final newWordControllerProvider = StateNotifierProvider.autoDispose<
-        NewWordController, AsyncValue<WordRecord>>(
-    (ref) => NewWordController(
-          wordsServices: ref.watch(wordsServicesProvider),
-        ),
-    dependencies: [
+final newWordControllerProvider =
+    StateNotifierProvider<NewWordController, AsyncValue<WordRecord>>(
+        (ref) => NewWordController(
+              wordsServices: ref.watch(wordsServicesProvider),
+            ),
+        dependencies: [
       wordsServicesProvider,
     ]);
 
@@ -53,13 +50,13 @@ class NewWordController extends StateNotifier<AsyncValue<WordRecord>> {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final groupId = await _checkTodayGroup(now, wordsServices);
-      final imagesBase64 = wordImages.map((img) => base64Encode(img)).toList();
+      final imgPaths = await saveImagesFiles(wordImages);
       final newWordCompanion = WordCompanion.insert(
           group: groupId,
           foreignWord: foreignWord,
-          wordMeans: wordMeans.join('-'),
-          wordImages: imagesBase64.join('-'),
-          wordExamples: wordExamples.join('-'),
+          wordMeans: wordMeans.encodingData(),
+          wordImages: imgPaths.encodingData(),
+          wordExamples: wordExamples.encodingData(),
           wordNote: wordNote,
           wordDate: now);
       await wordsServices.addNewWordInGroup(newWordCompanion);
@@ -88,19 +85,19 @@ class NewWordController extends StateNotifier<AsyncValue<WordRecord>> {
     state = AsyncData(state.value!.copyWith(wordMeans: updatedMeans));
   }
 
-  void saveWordImage(Uint8List image) {
+  void saveWordImage(String path) async {
     // Create a copy of the current image list
-    List<Uint8List> updatedImages = List.from(state.value!.wordImages);
+    List<String> updatedImages = List.from(state.value!.wordImages);
 
     // Update the specific image
-    updatedImages = [...updatedImages, image];
+    updatedImages = [...updatedImages, path];
 
     // Update the state with the modified image list
     state = AsyncData(state.value!.copyWith(wordImages: updatedImages));
   }
 
   void removeImage(int index) {
-    List<Uint8List> updatedImages = List.from(state.value!.wordImages);
+    List<String> updatedImages = List.from(state.value!.wordImages);
     updatedImages.removeAt(index);
     state = AsyncData(state.value!.copyWith(wordImages: updatedImages));
   }
@@ -158,35 +155,36 @@ class NewWordController extends StateNotifier<AsyncValue<WordRecord>> {
     }
   }
 
-  void _validateWordImage(List<Uint8List> wordImages) {
+  void _validateWordImage(List<String> wordImages) {
     // Check the number of images
     if (wordImages.length > 5) {
       state = AsyncValue.error(
           'You cannot upload more than 10 images.', StackTrace.current);
       return;
     }
+    // todo:
     // Check image sizes and formats
-    for (var image in wordImages) {
-      // Check the image size
-      if (image.lengthInBytes > 5000000) {
-        // 5MB
-        state = AsyncValue.error(
-            'Images must be less than 5MB in size.', StackTrace.current);
-        return;
-      }
-      // Decode the image to check dimensions and format
-      final decodedImage = img.decodeImage(image);
-      if (decodedImage == null) {
-        state = AsyncValue.error('Invalid Image', StackTrace.current);
-        return;
-      }
-      // Check the image dimensions
-      if (decodedImage.width < 400 || decodedImage.height < 400) {
-        state = AsyncValue.error(
-            'Images must be at least 400x400 pixels.', StackTrace.current);
-        return;
-      }
-    }
+    // for (var image in wordImages) {
+    //   // Check the image size
+    //   if (image.lengthInBytes > 5000000) {
+    //     // 5MB
+    //     state = AsyncValue.error(
+    //         'Images must be less than 5MB in size.', StackTrace.current);
+    //     return;
+    //   }
+    //   // Decode the image to check dimensions and format
+    //   final decodedImage = img.decodeImage(image);
+    //   if (decodedImage == null) {
+    //     state = AsyncValue.error('Invalid Image', StackTrace.current);
+    //     return;
+    //   }
+    //   // Check the image dimensions
+    //   if (decodedImage.width < 400 || decodedImage.height < 400) {
+    //     state = AsyncValue.error(
+    //         'Images must be at least 400x400 pixels.', StackTrace.current);
+    //     return;
+    //   }
+    // }
   }
 
   void _validateNote(String wordNote) {

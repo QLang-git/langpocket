@@ -4,7 +4,7 @@ class WordRecord {
   final int? id;
   final String foreignWord;
   final List<String> wordMeans;
-  final List<Uint8List> wordImages;
+  final List<String> wordImages;
   final List<String> wordExamples;
   final String wordNote;
 
@@ -26,7 +26,7 @@ class WordRecord {
     int? id,
     String? foreignWord,
     List<String>? wordMeans,
-    List<Uint8List>? wordImages,
+    List<String>? wordImages,
     List<String>? wordExamples,
     String? wordNote,
   }) {
@@ -55,7 +55,7 @@ class WordRecord {
     return other.id == id &&
         other.foreignWord == foreignWord &&
         listEquals(other.wordMeans, wordMeans) &&
-        isUint8ListEquals(other.wordImages, wordImages) &&
+        listEquals(other.wordImages, wordImages) &&
         listEquals(other.wordExamples, wordExamples) &&
         other.wordNote == wordNote;
   }

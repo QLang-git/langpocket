@@ -3,6 +3,12 @@ class ValidationInput {
     if (foreignWord == null || foreignWord.trim().isEmpty) {
       return (message: 'The word field can\'t be empty.', status: false);
     }
+    if (containsSpecialCharacters(foreignWord)) {
+      return (
+        message: 'Special characters like ";" are not allowed.',
+        status: false
+      );
+    }
     if (foreignWord.split(' ').length != 1) {
       return (message: 'Keep it one word in this field', status: false);
     }
@@ -17,10 +23,17 @@ class ValidationInput {
     if (wordMeans.isEmpty) {
       return (message: 'This field can\'t be empty.', status: false);
     }
+
     if (!_isNotEmptyList(wordMeans)) {
       return (message: 'This field can\'t be empty.', status: false);
     }
     for (var wordMean in wordMeans) {
+      if (containsSpecialCharacters(wordMean)) {
+        return (
+          message: 'Special characters like ";" are not allowed.',
+          status: false
+        );
+      }
       if (wordMean.length > 40) {
         return (
           message: 'keep the definition of the word smaller',
@@ -47,6 +60,12 @@ class ValidationInput {
       return (message: 'Invalid text', status: false);
     }
     for (var wordExample in wordExamples) {
+      if (containsSpecialCharacters(wordExample)) {
+        return (
+          message: 'Special characters like ";" are not allowed.',
+          status: false
+        );
+      }
       if (wordExample.trim().length > 40) {
         return (
           message:
@@ -73,4 +92,9 @@ class ValidationInput {
     }
     return false;
   }
+}
+
+bool containsSpecialCharacters(String input) {
+  final pattern = RegExp(r'[;]');
+  return pattern.hasMatch(input);
 }

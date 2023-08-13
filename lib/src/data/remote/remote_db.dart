@@ -1,11 +1,28 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:langpocket/models/Word.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/remote/remote_group_repository.dart';
 
 class RemoteDb implements RemoteGroupRepository {
   @override
-  Future<void> addNewWordInGroup(WordCompanion newWord, int userId) {
-    // TODO: implement addNewWordInGroup
-    throw UnimplementedError();
+  Future<void> addNewWordInGroup(WordCompanion newWord, int userId) async {
+    final WordCompanion(
+      :foreignWord,
+      :wordMeans,
+      :wordImages,
+      :wordExamples,
+      :wordNote,
+    ) = newWord;
+
+    // final x =
+    //  await Amplify.Storage.uploadFile(localFile: AWSFile.fromData(), key: key)
+    // await Amplify.DataStore.save(Word(
+
+    //     foreignWord: foreignWord.value,
+    //     wordMeans: wordMeans.value.split('-'),
+    //     wordImages: wordImages,
+    //     wordExamples: wordExamples,
+    //     wordNote: wordNote));
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -164,7 +165,8 @@ class _SearchResult extends StatelessWidget {
       itemBuilder: (context, index) {
         final word = words[index];
         final imgs = word.decoding().wordImages;
-        final randomExample = Random().nextInt(word.examplesList().length);
+        final randomExample =
+            Random().nextInt(word.decoding().wordExamples.length);
 
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 15),
@@ -190,8 +192,8 @@ class _SearchResult extends StatelessWidget {
                     height: 90,
                     width: 90,
                     child: imgs.isNotEmpty
-                        ? Image.memory(
-                            imgs.first,
+                        ? Image(
+                            image: FileImage(File(imgs.first)),
                             fit: BoxFit.fill,
                           )
                         : Container(
@@ -200,7 +202,7 @@ class _SearchResult extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.all(3),
                               child: Center(
-                                child: Text(word.meansList().first,
+                                child: Text(word.decoding().wordImages.first,
                                     overflow: TextOverflow.fade,
                                     textAlign: TextAlign.center,
                                     style: GoogleFonts.rubik(
@@ -241,7 +243,7 @@ class _SearchResult extends StatelessWidget {
                               Expanded(
                                 // And this
                                 child: Text(
-                                  word.meansList().join(','),
+                                  word.decoding().wordMeans.join(','),
                                   overflow: TextOverflow.ellipsis,
                                   softWrap: false,
                                   style: GoogleFonts.rubik(
@@ -266,7 +268,7 @@ class _SearchResult extends StatelessWidget {
                               Expanded(
                                 // And this
                                 child: Text(
-                                  word.examplesList()[randomExample],
+                                  word.decoding().wordExamples[randomExample],
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   softWrap: false,

@@ -1,6 +1,3 @@
-import 'dart:typed_data';
-
-import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
@@ -8,8 +5,6 @@ import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:langpocket/src/data/services/word_service.dart';
 import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
 import 'package:mocktail/mocktail.dart';
-
-import '../../../../images_testing/images_test.dart';
 
 //! 1- the initial state should be object with empty props
 //! 2- saveNewWord =>
@@ -95,38 +90,6 @@ void main() {
       controller.saveWordNote('this is notes for test only');
       expect(
           controller.debugState.value!.wordNote, 'this is notes for test only');
-    });
-    test('save and remove image', () {
-      expect(
-        controller.debugState.toString(),
-        AsyncData(initialWord).toString(),
-      );
-      final img0 = Uint8List.fromList(accoladeTestData().codeUnits);
-      final img1 = Uint8List.fromList(circumventTestData().codeUnits);
-      final img2 = Uint8List.fromList(praiseworthyTestData().codeUnits);
-
-      controller.saveWordImage(img0);
-      controller.saveWordImage(img1);
-      controller.saveWordImage(img2);
-      // index 0
-      expect(controller.debugState.value!.wordImages.contains(img0), true);
-      expect(controller.debugState.value!.wordImages.indexOf(img0), 0);
-      // index 1
-      expect(controller.debugState.value!.wordImages.contains(img1), true);
-      expect(controller.debugState.value!.wordImages.indexOf(img1), 1);
-      // index 2
-      expect(controller.debugState.value!.wordImages.contains(img2), true);
-      expect(controller.debugState.value!.wordImages.indexOf(img2), 2);
-
-      //* delete index 2
-      controller.removeImage(1);
-      expect(controller.debugState.value!.wordImages.contains(img0), true);
-      expect(controller.debugState.value!.wordImages.indexOf(img0), 0);
-      // index 1
-      expect(controller.debugState.value!.wordImages.contains(img1), false);
-      // index 2
-      expect(controller.debugState.value!.wordImages.contains(img2), true);
-      expect(controller.debugState.value!.wordImages.indexOf(img2), 1);
     });
   });
 
@@ -265,23 +228,6 @@ void main() {
           wordMeans: ['mean1', 'mean2', ''],
           wordImages: [],
           wordExamples: ['', '', '', '', ''],
-          wordNote: '');
-      // set up
-      controller.saveForeignWord(word.foreignWord);
-      controller.saveWordExample(word.wordExamples[0], 0);
-      controller.saveWordExample(word.wordExamples[1], 1);
-
-      await controller.saveNewWord(now);
-
-      expect(controller.debugState.hasError, true);
-    });
-    test('image Word is invalid', () async {
-      final now = DateTime.now();
-      var word = WordRecord(
-          foreignWord: 'test',
-          wordMeans: ['mean1', 'mean2', ''],
-          wordImages: [Uint8List.fromList('invalid'.codeUnits)],
-          wordExamples: ['tes', 'tes', 'dfs', '', ''],
           wordNote: '');
       // set up
       controller.saveForeignWord(word.foreignWord);

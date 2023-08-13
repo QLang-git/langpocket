@@ -1,5 +1,4 @@
 import 'package:langpocket/src/data/local/entities/word_entity.dart';
-import 'package:langpocket/src/data/local/repository/insert_default_data.dart';
 import 'package:langpocket/src/data/local/repository/local_group_repository.dart';
 import 'package:drift/drift.dart';
 import 'package:langpocket/src/data/local/entities/group_entity.dart';
@@ -24,12 +23,12 @@ class DriftGroupRepository extends _$DriftGroupRepository
       beforeOpen: (details) async {
         // Make sure that foreign keys are enabled
         await customStatement('PRAGMA foreign_keys = ON');
-        if (details.wasCreated && !isTesting) {
-          await batch((batch) {
-            batch.insertAll(group, defaultGroups);
-            batch.insertAll(word, defaultWords);
-          });
-        }
+        // if (details.wasCreated && !isTesting) {
+        //   await batch((batch) {
+        //     batch.insertAll(group, defaultGroups);
+        //     batch.insertAll(word, defaultWords);
+        //   });
+        // }
       },
     );
   }

@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/features/group/controller/group_controller.dart';
+import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -11,9 +13,10 @@ import 'package:langpocket/src/data/services/word_service.dart';
 final todoControllerProvider = StateNotifierProvider.autoDispose<TodoController,
     AsyncValue<List<TodoContents>>>((ref) {
   final service = ref.watch(wordsServicesProvider);
-
+  ref.watch(newWordControllerProvider);
+  ref.watch(groupControllerProvider);
   return TodoController(service, ref);
-});
+}, dependencies: [newWordControllerProvider, groupControllerProvider]);
 
 class TodoController extends StateNotifier<AsyncValue<List<TodoContents>>> {
   final WordServices wordServices;
@@ -52,14 +55,19 @@ class TodoController extends StateNotifier<AsyncValue<List<TodoContents>>> {
     int todayCount = 1;
     final sortedGroups = groups.map((group) {
       var isToday = group.studyTime.compareDayMonthYearTo(today);
-      var isLate = group.studyTime.isBefore(today);
+      DateTime studyTimeDateOnly = DateTime(
+          group.studyTime.year, group.studyTime.month, group.studyTime.day);
+      DateTime todayDateOnly = DateTime(today.year, today.month, today.day);
+
+      var isLate = studyTimeDateOnly.isBefore(todayDateOnly);
       if (isToday || isLate) {
         todayCount += 1;
       }
+
       return TodoContents(
           isLate: isLate,
           groupData: group,
-          isToday: isToday && isLate,
+          isToday: isToday || isLate,
           isChecked:
               (isToday || isLate) && _isChecked(group.id.toString(), prefs));
     }).toList();
