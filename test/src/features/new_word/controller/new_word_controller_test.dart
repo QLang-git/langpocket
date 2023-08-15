@@ -111,6 +111,7 @@ void main() {
       // set up saving
       final now = DateTime.now();
       final group = GroupData(
+          synced: false,
           level: 1,
           id: 1,
           groupName: 'test',
@@ -155,6 +156,7 @@ void main() {
       // set up saving
       final now = DateTime.now();
       final group = GroupData(
+          synced: false,
           level: 1,
           id: 1,
           groupName: 'test',

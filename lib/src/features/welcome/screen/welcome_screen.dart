@@ -43,6 +43,35 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
+  void loginWithFacebook(WidgetRef ref) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    setState(() => isLoading = true);
+    showLoadingOverlay();
+
+    // handle Google login
+    final success = await ref
+        .read(routerControllerProvider.notifier)
+        .continueWithFacebook();
+
+    setState(() => isLoading = false);
+    hideLoadingOverlay();
+
+    if (success) {
+      scaffoldMessenger.showSnackBar(SnackBar(
+        backgroundColor: Colors.green[800],
+        content: const Text('Login successful!'),
+      ));
+
+      ref.read(routerControllerProvider.notifier).setFirstTimeToFalse();
+    } else {
+      scaffoldMessenger.showSnackBar(SnackBar(
+        backgroundColor: Colors.red[900],
+        content: const Text('Login Failed, please try again..'),
+      ));
+    }
+  }
+
   void showLoadingOverlay() {
     loadingOverlay = OverlayEntry(
       builder: (context) => Container(
@@ -195,11 +224,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   child: ElevatedButton.icon(
                                     onPressed: () {},
                                     icon: const Icon(
-                                      Ionicons.logo_apple,
+                                      Ionicons.logo_amazon,
                                       color: Colors.white,
                                     ),
                                     label: Text(
-                                      'Continue with Apple',
+                                      'Continue with Amazon',
                                       style: textTheme.labelMedium!
                                           .copyWith(color: Colors.white),
                                     ),
@@ -212,7 +241,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   height:
                                       MediaQuery.of(context).size.height * 0.08,
                                   child: ElevatedButton.icon(
-                                    onPressed: () {},
+                                    onPressed: () => loginWithFacebook(ref),
                                     icon: const Icon(
                                       Ionicons.logo_facebook,
                                       color: Colors.white,

@@ -19,6 +19,9 @@
     "prefs",
     "rxdart",
     "Swiper",
-    "todos"
+    "todos",
+    "Unsynced",
+    "upsert",
+    "Workmanager"
   ]
 }

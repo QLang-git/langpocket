@@ -31,7 +31,7 @@ class WordServices {
     }
   }
 
-  //sets the geven group in the local or remote db depending on user satate
+  //sets the given group in the local or remote db depending on user satate
   // in remote or local
   Future<GroupData> createGroup(GroupCompanion newGroup) async {
     if (user) {

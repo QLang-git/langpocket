@@ -1,5 +1,13 @@
+import 'dart:io';
+
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:drift/drift.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/modules/word_module.dart';
+import 'package:langpocket/models/ModelProvider.dart' as AWS;
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 extension WordExt on WordData {
   WordRecord decoding() {
@@ -53,4 +61,68 @@ List<String> splitPaths(String joinedPaths) {
       .where((element) => element.isNotEmpty)
       .map((path) => Uri.decodeComponent(path))
       .toList();
+}
+
+extension ToLocalTime on TemporalDateTime {
+  DateTime convertTemporalToDateTime() {
+    return DateTime.parse(format());
+  }
+}
+
+extension LocalGroupDB on AWS.Group {
+  GroupCompanion toLocalData() {
+    return GroupCompanion.insert(
+      id: Value(int.parse(id)),
+      creatingTime: creatingTime?.convertTemporalToDateTime() ?? DateTime.now(),
+      groupName: groupName,
+      studyTime: studyTime.convertTemporalToDateTime(),
+      level: Value(level),
+      synced: const Value(true),
+    );
+  }
+}
+
+extension LocalWordDB on AWS.Word {
+  Future<WordCompanion> toLocalData() async {
+    final imgPaths = await _downloadAndSaveImage();
+    return WordCompanion.insert(
+        id: Value(int.parse(id)),
+        group: int.parse(group!.id),
+        foreignWord: foreignWord,
+        wordMeans: wordMeans.join(';'),
+        wordExamples: wordExamples.join(';'),
+        wordImages: imgPaths.join(';'),
+        wordDate: creatingTime?.convertTemporalToDateTime() ?? DateTime.now(),
+        wordNote: wordNote);
+  }
+
+  Future<List<String>> _downloadAndSaveImage() async {
+    final List<String> localPaths = [];
+    for (var imageUrl in wordImages) {
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        // Get the app directory
+        final appDir = await getApplicationDocumentsDirectory();
+        final targetPath = "${appDir.path}/images/";
+        final targetDirectory = Directory(targetPath);
+        if (!targetDirectory.existsSync()) {
+          targetDirectory.createSync(recursive: true);
+        }
+
+        // Generate a filename based on the URL or you can use DateTime as previously shown
+        final fileName = basename(imageUrl);
+        final targetFile = File("$targetPath$fileName");
+
+        // Write the image data to a file
+        await targetFile.writeAsBytes(response.bodyBytes);
+
+        localPaths.add(targetFile.path);
+      } else {
+        print('Failed to download image from $imageUrl');
+      }
+    }
+    return localPaths;
+
+    // Fetch the image data
+  }
 }

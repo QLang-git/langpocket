@@ -48,4 +48,20 @@ class RouterController
       return false;
     }
   }
+
+  Future<bool> continueWithFacebook() async {
+    try {
+      final result =
+          await Amplify.Auth.signInWithWebUI(provider: AuthProvider.facebook);
+
+      if (result.isSignedIn) {
+        state = const AsyncLoading();
+        state = const AsyncValue.data((isFirstTime: false, hasAuth: true));
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
 }

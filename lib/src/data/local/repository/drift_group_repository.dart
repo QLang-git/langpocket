@@ -1,7 +1,10 @@
 import 'package:langpocket/src/data/local/entities/word_entity.dart';
 import 'package:langpocket/src/data/local/repository/local_group_repository.dart';
 import 'package:drift/drift.dart';
+import 'package:langpocket/models/ModelProvider.dart' as AWS;
+
 import 'package:langpocket/src/data/local/entities/group_entity.dart';
+import 'package:langpocket/src/data/modules/extensions.dart';
 part 'drift_group_repository.g.dart';
 
 @DriftDatabase(tables: [Group, Word])
@@ -125,5 +128,59 @@ class DriftGroupRepository extends _$DriftGroupRepository
   Future<void> updateGroupLevel(int groupId, GroupCompanion newGroup) async {
     await (update(group)..where((tbl) => tbl.id.equals(groupId)))
         .write(newGroup);
+  }
+
+  @override
+  Future<void> markGroupAsSynced(int groupId) async {
+    await (update(group)..where((tbl) => tbl.id.equals(groupId)))
+        .write(const GroupCompanion(synced: Value(true)));
+  }
+
+  @override
+  Future<void> upsertGroups(List<AWS.Group> awsGroups) async {
+    final groups = awsGroups.map((g) => g.toLocalData()).toList();
+    final List<WordCompanion> words = [];
+    for (var g in awsGroups) {
+      if (g.words != null) {
+        for (var w in g.words!) {
+          final myWord = await w.toLocalData();
+          words.add(myWord);
+        }
+      }
+    }
+
+    await batch((b) {
+      b.insertAllOnConflictUpdate(group, groups);
+      b.insertAllOnConflictUpdate(word, words);
+    });
+  }
+
+  @override
+  Future<({List<GroupData> groups, List<WordData> words})>
+      fetchUnsyncedGroups() async {
+    return transaction(() async {
+      List<WordData> words = [];
+      List<GroupData> groups = [];
+      // Fetch unsynced groups
+      groups = await (select(group)..where((tbl) => tbl.synced.not())).get();
+
+      if (groups.isEmpty) {
+        return (groups: groups, words: words);
+      }
+      // Extract group IDs and mark them as synced
+      final groupIds = groups.map((g) => g.id).toList();
+      await batch((b) {
+        for (final id in groupIds) {
+          b.update(group, const GroupCompanion(synced: Value(true)),
+              where: (tbl) => tbl.id.equals(id));
+        }
+      });
+
+      // Fetch words associated with those groups
+      words =
+          await (select(word)..where((tbl) => tbl.group.isIn(groupIds))).get();
+
+      return (groups: groups, words: words);
+    });
   }
 }
