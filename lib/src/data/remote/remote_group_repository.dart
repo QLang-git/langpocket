@@ -18,6 +18,8 @@ abstract class RemoteGroupRepository {
   Future<void> deleteWordById(int wordId);
   Future<void> upadateWordInf(int wordId, WordCompanion wordCompanion);
   Stream<WordData> watchWordById(int wordId);
+  Future<List<GroupData>> fetchAllGroups();
+  Future<void> updateGroupLevel(int groupId, int newLevel);
 }
 
 final remoteGroupRepositoryProvider = Provider<RemoteGroupRepository>((ref) {

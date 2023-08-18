@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/features/home/app_bar/custom_search_delegate.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double screenHeight;
@@ -43,7 +44,10 @@ class _HomeAppBarState extends State<HomeAppBar> {
                           size: 50,
                         ),
                         color: Colors.white,
-                        onPressed: () {},
+                        onPressed: () async {
+                          final pr = await SharedPreferences.getInstance();
+                          pr.clear();
+                        },
                       )),
                   Padding(
                       padding: const EdgeInsets.only(right: 37),

@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,7 +7,7 @@ import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
 
 class ImagesDashboard extends ConsumerStatefulWidget {
-  final List<Uint8List>? currentImg;
+  final List<String>? currentImg;
 
   const ImagesDashboard({Key? key, this.currentImg}) : super(key: key);
 
@@ -16,7 +16,7 @@ class ImagesDashboard extends ConsumerStatefulWidget {
 }
 
 class _ImagePreviewerState extends ConsumerState<ImagesDashboard> {
-  late List<Uint8List> wordImages;
+  late List<String> wordImages;
 
   @override
   void initState() {
@@ -60,7 +60,7 @@ class _ImagePreviewerState extends ConsumerState<ImagesDashboard> {
 }
 
 class ImageListView extends StatelessWidget {
-  final List<Uint8List> wordImages;
+  final List<String> wordImages;
   final Function(int) removeImage;
 
   const ImageListView({
@@ -86,7 +86,9 @@ class ImageListView extends StatelessWidget {
                 margin: const EdgeInsets.all(10.0),
                 decoration:
                     BoxDecoration(borderRadius: BorderRadius.circular(20)),
-                child: Image.memory(wordImages[index], fit: BoxFit.cover),
+                child: Image(
+                    image: FileImage(File(wordImages[index])),
+                    fit: BoxFit.cover),
               ),
               Positioned(
                 top: 0,
@@ -108,7 +110,7 @@ class ImageListView extends StatelessWidget {
 }
 
 class ImageAddButton extends StatelessWidget {
-  final List<Uint8List> wordImages;
+  final List<String> wordImages;
 
   const ImageAddButton({super.key, required this.wordImages});
 
@@ -133,10 +135,9 @@ class ImageAddButton extends StatelessWidget {
                   final image = await ImagePicker()
                       .pickImage(source: ImageSource.gallery);
                   if (image == null) return;
-                  final bytes = await image.readAsBytes();
                   ref
                       .read(newWordControllerProvider.notifier)
-                      .saveWordImage(bytes);
+                      .saveWordImage(image.path);
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

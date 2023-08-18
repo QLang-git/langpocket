@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/custom_warning_dialog.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
+import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:langpocket/src/features/new_word/controller/new_word_controller.dart';
 import 'package:langpocket/src/features/word_edit/controller/word_editor_controller.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class WordEditorAppbar extends ConsumerStatefulWidget
     implements PreferredSizeWidget {

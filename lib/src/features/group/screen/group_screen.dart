@@ -8,6 +8,7 @@ import 'package:langpocket/src/features/group/app_bar/group_appbar.dart';
 import 'package:langpocket/src/features/group/controller/group_controller.dart';
 import 'package:langpocket/src/features/group/widgets/words_list.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
+import 'package:langpocket/src/utils/routes/not_found_screen.dart';
 
 class GroupScreen extends ConsumerStatefulWidget {
   final int groupId;
@@ -25,21 +26,25 @@ class _GroupScreenState extends ConsumerState<GroupScreen> {
 
   @override
   void initState() {
-    groupController =
-        ref.read(groupControllerProvider(widget.groupId).notifier);
+    groupController = ref.refresh(groupControllerProvider.notifier);
+    groupController.getWords(widget.groupId);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final data = ref.watch(groupControllerProvider(widget.groupId));
+    final data = ref.watch(groupControllerProvider);
     return ResponsiveCenter(
         child: AsyncValueWidget(
             value: data,
             child: (wordsGroup) {
+              if (wordsGroup == null) {
+                return const NotFoundScreen();
+              }
               final wordsList = wordsGroup.wordsData;
               return Scaffold(
                 appBar: GroupAppBar(
+                  groupId: widget.groupId,
                   creatingTime: wordsGroup.groupData.creatingTime,
                   groupName: wordsGroup.groupData.groupName,
                   groupController: groupController,
@@ -48,7 +53,9 @@ class _GroupScreenState extends ConsumerState<GroupScreen> {
                   padding:
                       const EdgeInsets.symmetric(vertical: 15, horizontal: 12),
                   child: WordsList(
-                      words: wordsList, groupController: groupController),
+                      groupId: widget.groupId,
+                      words: wordsList,
+                      groupController: groupController),
                 ),
                 floatingActionButton: SpeedDial(
                   animatedIcon: AnimatedIcons.menu_close,

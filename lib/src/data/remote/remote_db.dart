@@ -3,10 +3,7 @@ import 'package:langpocket/src/data/remote/remote_group_repository.dart';
 
 class RemoteDb implements RemoteGroupRepository {
   @override
-  Future<void> addNewWordInGroup(WordCompanion newWord, int userId) {
-    // TODO: implement addNewWordInGroup
-    throw UnimplementedError();
-  }
+  Future<void> addNewWordInGroup(WordCompanion newWord, int userId) async {}
 
   @override
   Future<GroupData> createGroup(GroupCompanion newgroup, int userId) {
@@ -89,6 +86,18 @@ class RemoteDb implements RemoteGroupRepository {
   @override
   Future<List<WordData>> fetchAllWords() {
     // TODO: implement fetchAllWords
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<GroupData>> fetchAllGroups() {
+    // TODO: implement fetchAllGroups
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> updateGroupLevel(int groupId, int newLevel) {
+    // TODO: implement updateGroupLevel
     throw UnimplementedError();
   }
 

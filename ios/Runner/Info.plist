@@ -3,9 +3,14 @@
 <plist version="1.0">
 	<dict>
 	    <key>BGTaskSchedulerPermittedIdentifiers</key>
-      <array>
-         <string>dev.flutter.background.refresh</string>
-      </array>
+         <array>
+          <string>dev.flutter.background.refresh</string>
+		  <string>task-identifier</string>
+         </array>
+		 <key>UIBackgroundModes</key>
+         <array>
+	       <string>processing</string>
+        </array>
 		<key>NSSpeechRecognitionUsageDescription</key>
 		<string>Our app uses speech recognition to convert your spoken words into text. This allows us to provide a more interactive experience and enables features like voice commands and dictation</string>
 		<key>NSMicrophoneUsageDescription</key>

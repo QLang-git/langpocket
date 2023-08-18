@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/models/ModelProvider.dart';
 
 import 'drift_group_repository.dart';
 import 'package:langpocket/src/data/local/connection/connection.dart' as impl;
 
 abstract class LocalGroupRepository {
-  Future<List<GroupData>> fetchGroups();
   Stream<List<GroupData>> watchGroups();
   Future<GroupData> fetchGroupById(int groupId);
   Future<GroupData> fetchGroupByTime(DateTime now);
@@ -19,11 +19,17 @@ abstract class LocalGroupRepository {
   Future<List<WordData>> fetchAllWords();
   Stream<WordData> watchWordById(int wordId);
   Future<void> updateWordInf(int wordId, WordCompanion wordCompanion);
+  Future<List<GroupData>> fetchAllGroups();
+  Future<void> updateGroupLevel(int groupId, GroupCompanion newGroup);
+  Future<void> markGroupAsSynced(int groupId);
+  Future<void> upsertGroups(List<Group> awsGroups);
+  Future<({List<GroupData> groups, List<WordData> words})>
+      fetchUnsyncedGroups();
 }
 
 // ignore: non_constant_identifier_names
-final _safe_acess_local_db = DriftGroupRepository(impl.connect());
+final safe_acess_local_db = DriftGroupRepository(impl.connect());
 final localGroupRepositoryProvider = Provider<LocalGroupRepository>((ref) {
-  ref.onDispose(_safe_acess_local_db.close);
-  return _safe_acess_local_db;
+  ref.onDispose(safe_acess_local_db.close);
+  return safe_acess_local_db;
 });

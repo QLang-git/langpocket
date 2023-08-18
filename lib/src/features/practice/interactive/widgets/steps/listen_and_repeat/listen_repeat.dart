@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
+import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:langpocket/src/features/practice/interactive/controller/practice_stepper_controller.dart';
 import 'package:langpocket/src/features/practice/interactive/widgets/practice_stepper/animated_sound_icon.dart';
 import 'package:langpocket/src/features/practice/interactive/widgets/practice_stepper/step_message.dart';
 import 'package:langpocket/src/features/practice/interactive/widgets/practice_stepper/steps_microphone_button.dart';
 import 'package:langpocket/src/features/practice/interactive/widgets/steps/listen_and_repeat/listen_repeat_controller.dart';
 import 'package:langpocket/src/features/practice/pronunciation/controllers/mic_single_controller.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class ListenRepeat extends ConsumerStatefulWidget {
   final int wordId;

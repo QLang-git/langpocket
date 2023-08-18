@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:langpocket/src/features/practice/interactive/controller/practice_stepper_controller.dart';
 import 'package:langpocket/src/features/practice/pronunciation/controllers/mic_single_controller.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 
 final listenRepeatControllerProvider = StateNotifierProvider.autoDispose<

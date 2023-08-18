@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/modules/extensions.dart';
+import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:langpocket/src/data/services/word_service.dart';
 import 'package:langpocket/src/features/word_edit/controller/word_editor_controller.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 // Define a class to hold your state
 class InfoState {
@@ -14,22 +14,19 @@ class InfoState {
   InfoState({required this.wordsData, required this.groupData});
 }
 
-final groupControllerProvider = StateNotifierProvider.autoDispose
-    .family<GroupController, AsyncValue<InfoState>, int>((ref, groupId) {
+final groupControllerProvider =
+    StateNotifierProvider.autoDispose<GroupController, AsyncValue<InfoState?>>(
+        (ref) {
   final wordService = ref.watch(wordsServicesProvider);
   ref.watch(wordEditorProvider);
-  return GroupController(wordService: wordService, groupId: groupId);
+  return GroupController(wordService: wordService);
 });
 
-class GroupController extends StateNotifier<AsyncValue<InfoState>> {
+class GroupController extends StateNotifier<AsyncValue<InfoState?>> {
   WordServices wordService;
-  int groupId;
-  GroupController({required this.wordService, required this.groupId})
-      : super(const AsyncLoading()) {
-    getWords();
-  }
+  GroupController({required this.wordService}) : super(const AsyncLoading());
 
-  void getWords() async {
+  void getWords(int groupId) async {
     if (mounted) {
       state = const AsyncLoading();
     }
@@ -44,20 +41,23 @@ class GroupController extends StateNotifier<AsyncValue<InfoState>> {
     }
   }
 
-  void deleteWord(int wordId) async {
+  void deleteWord(int wordId, int groupId) async {
     await wordService.deleteWordById(wordId, groupId);
+    state = const AsyncData(null);
   }
 
   // app bar
   Future<bool> editGroupName(
     String groupName,
+    int groupId,
     TextEditingController controller,
     BuildContext context,
     GlobalKey<FormState> inputKey,
     ValueChanged<bool> onEditModeActivating,
   ) async {
     if (groupName != controller.text) {
-      return await _updateGroupName(controller.text, inputKey, context);
+      return await _updateGroupName(
+          controller.text, inputKey, context, groupId);
       // newGroupName(controller.text);
     }
     onEditModeActivating(false);
@@ -65,7 +65,7 @@ class GroupController extends StateNotifier<AsyncValue<InfoState>> {
   }
 
   Future<bool> _updateGroupName(String newName, GlobalKey<FormState> inputKey,
-      BuildContext context) async {
+      BuildContext context, int groupId) async {
     if (!inputKey.currentState!.validate()) {
       return false;
     }

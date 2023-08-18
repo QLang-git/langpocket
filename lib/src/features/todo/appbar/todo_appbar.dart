@@ -7,7 +7,7 @@ class TodoAppBar extends StatefulWidget implements PreferredSizeWidget {
   @override
   State<TodoAppBar> createState() => _TodoAppBarState();
   @override
-  Size get preferredSize => const Size.fromHeight(80);
+  Size get preferredSize => const Size.fromHeight(130);
 }
 
 class _TodoAppBarState extends State<TodoAppBar> {
@@ -23,6 +23,22 @@ class _TodoAppBarState extends State<TodoAppBar> {
             borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(38),
                 bottomRight: Radius.circular(38))),
+        bottom: TabBar(
+            indicatorSize: TabBarIndicatorSize.label,
+            indicator: CustomUnderlineTabIndicator(),
+            labelPadding: const EdgeInsets.all(2),
+            tabs: const [
+              Tab(
+                  icon: Icon(
+                Icons.toc,
+                size: 30,
+              )),
+              Tab(
+                  icon: Icon(
+                Icons.calendar_month,
+                size: 30,
+              )),
+            ]),
         centerTitle: true,
         elevation: 0,
         toolbarHeight: 70,
@@ -35,5 +51,34 @@ class _TodoAppBarState extends State<TodoAppBar> {
         ),
       ),
     );
+  }
+}
+
+class CustomUnderlineTabIndicator extends Decoration {
+  @override
+  CustomUnderlinePainter createBoxPainter([VoidCallback? onChanged]) =>
+      CustomUnderlinePainter(this, onChanged);
+}
+
+class CustomUnderlinePainter extends BoxPainter {
+  final CustomUnderlineTabIndicator decoration;
+
+  CustomUnderlinePainter(this.decoration, VoidCallback? onChanged)
+      : super(onChanged);
+
+  @override
+  void paint(Canvas canvas, Offset offset, ImageConfiguration configuration) {
+    final Paint paint = Paint();
+    paint.color = Colors.white;
+    paint.style = PaintingStyle.stroke;
+    paint.strokeWidth = 2; // Thickness of underline
+
+    const double extraWidth = 45; // Extra width you want on each side
+    final double startX =
+        offset.dx + configuration.size!.width / 2 - extraWidth;
+    final double endX = offset.dx + configuration.size!.width / 2 + extraWidth;
+    final double yPosition = offset.dy + configuration.size!.height - 2;
+
+    canvas.drawLine(Offset(startX, yPosition), Offset(endX, yPosition), paint);
   }
 }

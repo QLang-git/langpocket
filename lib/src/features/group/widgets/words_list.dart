@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:langpocket/src/features/group/controller/group_controller.dart';
 import 'package:langpocket/src/features/group/widgets/custom_practice_dialog.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
@@ -10,10 +12,12 @@ import 'package:text_to_speech/text_to_speech.dart';
 import 'package:langpocket/src/utils/constants/breakpoints.dart';
 
 class WordsList extends ConsumerStatefulWidget {
+  final int groupId;
   final GroupController groupController;
   final List<WordRecord> words;
 
   const WordsList({
+    required this.groupId,
     required this.words,
     required this.groupController,
     Key? key,
@@ -29,6 +33,7 @@ class _WordsGroupsState extends ConsumerState<WordsList> {
     return widget.words.isEmpty
         ? const Center(child: Text('No Word saved in This Group'))
         : _MyWordList(
+            groupId: widget.groupId,
             words: widget.words,
             groupController: widget.groupController,
           );
@@ -37,9 +42,11 @@ class _WordsGroupsState extends ConsumerState<WordsList> {
 
 class _MyWordList extends ConsumerStatefulWidget {
   final List<WordRecord> words;
+  final int groupId;
   final GroupController groupController;
 
   const _MyWordList({
+    required this.groupId,
     required this.words,
     required this.groupController,
     Key? key,
@@ -84,14 +91,14 @@ class _MyWordListState extends ConsumerState<_MyWordList> {
         .closed
         .then((reason) {
       if (reason != SnackBarClosedReason.action) {
-        _deleteWord(word.id!);
+        _deleteWord(word.id!, widget.groupId);
       }
     });
   }
 
-  Future<void> _deleteWord(int wordId) async {
+  Future<void> _deleteWord(int wordId, int groupId) async {
     try {
-      widget.groupController.deleteWord(wordId);
+      widget.groupController.deleteWord(wordId, groupId);
       // Deletion succeeded
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -233,8 +240,8 @@ class WordCard extends StatelessWidget {
                 height: double.infinity,
                 width: 90,
                 child: word.wordImages.isNotEmpty
-                    ? Image.memory(
-                        word.wordImages.first,
+                    ? Image(
+                        image: FileImage(File(word.wordImages.first)),
                         fit: BoxFit.fill,
                       )
                     : Container(

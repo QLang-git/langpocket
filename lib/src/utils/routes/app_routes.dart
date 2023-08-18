@@ -1,10 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:langpocket/src/features/group/screen/group_screen.dart';
 import 'package:langpocket/src/features/home/screen/home_screen.dart';
 import 'package:langpocket/src/features/new_word/screen/new_word_screen.dart';
@@ -14,10 +13,12 @@ import 'package:langpocket/src/features/practice/pronunciation/screen/practice_p
 import 'package:langpocket/src/features/practice/spelling/screens/practice_spelling_group_screen.dart';
 import 'package:langpocket/src/features/practice/spelling/screens/practice_spelling_single_screen.dart';
 import 'package:langpocket/src/features/todo/screen/todo_screen.dart';
+import 'package:langpocket/src/features/welcome/screen/welcome_screen.dart';
 import 'package:langpocket/src/features/word_edit/screen/edit_mode_word_screen.dart';
 import 'package:langpocket/src/features/word_previewer/screen/word_previewer_screen.dart';
 import 'package:langpocket/src/features/word_view/screen/word_view_screen.dart';
 import 'package:langpocket/src/utils/routes/error_nav_screen.dart';
+import 'package:langpocket/src/utils/routes/router_controller.dart';
 
 enum AppRoute {
   home,
@@ -32,83 +33,37 @@ enum AppRoute {
   todo
 }
 
-class WordRecord {
-  final int? id;
-  final String foreignWord;
-  final List<String> wordMeans;
-  final List<Uint8List> wordImages;
-  final List<String> wordExamples;
-  final String wordNote;
+final goRouterProvider = Provider<GoRouter>((ref) {
+  final controller = ref.watch(routerControllerProvider);
+  return controller.when(
+      data: (routing) => GoRouter(
+          initialLocation: '/',
+          routes: appRouting,
+          redirect: ((context, state) {
+            if (routing.isFirstTime) {
+              return '/welcome';
+            } else {
+              return null;
+            }
+          })),
+      // todo: handle Error
+      error: (_, st) => GoRouter(routes: []),
+      loading: () => GoRouter(initialLocation: '/', routes: [
+            GoRoute(
+              path: '/',
+              builder: (context, state) {
+                print('loading....');
+                return const LinearProgressIndicator();
+              },
+            )
+          ]));
+});
 
-  WordRecord({
-    this.id,
-    required this.foreignWord,
-    required this.wordMeans,
-    required this.wordImages,
-    required this.wordExamples,
-    required this.wordNote,
-  });
-
-  @override
-  String toString() {
-    return 'Word(id: $id, foreignWord: $foreignWord, wordMeans: $wordMeans, wordImages: $wordImages, wordExamples: $wordExamples, wordNote: $wordNote)';
-  }
-
-  WordRecord copyWith({
-    int? id,
-    String? foreignWord,
-    List<String>? wordMeans,
-    List<Uint8List>? wordImages,
-    List<String>? wordExamples,
-    String? wordNote,
-  }) {
-    return WordRecord(
-      id: id ?? this.id,
-      foreignWord: foreignWord ?? this.foreignWord,
-      wordMeans: wordMeans ?? this.wordMeans,
-      wordImages: wordImages ?? this.wordImages,
-      wordExamples: wordExamples ?? this.wordExamples,
-      wordNote: wordNote ?? this.wordNote,
-    );
-  }
-
-  @override
-  bool operator ==(covariant WordRecord other) {
-    if (identical(this, other)) return true;
-
-    bool isUint8ListEquals(List<Uint8List> list1, List<Uint8List> list2) {
-      if (list1.length != list2.length) return false;
-      for (int i = 0; i < list1.length; i++) {
-        if (!listEquals(list1[i], list2[i])) return false;
-      }
-      return true;
-    }
-
-    return other.id == id &&
-        other.foreignWord == foreignWord &&
-        listEquals(other.wordMeans, wordMeans) &&
-        isUint8ListEquals(other.wordImages, wordImages) &&
-        listEquals(other.wordExamples, wordExamples) &&
-        other.wordNote == wordNote;
-  }
-
-  @override
-  int get hashCode {
-    return id.hashCode ^
-        foreignWord.hashCode ^
-        wordMeans.hashCode ^
-        wordImages.hashCode ^
-        wordExamples.hashCode ^
-        wordNote.hashCode;
-  }
-}
-
-final GoRouter goroute = GoRouter(
-  initialLocation: '/',
-  routes: appScreens,
-);
-
-final appScreens = [
+List<RouteBase> appRouting = [
+  GoRoute(
+    path: '/welcome',
+    builder: (context, state) => const WelcomeScreen(),
+  ),
   GoRoute(
       path: '/',
       name: AppRoute.home.name,

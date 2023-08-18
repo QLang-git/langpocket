@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:langpocket/src/features/new_word/widgets/form/fields/example_word.dart';
 import 'package:langpocket/src/features/new_word/widgets/form/fields/foreign_word.dart';
 import 'package:langpocket/src/features/new_word/widgets/form/fields/mean_word.dart';
 import 'package:langpocket/src/features/new_word/widgets/form/fields/notes_word.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class NewWordForm extends StatefulWidget {
   final WordRecord? wordRecord;

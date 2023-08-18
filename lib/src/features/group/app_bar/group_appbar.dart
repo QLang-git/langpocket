@@ -9,8 +9,11 @@ class GroupAppBar extends StatefulWidget implements PreferredSizeWidget {
   final GroupController groupController;
   final String groupName;
   final DateTime creatingTime;
+  final int groupId;
+
   const GroupAppBar({
     super.key,
+    required this.groupId,
     required this.creatingTime,
     required this.groupName,
     required this.groupController,
@@ -128,8 +131,8 @@ class _GroupAppBarState extends State<GroupAppBar> {
                     onPressed: () async {
                       if (editModeActivate) {
                         await widget.groupController
-                            .editGroupName(widget.groupName, controller,
-                                context, inputKey, setEditMode)
+                            .editGroupName(widget.groupName, widget.groupId,
+                                controller, context, inputKey, setEditMode)
                             .then((res) => showSnackBar(res, context))
                             .then((_) => setEditMode(false));
                       } else {

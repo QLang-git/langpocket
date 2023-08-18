@@ -6,7 +6,10 @@ import 'package:langpocket/src/data/local/repository/drift_group_repository.dart
 void main() {
   late DriftGroupRepository database;
   final group = GroupCompanion(
-      groupName: const Value('new group'), creatingTime: Value(DateTime.now()));
+      level: const Value(0),
+      groupName: const Value('new group'),
+      studyTime: Value(DateTime.now()),
+      creatingTime: Value(DateTime.now()));
   final word = WordCompanion(
     group: const Value(1),
     foreignWord: const Value('test'),
@@ -42,9 +45,10 @@ void main() {
   test('fetch list of groups', () async {
     await database.createGroup(group);
     await database.createGroup(GroupCompanion(
+        studyTime: Value(DateTime.now()),
         groupName: const Value('new group 2'),
         creatingTime: Value(DateTime.now())));
-    final groups = await database.fetchGroups();
+    final groups = await database.fetchAllGroups();
 
     expect(groups.length, 2);
     expect(groups.first.groupName, 'new group');
@@ -55,6 +59,7 @@ void main() {
     final time = DateTime.now();
     await database.createGroup(
       GroupCompanion(
+        studyTime: Value(DateTime.now()),
         groupName: const Value('new group 2'),
         creatingTime: Value(time),
       ),
@@ -144,6 +149,7 @@ void main() {
     // setup
     await database.createGroup(group);
     await database.createGroup(GroupCompanion(
+        studyTime: Value(DateTime.now()),
         groupName: const Value('new group 2'),
         creatingTime: Value(DateTime.now())));
 
@@ -157,6 +163,7 @@ void main() {
     // setup
     await database.createGroup(group);
     await database.createGroup(GroupCompanion(
+        studyTime: Value(DateTime.now()),
         groupName: const Value('new group 2'),
         creatingTime: Value(DateTime.now())));
 

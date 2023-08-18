@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
 import 'package:langpocket/src/features/home/widgets/groups_list.dart';
 import 'package:langpocket/src/features/home/app_bar/home_appbar.dart';
+import 'package:langpocket/src/features/home/widgets/todo_style_button.dart';
 import 'package:langpocket/src/utils/routes/app_routes.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,11 +41,7 @@ class HomeScreen extends StatelessWidget {
                             backgroundColor: colorScheme.onPrimary,
                           ),
                           onPressed: () => context.goNamed(AppRoute.todo.name),
-                          child: Text(
-                            'Todo',
-                            style: textTheme.labelMedium
-                                ?.copyWith(color: Colors.white),
-                          ))
+                          child: const TodoStyleButton())
                     ],
                   ),
                 ),

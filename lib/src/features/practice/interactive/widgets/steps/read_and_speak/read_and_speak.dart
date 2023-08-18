@@ -4,12 +4,12 @@ import 'package:langpocket/src/common_widgets/async_value_widget.dart';
 import 'package:langpocket/src/common_widgets/views/examples_view/example_view.dart';
 import 'package:langpocket/src/common_widgets/views/image_view/image_view.dart';
 import 'package:langpocket/src/common_widgets/views/word_view/word_view.dart';
+import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:langpocket/src/features/practice/interactive/controller/practice_stepper_controller.dart';
 import 'package:langpocket/src/features/practice/interactive/widgets/practice_stepper/step_message.dart';
 import 'package:langpocket/src/features/practice/interactive/widgets/practice_stepper/steps_microphone_button.dart';
 import 'package:langpocket/src/features/practice/interactive/widgets/steps/read_and_speak/read_and_speak_controller.dart';
 import 'package:langpocket/src/features/practice/pronunciation/controllers/mic_single_controller.dart';
-import 'package:langpocket/src/utils/routes/app_routes.dart';
 
 class ReadSpeak extends ConsumerStatefulWidget {
   final int wordId;

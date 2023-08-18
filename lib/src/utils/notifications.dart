@@ -1,8 +1,9 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_native_timezone_updated_gradle/flutter_native_timezone.dart';
+import 'package:langpocket/src/data/modules/extensions.dart';
 import 'package:langpocket/src/utils/constants/globule_constants.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/utils/permissions.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -68,35 +69,34 @@ class AppNotification {
     final localTime = await getLocalTimeZone();
     final today = tz.TZDateTime.now(tz.getLocation(localTime));
 
-    if (group.level == 1) {
+    if (group.studyTime.withDays(1).compareDayMonthYearTo(today)) {
       _practiceGroupTomorrow(group.id, today, wordToDisplay);
       return;
     }
-    if (group.level == 2) {
-      // yesterday
+    if (group.studyTime.withDays(3).compareDayMonthYearTo(today)) {
       _practiceGroup3daysAfter(group.id, today, wordToDisplay);
       return;
     }
-    if (group.level == 3) {
+    if (group.studyTime.withDays(7).compareDayMonthYearTo(today)) {
       _practiceGroupOneWeekAfter(group.id, today, wordToDisplay);
       return;
     }
-    if (group.level == 4) {
+    if (group.studyTime.withDays(14).compareDayMonthYearTo(today)) {
       _practiceGroup2WeeksAfter(group.id, today, wordToDisplay);
       return;
     }
-    if (group.level == 5) {
+    if (group.studyTime.withDays(30).compareDayMonthYearTo(today)) {
       _practiceGroupOnMonthAfter(group.id, today, wordToDisplay);
     }
-    if (group.level == 6) {
+    if (group.studyTime.withDays(90).compareDayMonthYearTo(today)) {
       _practiceGroup3MonthsAfter(group.id, today, wordToDisplay);
       return;
     }
-    if (group.level == 7) {
+    if (group.studyTime.withDays(180).compareDayMonthYearTo(today)) {
       _practiceGroup6MonthsAfter(group.id, today, wordToDisplay);
       return;
     }
-    if (group.level == 8) {
+    if (group.studyTime.withDays(360).compareDayMonthYearTo(today)) {
       _practiceGroupOneYear(group.id, today, wordToDisplay);
       return;
     }

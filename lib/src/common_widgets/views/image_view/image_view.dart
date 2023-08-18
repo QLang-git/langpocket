@@ -1,11 +1,11 @@
-import 'dart:typed_data';
+import 'dart:io';
 
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ImageView extends StatelessWidget {
-  final List<Uint8List> imageList;
+  final List<String> imageList;
   final List<String> meanings;
   const ImageView({super.key, required this.imageList, required this.meanings});
 
@@ -20,8 +20,8 @@ class ImageView extends StatelessWidget {
                 child: Swiper(
                   loop: false,
                   itemCount: imageList.length,
-                  itemBuilder: (context, index) => Image.memory(
-                    imageList[index],
+                  itemBuilder: (context, index) => Image(
+                    image: FileImage(File(imageList[index])),
                     fit: BoxFit.cover,
                   ),
                   viewportFraction: 0.8,

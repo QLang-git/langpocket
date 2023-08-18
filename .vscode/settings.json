@@ -2,6 +2,8 @@
   "cSpell.words": [
     "acess",
     "airplanemode",
+    "amplifyconfig",
+    "amplifyconfiguration",
     "appbar",
     "autocorrect",
     "autofocus",
@@ -14,7 +16,12 @@
     "LTRB",
     "microtask",
     "mipmap",
+    "prefs",
     "rxdart",
-    "Swiper"
+    "Swiper",
+    "todos",
+    "Unsynced",
+    "upsert",
+    "Workmanager"
   ]
 }

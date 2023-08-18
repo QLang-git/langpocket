@@ -29,15 +29,34 @@ class $GroupTable extends Group with TableInfo<$GroupTable, GroupData> {
       'level', aliasedName, false,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultValue: const Constant(1));
+      defaultValue: const Constant(0));
+  static const VerificationMeta _studyTimeMeta =
+      const VerificationMeta('studyTime');
+  @override
+  late final GeneratedColumn<DateTime> studyTime = GeneratedColumn<DateTime>(
+      'studyTime_time', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
   static const VerificationMeta _creatingTimeMeta =
       const VerificationMeta('creatingTime');
   @override
   late final GeneratedColumn<DateTime> creatingTime = GeneratedColumn<DateTime>(
       'creating_time', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _syncedMeta = const VerificationMeta('synced');
   @override
-  List<GeneratedColumn> get $columns => [id, groupName, level, creatingTime];
+  late final GeneratedColumn<bool> synced =
+      GeneratedColumn<bool>('synced', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
+            SqlDialect.sqlite: 'CHECK ("synced" IN (0, 1))',
+            SqlDialect.mysql: '',
+            SqlDialect.postgres: '',
+          }),
+          defaultValue: const Constant(false));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, groupName, level, studyTime, creatingTime, synced];
   @override
   String get aliasedName => _alias ?? 'group';
   @override
@@ -60,6 +79,14 @@ class $GroupTable extends Group with TableInfo<$GroupTable, GroupData> {
       context.handle(
           _levelMeta, level.isAcceptableOrUnknown(data['level']!, _levelMeta));
     }
+    if (data.containsKey('studyTime_time')) {
+      context.handle(
+          _studyTimeMeta,
+          studyTime.isAcceptableOrUnknown(
+              data['studyTime_time']!, _studyTimeMeta));
+    } else if (isInserting) {
+      context.missing(_studyTimeMeta);
+    }
     if (data.containsKey('creating_time')) {
       context.handle(
           _creatingTimeMeta,
@@ -67,6 +94,10 @@ class $GroupTable extends Group with TableInfo<$GroupTable, GroupData> {
               data['creating_time']!, _creatingTimeMeta));
     } else if (isInserting) {
       context.missing(_creatingTimeMeta);
+    }
+    if (data.containsKey('synced')) {
+      context.handle(_syncedMeta,
+          synced.isAcceptableOrUnknown(data['synced']!, _syncedMeta));
     }
     return context;
   }
@@ -83,8 +114,12 @@ class $GroupTable extends Group with TableInfo<$GroupTable, GroupData> {
           .read(DriftSqlType.string, data['${effectivePrefix}group_name'])!,
       level: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}level'])!,
+      studyTime: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}studyTime_time'])!,
       creatingTime: attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime, data['${effectivePrefix}creating_time'])!,
+      synced: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}synced'])!,
     );
   }
 
@@ -98,19 +133,25 @@ class GroupData extends DataClass implements Insertable<GroupData> {
   final int id;
   final String groupName;
   final int level;
+  final DateTime studyTime;
   final DateTime creatingTime;
+  final bool synced;
   const GroupData(
       {required this.id,
       required this.groupName,
       required this.level,
-      required this.creatingTime});
+      required this.studyTime,
+      required this.creatingTime,
+      required this.synced});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['group_name'] = Variable<String>(groupName);
     map['level'] = Variable<int>(level);
+    map['studyTime_time'] = Variable<DateTime>(studyTime);
     map['creating_time'] = Variable<DateTime>(creatingTime);
+    map['synced'] = Variable<bool>(synced);
     return map;
   }
 
@@ -119,7 +160,9 @@ class GroupData extends DataClass implements Insertable<GroupData> {
       id: Value(id),
       groupName: Value(groupName),
       level: Value(level),
+      studyTime: Value(studyTime),
       creatingTime: Value(creatingTime),
+      synced: Value(synced),
     );
   }
 
@@ -130,7 +173,9 @@ class GroupData extends DataClass implements Insertable<GroupData> {
       id: serializer.fromJson<int>(json['id']),
       groupName: serializer.fromJson<String>(json['groupName']),
       level: serializer.fromJson<int>(json['level']),
+      studyTime: serializer.fromJson<DateTime>(json['studyTime']),
       creatingTime: serializer.fromJson<DateTime>(json['creatingTime']),
+      synced: serializer.fromJson<bool>(json['synced']),
     );
   }
   @override
@@ -140,17 +185,26 @@ class GroupData extends DataClass implements Insertable<GroupData> {
       'id': serializer.toJson<int>(id),
       'groupName': serializer.toJson<String>(groupName),
       'level': serializer.toJson<int>(level),
+      'studyTime': serializer.toJson<DateTime>(studyTime),
       'creatingTime': serializer.toJson<DateTime>(creatingTime),
+      'synced': serializer.toJson<bool>(synced),
     };
   }
 
   GroupData copyWith(
-          {int? id, String? groupName, int? level, DateTime? creatingTime}) =>
+          {int? id,
+          String? groupName,
+          int? level,
+          DateTime? studyTime,
+          DateTime? creatingTime,
+          bool? synced}) =>
       GroupData(
         id: id ?? this.id,
         groupName: groupName ?? this.groupName,
         level: level ?? this.level,
+        studyTime: studyTime ?? this.studyTime,
         creatingTime: creatingTime ?? this.creatingTime,
+        synced: synced ?? this.synced,
       );
   @override
   String toString() {
@@ -158,13 +212,16 @@ class GroupData extends DataClass implements Insertable<GroupData> {
           ..write('id: $id, ')
           ..write('groupName: $groupName, ')
           ..write('level: $level, ')
-          ..write('creatingTime: $creatingTime')
+          ..write('studyTime: $studyTime, ')
+          ..write('creatingTime: $creatingTime, ')
+          ..write('synced: $synced')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, groupName, level, creatingTime);
+  int get hashCode =>
+      Object.hash(id, groupName, level, studyTime, creatingTime, synced);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -172,38 +229,51 @@ class GroupData extends DataClass implements Insertable<GroupData> {
           other.id == this.id &&
           other.groupName == this.groupName &&
           other.level == this.level &&
-          other.creatingTime == this.creatingTime);
+          other.studyTime == this.studyTime &&
+          other.creatingTime == this.creatingTime &&
+          other.synced == this.synced);
 }
 
 class GroupCompanion extends UpdateCompanion<GroupData> {
   final Value<int> id;
   final Value<String> groupName;
   final Value<int> level;
+  final Value<DateTime> studyTime;
   final Value<DateTime> creatingTime;
+  final Value<bool> synced;
   const GroupCompanion({
     this.id = const Value.absent(),
     this.groupName = const Value.absent(),
     this.level = const Value.absent(),
+    this.studyTime = const Value.absent(),
     this.creatingTime = const Value.absent(),
+    this.synced = const Value.absent(),
   });
   GroupCompanion.insert({
     this.id = const Value.absent(),
     required String groupName,
     this.level = const Value.absent(),
+    required DateTime studyTime,
     required DateTime creatingTime,
+    this.synced = const Value.absent(),
   })  : groupName = Value(groupName),
+        studyTime = Value(studyTime),
         creatingTime = Value(creatingTime);
   static Insertable<GroupData> custom({
     Expression<int>? id,
     Expression<String>? groupName,
     Expression<int>? level,
+    Expression<DateTime>? studyTime,
     Expression<DateTime>? creatingTime,
+    Expression<bool>? synced,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (groupName != null) 'group_name': groupName,
       if (level != null) 'level': level,
+      if (studyTime != null) 'studyTime_time': studyTime,
       if (creatingTime != null) 'creating_time': creatingTime,
+      if (synced != null) 'synced': synced,
     });
   }
 
@@ -211,12 +281,16 @@ class GroupCompanion extends UpdateCompanion<GroupData> {
       {Value<int>? id,
       Value<String>? groupName,
       Value<int>? level,
-      Value<DateTime>? creatingTime}) {
+      Value<DateTime>? studyTime,
+      Value<DateTime>? creatingTime,
+      Value<bool>? synced}) {
     return GroupCompanion(
       id: id ?? this.id,
       groupName: groupName ?? this.groupName,
       level: level ?? this.level,
+      studyTime: studyTime ?? this.studyTime,
       creatingTime: creatingTime ?? this.creatingTime,
+      synced: synced ?? this.synced,
     );
   }
 
@@ -232,8 +306,14 @@ class GroupCompanion extends UpdateCompanion<GroupData> {
     if (level.present) {
       map['level'] = Variable<int>(level.value);
     }
+    if (studyTime.present) {
+      map['studyTime_time'] = Variable<DateTime>(studyTime.value);
+    }
     if (creatingTime.present) {
       map['creating_time'] = Variable<DateTime>(creatingTime.value);
+    }
+    if (synced.present) {
+      map['synced'] = Variable<bool>(synced.value);
     }
     return map;
   }
@@ -244,7 +324,9 @@ class GroupCompanion extends UpdateCompanion<GroupData> {
           ..write('id: $id, ')
           ..write('groupName: $groupName, ')
           ..write('level: $level, ')
-          ..write('creatingTime: $creatingTime')
+          ..write('studyTime: $studyTime, ')
+          ..write('creatingTime: $creatingTime, ')
+          ..write('synced: $synced')
           ..write(')'))
         .toString();
   }
