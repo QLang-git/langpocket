@@ -55,8 +55,6 @@ class DriftGroupRepository extends _$DriftGroupRepository
   }
 
   @override
-  Future<List<GroupData>> fetchGroups() async => await select(group).get();
-  @override
   Future<WordData> fetchWordById(int wordId) async =>
       await (select(word)..where((word) => word.id.equals(wordId))).getSingle();
 

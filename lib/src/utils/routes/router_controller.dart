@@ -1,15 +1,17 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:langpocket/src/utils/auth/auth_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final routerControllerProvider = StateNotifierProvider<RouterController,
     AsyncValue<({bool isFirstTime, bool hasAuth})>>((ref) {
-  return RouterController();
+  final authRepository = ref.watch(authRepositoryProvider);
+  return RouterController(authRepository);
 });
 
 class RouterController
     extends StateNotifier<AsyncValue<({bool isFirstTime, bool hasAuth})>> {
-  RouterController() : super(const AsyncLoading()) {
+  final AuthRepository authRepository;
+  RouterController(this.authRepository) : super(const AsyncLoading()) {
     initialize();
   }
   late SharedPreferences prefs;
@@ -33,34 +35,23 @@ class RouterController
   }
 
   Future<bool> continueWithGoogle() async {
-    try {
-      final result = await Amplify.Auth.signInWithWebUI(
-        provider: AuthProvider.google,
-      );
-
-      if (result.isSignedIn) {
-        state = const AsyncLoading();
-        state = const AsyncValue.data((isFirstTime: false, hasAuth: true));
-        return true;
-      }
-      return false;
-    } catch (e) {
+    final res = await authRepository.signWithGoogle();
+    if (res) {
+      state = const AsyncLoading();
+      state = const AsyncValue.data((isFirstTime: false, hasAuth: true));
+      return true;
+    } else {
       return false;
     }
   }
 
   Future<bool> continueWithFacebook() async {
-    try {
-      final result =
-          await Amplify.Auth.signInWithWebUI(provider: AuthProvider.facebook);
-
-      if (result.isSignedIn) {
-        state = const AsyncLoading();
-        state = const AsyncValue.data((isFirstTime: false, hasAuth: true));
-        return true;
-      }
-      return false;
-    } catch (e) {
+    final res = await authRepository.signWithFacebook();
+    if (res) {
+      state = const AsyncLoading();
+      state = const AsyncValue.data((isFirstTime: false, hasAuth: true));
+      return true;
+    } else {
       return false;
     }
   }

@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_null_comparison
-
 /*
 * Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 *
@@ -25,433 +23,333 @@ import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'package:collection/collection.dart';
 
+
 /** This is an auto generated class representing the Word type in your schema. */
 class Word extends amplify_core.Model {
   static const classType = const _WordModelType();
   final String id;
-  final Group? _group;
   final String? _foreignWord;
   final List<String>? _wordMeans;
-  final List<String>? _wordImages;
   final List<String>? _wordExamples;
   final String? _wordNote;
-  final amplify_core.TemporalDateTime? _creatingTime;
+  final List<String>? _wordImages;
+  final Group? _group;
+  final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
-  final String? _groupWordsId;
-  final String? _wordGroupId;
 
   @override
   getInstanceType() => classType;
-
-  @Deprecated(
-      '[getId] is being deprecated in favor of custom primary key feature. Use getter [modelIdentifier] to get model identifier.')
+  
+  @Deprecated('[getId] is being deprecated in favor of custom primary key feature. Use getter [modelIdentifier] to get model identifier.')
   @override
   String getId() => id;
-
+  
   WordModelIdentifier get modelIdentifier {
-    return WordModelIdentifier(id: id);
+      return WordModelIdentifier(
+        id: id
+      );
   }
-
-  Group? get group {
-    return _group;
-  }
-
+  
   String get foreignWord {
     try {
       return _foreignWord!;
-    } catch (e) {
+    } catch(e) {
       throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages
-              .codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion: amplify_core.AmplifyExceptionMessages
-              .codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString());
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
     }
   }
-
+  
   List<String> get wordMeans {
     try {
       return _wordMeans!;
-    } catch (e) {
+    } catch(e) {
       throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages
-              .codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion: amplify_core.AmplifyExceptionMessages
-              .codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString());
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
     }
   }
-
-  List<String> get wordImages {
-    try {
-      return _wordImages!;
-    } catch (e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages
-              .codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion: amplify_core.AmplifyExceptionMessages
-              .codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString());
-    }
-  }
-
+  
   List<String> get wordExamples {
     try {
       return _wordExamples!;
-    } catch (e) {
+    } catch(e) {
       throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages
-              .codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion: amplify_core.AmplifyExceptionMessages
-              .codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString());
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
     }
   }
-
-  String get wordNote {
+  
+  String? get wordNote {
+    return _wordNote;
+  }
+  
+  List<String> get wordImages {
     try {
-      return _wordNote!;
-    } catch (e) {
+      return _wordImages!;
+    } catch(e) {
       throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages
-              .codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion: amplify_core.AmplifyExceptionMessages
-              .codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString());
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
     }
   }
-
-  amplify_core.TemporalDateTime? get creatingTime {
-    return _creatingTime;
+  
+  Group get group {
+    try {
+      return _group!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
-
+  
+  amplify_core.TemporalDateTime get createdAt {
+    try {
+      return _createdAt!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
+  }
+  
   amplify_core.TemporalDateTime? get updatedAt {
     return _updatedAt;
   }
-
-  String? get groupWordsId {
-    return _groupWordsId;
-  }
-
-  String? get wordGroupId {
-    return _wordGroupId;
-  }
-
-  const Word._internal(
-      {required this.id,
-      group,
-      required foreignWord,
-      required wordMeans,
-      required wordImages,
-      required wordExamples,
-      required wordNote,
-      creatingTime,
-      updatedAt,
-      groupWordsId,
-      wordGroupId})
-      : _group = group,
-        _foreignWord = foreignWord,
-        _wordMeans = wordMeans,
-        _wordImages = wordImages,
-        _wordExamples = wordExamples,
-        _wordNote = wordNote,
-        _creatingTime = creatingTime,
-        _updatedAt = updatedAt,
-        _groupWordsId = groupWordsId,
-        _wordGroupId = wordGroupId;
-
-  factory Word(
-      {String? id,
-      Group? group,
-      required String foreignWord,
-      required List<String> wordMeans,
-      required List<String> wordImages,
-      required List<String> wordExamples,
-      required String wordNote,
-      String? groupWordsId,
-      String? wordGroupId}) {
+  
+  const Word._internal({required this.id, required foreignWord, required wordMeans, required wordExamples, wordNote, required wordImages, required group, required createdAt, updatedAt}): _foreignWord = foreignWord, _wordMeans = wordMeans, _wordExamples = wordExamples, _wordNote = wordNote, _wordImages = wordImages, _group = group, _createdAt = createdAt, _updatedAt = updatedAt;
+  
+  factory Word({String? id, required String foreignWord, required List<String> wordMeans, required List<String> wordExamples, String? wordNote, required List<String> wordImages, required Group group, required amplify_core.TemporalDateTime createdAt}) {
     return Word._internal(
-        id: id == null ? amplify_core.UUID.getUUID() : id,
-        group: group,
-        foreignWord: foreignWord,
-        wordMeans: wordMeans != null
-            ? List<String>.unmodifiable(wordMeans)
-            : wordMeans,
-        wordImages: wordImages != null
-            ? List<String>.unmodifiable(wordImages)
-            : wordImages,
-        wordExamples: wordExamples != null
-            ? List<String>.unmodifiable(wordExamples)
-            : wordExamples,
-        wordNote: wordNote,
-        groupWordsId: groupWordsId,
-        wordGroupId: wordGroupId);
+      id: id == null ? amplify_core.UUID.getUUID() : id,
+      foreignWord: foreignWord,
+      wordMeans: wordMeans != null ? List<String>.unmodifiable(wordMeans) : wordMeans,
+      wordExamples: wordExamples != null ? List<String>.unmodifiable(wordExamples) : wordExamples,
+      wordNote: wordNote,
+      wordImages: wordImages != null ? List<String>.unmodifiable(wordImages) : wordImages,
+      group: group,
+      createdAt: createdAt);
   }
-
+  
   bool equals(Object other) {
     return this == other;
   }
-
+  
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is Word &&
-        id == other.id &&
-        _group == other._group &&
-        _foreignWord == other._foreignWord &&
-        DeepCollectionEquality().equals(_wordMeans, other._wordMeans) &&
-        DeepCollectionEquality().equals(_wordImages, other._wordImages) &&
-        DeepCollectionEquality().equals(_wordExamples, other._wordExamples) &&
-        _wordNote == other._wordNote &&
-        _groupWordsId == other._groupWordsId &&
-        _wordGroupId == other._wordGroupId;
+      id == other.id &&
+      _foreignWord == other._foreignWord &&
+      DeepCollectionEquality().equals(_wordMeans, other._wordMeans) &&
+      DeepCollectionEquality().equals(_wordExamples, other._wordExamples) &&
+      _wordNote == other._wordNote &&
+      DeepCollectionEquality().equals(_wordImages, other._wordImages) &&
+      _group == other._group &&
+      _createdAt == other._createdAt;
   }
-
+  
   @override
   int get hashCode => toString().hashCode;
-
+  
   @override
   String toString() {
     var buffer = new StringBuffer();
-
+    
     buffer.write("Word {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("foreignWord=" + "$_foreignWord" + ", ");
-    buffer.write("wordMeans=" +
-        (_wordMeans != null ? _wordMeans!.toString() : "null") +
-        ", ");
-    buffer.write("wordImages=" +
-        (_wordImages != null ? _wordImages!.toString() : "null") +
-        ", ");
-    buffer.write("wordExamples=" +
-        (_wordExamples != null ? _wordExamples!.toString() : "null") +
-        ", ");
+    buffer.write("wordMeans=" + (_wordMeans != null ? _wordMeans!.toString() : "null") + ", ");
+    buffer.write("wordExamples=" + (_wordExamples != null ? _wordExamples!.toString() : "null") + ", ");
     buffer.write("wordNote=" + "$_wordNote" + ", ");
-    buffer.write("creatingTime=" +
-        (_creatingTime != null ? _creatingTime!.format() : "null") +
-        ", ");
-    buffer.write("updatedAt=" +
-        (_updatedAt != null ? _updatedAt!.format() : "null") +
-        ", ");
-    buffer.write("groupWordsId=" + "$_groupWordsId" + ", ");
-    buffer.write("wordGroupId=" + "$_wordGroupId");
+    buffer.write("wordImages=" + (_wordImages != null ? _wordImages!.toString() : "null") + ", ");
+    buffer.write("group=" + (_group != null ? _group!.toString() : "null") + ", ");
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
-
+    
     return buffer.toString();
   }
-
-  Word copyWith(
-      {Group? group,
-      String? foreignWord,
-      List<String>? wordMeans,
-      List<String>? wordImages,
-      List<String>? wordExamples,
-      String? wordNote,
-      String? groupWordsId,
-      String? wordGroupId}) {
+  
+  Word copyWith({String? foreignWord, List<String>? wordMeans, List<String>? wordExamples, String? wordNote, List<String>? wordImages, Group? group, amplify_core.TemporalDateTime? createdAt}) {
     return Word._internal(
-        id: id,
-        group: group ?? this.group,
-        foreignWord: foreignWord ?? this.foreignWord,
-        wordMeans: wordMeans ?? this.wordMeans,
-        wordImages: wordImages ?? this.wordImages,
-        wordExamples: wordExamples ?? this.wordExamples,
-        wordNote: wordNote ?? this.wordNote,
-        groupWordsId: groupWordsId ?? this.groupWordsId,
-        wordGroupId: wordGroupId ?? this.wordGroupId);
+      id: id,
+      foreignWord: foreignWord ?? this.foreignWord,
+      wordMeans: wordMeans ?? this.wordMeans,
+      wordExamples: wordExamples ?? this.wordExamples,
+      wordNote: wordNote ?? this.wordNote,
+      wordImages: wordImages ?? this.wordImages,
+      group: group ?? this.group,
+      createdAt: createdAt ?? this.createdAt);
   }
-
-  Word copyWithModelFieldValues(
-      {ModelFieldValue<Group?>? group,
-      ModelFieldValue<String>? foreignWord,
-      ModelFieldValue<List<String>>? wordMeans,
-      ModelFieldValue<List<String>>? wordImages,
-      ModelFieldValue<List<String>>? wordExamples,
-      ModelFieldValue<String>? wordNote,
-      ModelFieldValue<String?>? groupWordsId,
-      ModelFieldValue<String?>? wordGroupId}) {
+  
+  Word copyWithModelFieldValues({
+    ModelFieldValue<String>? foreignWord,
+    ModelFieldValue<List<String>>? wordMeans,
+    ModelFieldValue<List<String>>? wordExamples,
+    ModelFieldValue<String?>? wordNote,
+    ModelFieldValue<List<String>?>? wordImages,
+    ModelFieldValue<Group>? group,
+    ModelFieldValue<amplify_core.TemporalDateTime>? createdAt
+  }) {
     return Word._internal(
-        id: id,
-        group: group == null ? this.group : group.value,
-        foreignWord: foreignWord == null ? this.foreignWord : foreignWord.value,
-        wordMeans: wordMeans == null ? this.wordMeans : wordMeans.value,
-        wordImages: wordImages == null ? this.wordImages : wordImages.value,
-        wordExamples:
-            wordExamples == null ? this.wordExamples : wordExamples.value,
-        wordNote: wordNote == null ? this.wordNote : wordNote.value,
-        groupWordsId:
-            groupWordsId == null ? this.groupWordsId : groupWordsId.value,
-        wordGroupId:
-            wordGroupId == null ? this.wordGroupId : wordGroupId.value);
+      id: id,
+      foreignWord: foreignWord == null ? this.foreignWord : foreignWord.value,
+      wordMeans: wordMeans == null ? this.wordMeans : wordMeans.value,
+      wordExamples: wordExamples == null ? this.wordExamples : wordExamples.value,
+      wordNote: wordNote == null ? this.wordNote : wordNote.value,
+      wordImages: wordImages == null ? this.wordImages : wordImages.value,
+      group: group == null ? this.group : group.value,
+      createdAt: createdAt == null ? this.createdAt : createdAt.value
+    );
   }
-
-  Word.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        _group = json['group']?['serializedData'] != null
-            ? Group.fromJson(
-                new Map<String, dynamic>.from(json['group']['serializedData']))
-            : null,
-        _foreignWord = json['foreignWord'],
-        _wordMeans = json['wordMeans']?.cast<String>(),
-        _wordImages = json['wordImages']?.cast<String>(),
-        _wordExamples = json['wordExamples']?.cast<String>(),
-        _wordNote = json['wordNote'],
-        _creatingTime = json['creatingTime'] != null
-            ? amplify_core.TemporalDateTime.fromString(json['creatingTime'])
-            : null,
-        _updatedAt = json['updatedAt'] != null
-            ? amplify_core.TemporalDateTime.fromString(json['updatedAt'])
-            : null,
-        _groupWordsId = json['groupWordsId'],
-        _wordGroupId = json['wordGroupId'];
-
+  
+  Word.fromJson(Map<String, dynamic> json)  
+    : id = json['id'],
+      _foreignWord = json['foreignWord'],
+      _wordMeans = json['wordMeans']?.cast<String>(),
+      _wordExamples = json['wordExamples']?.cast<String>(),
+      _wordNote = json['wordNote'],
+      _wordImages = json['wordImages']?.cast<String>(),
+      _group = json['group']?['serializedData'] != null
+        ? Group.fromJson(new Map<String, dynamic>.from(json['group']['serializedData']))
+        : null,
+      _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
+      _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
+  
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'group': _group?.toJson(),
-        'foreignWord': _foreignWord,
-        'wordMeans': _wordMeans,
-        'wordImages': _wordImages,
-        'wordExamples': _wordExamples,
-        'wordNote': _wordNote,
-        'creatingTime': _creatingTime?.format(),
-        'updatedAt': _updatedAt?.format(),
-        'groupWordsId': _groupWordsId,
-        'wordGroupId': _wordGroupId
-      };
-
+    'id': id, 'foreignWord': _foreignWord, 'wordMeans': _wordMeans, 'wordExamples': _wordExamples, 'wordNote': _wordNote, 'wordImages': _wordImages, 'group': _group?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+  };
+  
   Map<String, Object?> toMap() => {
-        'id': id,
-        'group': _group,
-        'foreignWord': _foreignWord,
-        'wordMeans': _wordMeans,
-        'wordImages': _wordImages,
-        'wordExamples': _wordExamples,
-        'wordNote': _wordNote,
-        'creatingTime': _creatingTime,
-        'updatedAt': _updatedAt,
-        'groupWordsId': _groupWordsId,
-        'wordGroupId': _wordGroupId
-      };
+    'id': id,
+    'foreignWord': _foreignWord,
+    'wordMeans': _wordMeans,
+    'wordExamples': _wordExamples,
+    'wordNote': _wordNote,
+    'wordImages': _wordImages,
+    'group': _group,
+    'createdAt': _createdAt,
+    'updatedAt': _updatedAt
+  };
 
-  static final amplify_core.QueryModelIdentifier<WordModelIdentifier>
-      MODEL_IDENTIFIER =
-      amplify_core.QueryModelIdentifier<WordModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<WordModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<WordModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
-  static final GROUP = amplify_core.QueryField(
-      fieldName: "group",
-      fieldType: amplify_core.ModelFieldType(
-          amplify_core.ModelFieldTypeEnum.model,
-          ofModelName: 'Group'));
   static final FOREIGNWORD = amplify_core.QueryField(fieldName: "foreignWord");
   static final WORDMEANS = amplify_core.QueryField(fieldName: "wordMeans");
-  static final WORDIMAGES = amplify_core.QueryField(fieldName: "wordImages");
-  static final WORDEXAMPLES =
-      amplify_core.QueryField(fieldName: "wordExamples");
+  static final WORDEXAMPLES = amplify_core.QueryField(fieldName: "wordExamples");
   static final WORDNOTE = amplify_core.QueryField(fieldName: "wordNote");
-  static final GROUPWORDSID =
-      amplify_core.QueryField(fieldName: "groupWordsId");
-  static final WORDGROUPID = amplify_core.QueryField(fieldName: "wordGroupId");
-  static var schema = amplify_core.Model.defineSchema(
-      define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
+  static final WORDIMAGES = amplify_core.QueryField(fieldName: "wordImages");
+  static final GROUP = amplify_core.QueryField(
+    fieldName: "group",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Group'));
+  static final CREATEDAT = amplify_core.QueryField(fieldName: "createdAt");
+  static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Word";
     modelSchemaDefinition.pluralName = "Words";
-
+    
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
-          authStrategy: amplify_core.AuthStrategy.OWNER,
-          ownerField: "owner",
-          identityClaim: "cognito:username",
-          provider: amplify_core.AuthRuleProvider.USERPOOLS,
-          operations: const [
-            amplify_core.ModelOperation.CREATE,
-            amplify_core.ModelOperation.UPDATE,
-            amplify_core.ModelOperation.DELETE,
-            amplify_core.ModelOperation.READ
-          ])
+        authStrategy: amplify_core.AuthStrategy.OWNER,
+        ownerField: "owner",
+        identityClaim: "cognito:username",
+        provider: amplify_core.AuthRuleProvider.USERPOOLS,
+        operations: const [
+          amplify_core.ModelOperation.CREATE,
+          amplify_core.ModelOperation.UPDATE,
+          amplify_core.ModelOperation.DELETE,
+          amplify_core.ModelOperation.READ
+        ])
     ];
-
+    
+    modelSchemaDefinition.indexes = [
+      amplify_core.ModelIndex(fields: const ["groupID"], name: "byGroup")
+    ];
+    
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
-
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasOne(
-        key: Word.GROUP,
-        isRequired: false,
-        ofModelName: 'Group',
-        associatedKey: Group.ID));
-
+    
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-        key: Word.FOREIGNWORD,
-        isRequired: true,
-        ofType: amplify_core.ModelFieldType(
-            amplify_core.ModelFieldTypeEnum.string)));
-
+      key: Word.FOREIGNWORD,
+      isRequired: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-        key: Word.WORDMEANS,
-        isRequired: true,
-        isArray: true,
-        ofType: amplify_core.ModelFieldType(
-            amplify_core.ModelFieldTypeEnum.collection,
-            ofModelName: amplify_core.ModelFieldTypeEnum.string.name)));
-
+      key: Word.WORDMEANS,
+      isRequired: true,
+      isArray: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.collection, ofModelName: amplify_core.ModelFieldTypeEnum.string.name)
+    ));
+    
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-        key: Word.WORDIMAGES,
-        isRequired: true,
-        isArray: true,
-        ofType: amplify_core.ModelFieldType(
-            amplify_core.ModelFieldTypeEnum.collection,
-            ofModelName: amplify_core.ModelFieldTypeEnum.string.name)));
-
+      key: Word.WORDEXAMPLES,
+      isRequired: true,
+      isArray: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.collection, ofModelName: amplify_core.ModelFieldTypeEnum.string.name)
+    ));
+    
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-        key: Word.WORDEXAMPLES,
-        isRequired: true,
-        isArray: true,
-        ofType: amplify_core.ModelFieldType(
-            amplify_core.ModelFieldTypeEnum.collection,
-            ofModelName: amplify_core.ModelFieldTypeEnum.string.name)));
-
+      key: Word.WORDNOTE,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-        key: Word.WORDNOTE,
-        isRequired: true,
-        ofType: amplify_core.ModelFieldType(
-            amplify_core.ModelFieldTypeEnum.string)));
-
-    modelSchemaDefinition.addField(
-        amplify_core.ModelFieldDefinition.nonQueryField(
-            fieldName: 'creatingTime',
-            isRequired: false,
-            isReadOnly: true,
-            ofType: amplify_core.ModelFieldType(
-                amplify_core.ModelFieldTypeEnum.dateTime)));
-
-    modelSchemaDefinition.addField(
-        amplify_core.ModelFieldDefinition.nonQueryField(
-            fieldName: 'updatedAt',
-            isRequired: false,
-            isReadOnly: true,
-            ofType: amplify_core.ModelFieldType(
-                amplify_core.ModelFieldTypeEnum.dateTime)));
-
+      key: Word.WORDIMAGES,
+      isRequired: true,
+      isArray: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.collection, ofModelName: amplify_core.ModelFieldTypeEnum.string.name)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
+      key: Word.GROUP,
+      isRequired: true,
+      targetNames: ['groupID'],
+      ofModelName: 'Group'
+    ));
+    
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-        key: Word.GROUPWORDSID,
-        isRequired: false,
-        ofType: amplify_core.ModelFieldType(
-            amplify_core.ModelFieldTypeEnum.string)));
-
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-        key: Word.WORDGROUPID,
-        isRequired: false,
-        ofType: amplify_core.ModelFieldType(
-            amplify_core.ModelFieldTypeEnum.string)));
+      key: Word.CREATEDAT,
+      isRequired: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
+      fieldName: 'updatedAt',
+      isRequired: false,
+      isReadOnly: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
+    ));
   });
 }
 
 class _WordModelType extends amplify_core.ModelType<Word> {
   const _WordModelType();
-
+  
   @override
   Word fromJson(Map<String, dynamic> jsonData) {
     return Word.fromJson(jsonData);
   }
-
+  
   @override
   String modelName() {
     return 'Word';
@@ -466,32 +364,37 @@ class WordModelIdentifier implements amplify_core.ModelIdentifier<Word> {
   final String id;
 
   /** Create an instance of WordModelIdentifier using [id] the primary key. */
-  const WordModelIdentifier({required this.id});
-
+  const WordModelIdentifier({
+    required this.id});
+  
   @override
-  Map<String, dynamic> serializeAsMap() => (<String, dynamic>{'id': id});
-
+  Map<String, dynamic> serializeAsMap() => (<String, dynamic>{
+    'id': id
+  });
+  
   @override
   List<Map<String, dynamic>> serializeAsList() => serializeAsMap()
-      .entries
-      .map((entry) => (<String, dynamic>{entry.key: entry.value}))
-      .toList();
-
+    .entries
+    .map((entry) => (<String, dynamic>{ entry.key: entry.value }))
+    .toList();
+  
   @override
   String serializeAsString() => serializeAsMap().values.join('#');
-
+  
   @override
   String toString() => 'WordModelIdentifier(id: $id)';
-
+  
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
       return true;
     }
-
-    return other is WordModelIdentifier && id == other.id;
+    
+    return other is WordModelIdentifier &&
+      id == other.id;
   }
-
+  
   @override
-  int get hashCode => id.hashCode;
+  int get hashCode =>
+    id.hashCode;
 }

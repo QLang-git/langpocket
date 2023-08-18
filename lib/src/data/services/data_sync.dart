@@ -1,33 +1,32 @@
-import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/data/local/repository/local_group_repository.dart';
 import 'package:langpocket/src/data/remote/aws_db.dart';
-import 'package:langpocket/src/data/local/connection/connection.dart' as impl;
 
 class DataSync {
-  final LocalGroupRepository localDB = DriftGroupRepository(impl.connect());
-  final AwsDatabase remoteDB = AwsDatabase();
+  final LocalGroupRepository localDB;
+  final AwsDatabase remoteDB;
 
-  DataSync();
+  DataSync(this.localDB, this.remoteDB);
 
   Future<void> syncData() async {
-    await pullRemoteChanges();
-    await pushLocalChanges();
+    pullRemoteChanges();
+    pushLocalChanges();
   }
 
-  Future<void> pullRemoteChanges() async {
+  void pullRemoteChanges() async {
     try {
-      final remoteGroups = await remoteDB.fetchAllGroups();
+      final remoteGroups = await remoteDB.syncDataFromCloud();
       //  insert/update the pulled groups into  local database
-      localDB.upsertGroups(remoteGroups);
+      await localDB.upsertGroups(remoteGroups);
     } catch (e) {
       print("Error pulling remote changes: $e");
     }
   }
 
-  Future<void> pushLocalChanges() async {
+  void pushLocalChanges() async {
     try {
       final unsyncedGroups = await localDB.fetchUnsyncedGroups();
-      remoteDB.saveNewGroupWithWords(
+      remoteDB.syncDataToCloud(
         unsyncedGroups.groups,
         unsyncedGroups.words,
       );
@@ -36,3 +35,9 @@ class DataSync {
     }
   }
 }
+
+final dataSyncProvider = Provider<DataSync>((ref) {
+  final localDB = ref.watch(localGroupRepositoryProvider);
+  final remoteDB = ref.watch(awsDBProvider);
+  return DataSync(localDB, remoteDB);
+});

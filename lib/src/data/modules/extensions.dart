@@ -1,7 +1,11 @@
+// ignore_for_file: library_prefixes
+
 import 'dart:io';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:drift/drift.dart';
+import 'package:langpocket/models/Group.dart';
+import 'package:langpocket/models/Word.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:langpocket/models/ModelProvider.dart' as AWS;
@@ -19,6 +23,18 @@ extension WordExt on WordData {
       wordExamples: splitPaths(wordExamples),
       wordNote: wordNote,
     );
+  }
+
+  Word toCloudData(Group group) {
+    return Word(
+        id: id.toString(),
+        group: group,
+        foreignWord: foreignWord,
+        wordMeans: splitPaths(wordMeans),
+        wordImages: splitPaths(wordImages),
+        wordExamples: splitPaths(wordExamples),
+        wordNote: wordNote,
+        createdAt: TemporalDateTime(wordDate));
   }
 }
 
@@ -69,11 +85,17 @@ extension ToLocalTime on TemporalDateTime {
   }
 }
 
+extension ToLocalDate on TemporalDate {
+  DateTime convertTemporalToDateTime() {
+    return DateTime.parse(format());
+  }
+}
+
 extension LocalGroupDB on AWS.Group {
   GroupCompanion toLocalData() {
     return GroupCompanion.insert(
       id: Value(int.parse(id)),
-      creatingTime: creatingTime?.convertTemporalToDateTime() ?? DateTime.now(),
+      creatingTime: createdAt.convertTemporalToDateTime(),
       groupName: groupName,
       studyTime: studyTime.convertTemporalToDateTime(),
       level: Value(level),
@@ -87,13 +109,13 @@ extension LocalWordDB on AWS.Word {
     final imgPaths = await _downloadAndSaveImage();
     return WordCompanion.insert(
         id: Value(int.parse(id)),
-        group: int.parse(group!.id),
+        group: int.parse(group.id),
         foreignWord: foreignWord,
         wordMeans: wordMeans.join(';'),
         wordExamples: wordExamples.join(';'),
         wordImages: imgPaths.join(';'),
-        wordDate: creatingTime?.convertTemporalToDateTime() ?? DateTime.now(),
-        wordNote: wordNote);
+        wordDate: createdAt.convertTemporalToDateTime(),
+        wordNote: wordNote ?? '');
   }
 
   Future<List<String>> _downloadAndSaveImage() async {
@@ -124,5 +146,16 @@ extension LocalWordDB on AWS.Word {
     return localPaths;
 
     // Fetch the image data
+  }
+}
+
+extension ToCloud on GroupData {
+  Group toCloudData() {
+    return Group(
+        id: id.toString(),
+        groupName: groupName,
+        level: level,
+        createdAt: TemporalDateTime(creatingTime),
+        studyTime: TemporalDate(studyTime));
   }
 }

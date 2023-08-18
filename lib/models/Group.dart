@@ -30,9 +30,9 @@ class Group extends amplify_core.Model {
   final String id;
   final String? _groupName;
   final int? _level;
-  final amplify_core.TemporalDateTime? _studyTime;
+  final amplify_core.TemporalDate? _studyTime;
   final List<Word>? _words;
-  final amplify_core.TemporalDateTime? _creatingTime;
+  final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
   @override
@@ -74,7 +74,7 @@ class Group extends amplify_core.Model {
     }
   }
   
-  amplify_core.TemporalDateTime get studyTime {
+  amplify_core.TemporalDate get studyTime {
     try {
       return _studyTime!;
     } catch(e) {
@@ -91,23 +91,33 @@ class Group extends amplify_core.Model {
     return _words;
   }
   
-  amplify_core.TemporalDateTime? get creatingTime {
-    return _creatingTime;
+  amplify_core.TemporalDateTime get createdAt {
+    try {
+      return _createdAt!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
   amplify_core.TemporalDateTime? get updatedAt {
     return _updatedAt;
   }
   
-  const Group._internal({required this.id, required groupName, required level, required studyTime, words, creatingTime, updatedAt}): _groupName = groupName, _level = level, _studyTime = studyTime, _words = words, _creatingTime = creatingTime, _updatedAt = updatedAt;
+  const Group._internal({required this.id, required groupName, required level, required studyTime, words, required createdAt, updatedAt}): _groupName = groupName, _level = level, _studyTime = studyTime, _words = words, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Group({String? id, required String groupName, required int level, required amplify_core.TemporalDateTime studyTime, List<Word>? words}) {
+  factory Group({String? id, required String groupName, required int level, required amplify_core.TemporalDate studyTime, List<Word>? words, required amplify_core.TemporalDateTime createdAt}) {
     return Group._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       groupName: groupName,
       level: level,
       studyTime: studyTime,
-      words: words != null ? List<Word>.unmodifiable(words) : words);
+      words: words != null ? List<Word>.unmodifiable(words) : words,
+      createdAt: createdAt);
   }
   
   bool equals(Object other) {
@@ -122,7 +132,8 @@ class Group extends amplify_core.Model {
       _groupName == other._groupName &&
       _level == other._level &&
       _studyTime == other._studyTime &&
-      DeepCollectionEquality().equals(_words, other._words);
+      DeepCollectionEquality().equals(_words, other._words) &&
+      _createdAt == other._createdAt;
   }
   
   @override
@@ -137,34 +148,37 @@ class Group extends amplify_core.Model {
     buffer.write("groupName=" + "$_groupName" + ", ");
     buffer.write("level=" + (_level != null ? _level!.toString() : "null") + ", ");
     buffer.write("studyTime=" + (_studyTime != null ? _studyTime!.format() : "null") + ", ");
-    buffer.write("creatingTime=" + (_creatingTime != null ? _creatingTime!.format() : "null") + ", ");
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  Group copyWith({String? groupName, int? level, amplify_core.TemporalDateTime? studyTime, List<Word>? words}) {
+  Group copyWith({String? groupName, int? level, amplify_core.TemporalDate? studyTime, List<Word>? words, amplify_core.TemporalDateTime? createdAt}) {
     return Group._internal(
       id: id,
       groupName: groupName ?? this.groupName,
       level: level ?? this.level,
       studyTime: studyTime ?? this.studyTime,
-      words: words ?? this.words);
+      words: words ?? this.words,
+      createdAt: createdAt ?? this.createdAt);
   }
   
   Group copyWithModelFieldValues({
     ModelFieldValue<String>? groupName,
     ModelFieldValue<int>? level,
-    ModelFieldValue<amplify_core.TemporalDateTime>? studyTime,
-    ModelFieldValue<List<Word>?>? words
+    ModelFieldValue<amplify_core.TemporalDate>? studyTime,
+    ModelFieldValue<List<Word>>? words,
+    ModelFieldValue<amplify_core.TemporalDateTime>? createdAt
   }) {
     return Group._internal(
       id: id,
       groupName: groupName == null ? this.groupName : groupName.value,
       level: level == null ? this.level : level.value,
       studyTime: studyTime == null ? this.studyTime : studyTime.value,
-      words: words == null ? this.words : words.value
+      words: words == null ? this.words : words.value,
+      createdAt: createdAt == null ? this.createdAt : createdAt.value
     );
   }
   
@@ -172,18 +186,18 @@ class Group extends amplify_core.Model {
     : id = json['id'],
       _groupName = json['groupName'],
       _level = (json['level'] as num?)?.toInt(),
-      _studyTime = json['studyTime'] != null ? amplify_core.TemporalDateTime.fromString(json['studyTime']) : null,
+      _studyTime = json['studyTime'] != null ? amplify_core.TemporalDate.fromString(json['studyTime']) : null,
       _words = json['words'] is List
         ? (json['words'] as List)
           .where((e) => e?['serializedData'] != null)
           .map((e) => Word.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
           .toList()
         : null,
-      _creatingTime = json['creatingTime'] != null ? amplify_core.TemporalDateTime.fromString(json['creatingTime']) : null,
+      _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'groupName': _groupName, 'level': _level, 'studyTime': _studyTime?.format(), 'words': _words?.map((Word? e) => e?.toJson()).toList(), 'creatingTime': _creatingTime?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'groupName': _groupName, 'level': _level, 'studyTime': _studyTime?.format(), 'words': _words?.map((Word? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -192,7 +206,7 @@ class Group extends amplify_core.Model {
     'level': _level,
     'studyTime': _studyTime,
     'words': _words,
-    'creatingTime': _creatingTime,
+    'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
@@ -204,6 +218,7 @@ class Group extends amplify_core.Model {
   static final WORDS = amplify_core.QueryField(
     fieldName: "words",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Word'));
+  static final CREATEDAT = amplify_core.QueryField(fieldName: "createdAt");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Group";
     modelSchemaDefinition.pluralName = "Groups";
@@ -239,20 +254,19 @@ class Group extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Group.STUDYTIME,
       isRequired: true,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
       key: Group.WORDS,
-      isRequired: false,
+      isRequired: true,
       ofModelName: 'Word',
-      associatedKey: Word.GROUPWORDSID
+      associatedKey: Word.GROUP
     ));
     
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
-      fieldName: 'creatingTime',
-      isRequired: false,
-      isReadOnly: true,
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Group.CREATEDAT,
+      isRequired: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
     ));
     

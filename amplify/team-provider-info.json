@@ -15,11 +15,11 @@
       "auth": {
         "langpocket91dbd034": {}
       },
-      "api": {
-        "langpocket": {}
-      },
       "storage": {
         "s346aa2c29": {}
+      },
+      "api": {
+        "langpocket": {}
       }
     }
   }

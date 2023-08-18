@@ -28,7 +28,7 @@ export 'Word.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "543f1142c8cf0304a48e6ba03ca49d05";
+  String version = "b283c3b3b925fbac482737913e14ed8b";
   @override
   List<amplify_core.ModelSchema> modelSchemas = [Group.schema, Word.schema];
   @override

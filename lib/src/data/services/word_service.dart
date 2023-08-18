@@ -1,148 +1,105 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/local/repository/local_group_repository.dart';
-import 'package:langpocket/src/data/remote/remote_group_repository.dart';
+import 'package:langpocket/src/utils/auth/auth_repository.dart';
+import 'package:langpocket/src/utils/background_works.dart';
 
 // showing words depending on auth to shows the local or remote words
 class WordServices {
   final LocalGroupRepository localGroupRepository;
-  final RemoteGroupRepository remoteGroupRepository;
+  final BackgroundWorks backgroundWorks;
+  final AuthRepository authRepository;
 
   WordServices(
       {required this.localGroupRepository,
-      required this.remoteGroupRepository});
+      required this.backgroundWorks,
+      required this.authRepository});
 
   // get the group of words depending on the user auth
   var user = false;
   Stream<List<GroupData>> watchGroups() {
-    if (user) {
-      return remoteGroupRepository.watchGroups(0);
-    } else {
-      return localGroupRepository.watchGroups();
-    }
+    backgroundWorks.pullOut();
+    return localGroupRepository.watchGroups();
   }
 
-// save the words depending on auth
+// todo: 10 words => no account
+// todo: 25 words => free account
   Future<void> addNewWordInGroup(WordCompanion word) async {
-    if (user) {
-      await remoteGroupRepository.addNewWordInGroup(word, 0);
-    } else {
-      await localGroupRepository.addNewWordInGroup(word);
-    }
+    await localGroupRepository.addNewWordInGroup(word);
+    backgroundWorks.pushIn();
   }
 
-  //sets the given group in the local or remote db depending on user satate
-  // in remote or local
+// todo: 5 words => no account
+// todo: 30 words => free account
   Future<GroupData> createGroup(GroupCompanion newGroup) async {
-    if (user) {
-      return await remoteGroupRepository.createGroup(newGroup, 0);
-    } else {
-      return await localGroupRepository.createGroup(newGroup);
-    }
+    return await localGroupRepository.createGroup(newGroup);
   }
 
   Future<GroupData> fetchGroupByTime(DateTime now) async {
-    if (user) {
-      return await remoteGroupRepository.fetchGroupByTime(now, 0);
-    } else {
-      return await localGroupRepository.fetchGroupByTime(now);
-    }
+    return await localGroupRepository.fetchGroupByTime(now);
   }
 
   Stream<List<WordData>> watchWordsGroupId(int groupId) {
-    if (user) {
-      return remoteGroupRepository.watchWordsByGroupId(0);
-    } else {
-      return localGroupRepository.watchWordsByGroupId(groupId);
-    }
+    return localGroupRepository.watchWordsByGroupId(groupId);
   }
 
   Future<List<WordData>> fetchWordsByGroupId(int groupId) async {
-    if (user) {
-      return await remoteGroupRepository.fetchWordsByGroupId(0);
-    } else {
-      return await localGroupRepository.fetchWordsByGroupId(groupId);
-    }
+    return await localGroupRepository.fetchWordsByGroupId(groupId);
   }
 
+//!change
   Future<void> updateGroupName(int groupId, String newName) async {
-    if (user) {
-      await remoteGroupRepository.updateGroupName(groupId, newName);
-    } else {
-      await localGroupRepository.updateGroupName(groupId, newName);
-    }
+    await localGroupRepository.updateGroupName(groupId, newName);
+    backgroundWorks.pushIn();
   }
 
+//! change
   Future<void> deleteWordById(int wordId, int groupId) async {
-    if (user) {
-      await remoteGroupRepository.deleteWordById(wordId);
-    } else {
-      await localGroupRepository.deleteWordById(wordId, groupId);
-    }
+    await localGroupRepository.deleteWordById(wordId, groupId);
+    backgroundWorks.pushIn();
   }
 
+//! change
   Future<void> updateWordInfo(int wordId, WordCompanion wordCompanion) async {
-    if (user) {
-      await remoteGroupRepository.upadateWordInf(wordId, wordCompanion);
-    } else {
-      await localGroupRepository.updateWordInf(wordId, wordCompanion);
-    }
+    await localGroupRepository.updateWordInf(wordId, wordCompanion);
+    backgroundWorks.pushIn();
   }
 
   Stream<WordData> watchWordById(int wordId) {
-    if (user) {
-      return remoteGroupRepository.watchWordById(wordId);
-    } else {
-      return localGroupRepository.watchWordById(wordId);
-    }
+    return localGroupRepository.watchWordById(wordId);
   }
 
   Future<WordData> fetchWordById(int wordId) {
-    if (user) {
-      return remoteGroupRepository.fetchWordById(wordId);
-    } else {
-      return localGroupRepository.fetchWordById(wordId);
-    }
+    return localGroupRepository.fetchWordById(wordId);
   }
 
   Future<GroupData> fetchGroupById(int groupId) {
-    if (user) {
-      return remoteGroupRepository.fetchGroupById(groupId, 0);
-    } else {
-      return localGroupRepository.fetchGroupById(groupId);
-    }
+    return localGroupRepository.fetchGroupById(groupId);
   }
 
   Future<List<WordData>> fetchAllWords() {
-    if (user) {
-      return remoteGroupRepository.fetchAllWords();
-    } else {
-      return localGroupRepository.fetchAllWords();
-    }
+    return localGroupRepository.fetchAllWords();
   }
 
   Future<List<GroupData>> fetchAllGroups() {
-    if (user) {
-      return remoteGroupRepository.fetchAllGroups();
-    } else {
-      return localGroupRepository.fetchAllGroups();
-    }
+    return localGroupRepository.fetchAllGroups();
   }
 
-  Future<void> updateGroupLevel(int groupId, GroupCompanion groupCompanion) {
-    if (user) {
-      return remoteGroupRepository.updateGroupLevel(0, 0);
-    } else {
-      return localGroupRepository.updateGroupLevel(groupId, groupCompanion);
-    }
+//! change
+  Future<void> updateGroupLevel(
+      int groupId, GroupCompanion groupCompanion) async {
+    await localGroupRepository.updateGroupLevel(groupId, groupCompanion);
+    backgroundWorks.pushIn();
   }
+
+  //todo :: serve the ads to free users
 }
 
 final wordsServicesProvider = Provider<WordServices>((ref) {
   final localRepository = ref.watch(localGroupRepositoryProvider);
-  final remoteRepository = ref.watch(remoteGroupRepositoryProvider);
+  final auth = ref.watch(authRepositoryProvider);
   return WordServices(
-    localGroupRepository: localRepository,
-    remoteGroupRepository: remoteRepository,
-  );
+      localGroupRepository: localRepository,
+      backgroundWorks: BackgroundWorks(),
+      authRepository: auth);
 });

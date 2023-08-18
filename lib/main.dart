@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,12 +20,9 @@ void main() async {
 //! if the app run successfully
 Future<void> runAppSafely() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  final aws = await _amplifyAuthInitialization();
-  if (aws) {
-    final backgroundWorks = BackgroundWorks();
-    backgroundWorks.initialize();
-    backgroundWorks.scheduleBackgroundTask();
-  }
+  await _amplifyAuthInitialization();
+  final backgroundWorks = BackgroundWorks();
+  backgroundWorks.initialize();
 
   usePathUrlStrategy();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -59,19 +56,17 @@ void errorHandle(Object error, StackTrace stack) async {
   debugPrint(error.toString());
 }
 
-Future<bool> _amplifyAuthInitialization() async {
+Future<void> _amplifyAuthInitialization() async {
   try {
     await Amplify.addPlugins([
       AmplifyAuthCognito(),
-      AmplifyDataStore(modelProvider: ModelProvider.instance),
+      AmplifyAPI(modelProvider: ModelProvider.instance),
       AmplifyStorageS3()
     ]);
 
     await Amplify.configure(amplifyconfig);
-    return true;
   } catch (e) {
     errorScreen();
     print('auth field ... (((');
-    return false;
   }
 }

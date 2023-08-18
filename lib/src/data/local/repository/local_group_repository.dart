@@ -5,7 +5,6 @@ import 'drift_group_repository.dart';
 import 'package:langpocket/src/data/local/connection/connection.dart' as impl;
 
 abstract class LocalGroupRepository {
-  Future<List<GroupData>> fetchGroups();
   Stream<List<GroupData>> watchGroups();
   Future<GroupData> fetchGroupById(int groupId);
   Future<GroupData> fetchGroupByTime(DateTime now);
@@ -29,8 +28,8 @@ abstract class LocalGroupRepository {
 }
 
 // ignore: non_constant_identifier_names
-final _safe_acess_local_db = DriftGroupRepository(impl.connect());
+final safe_acess_local_db = DriftGroupRepository(impl.connect());
 final localGroupRepositoryProvider = Provider<LocalGroupRepository>((ref) {
-  ref.onDispose(_safe_acess_local_db.close);
-  return _safe_acess_local_db;
+  ref.onDispose(safe_acess_local_db.close);
+  return safe_acess_local_db;
 });

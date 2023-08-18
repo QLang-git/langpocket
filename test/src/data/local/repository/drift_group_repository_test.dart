@@ -48,7 +48,7 @@ void main() {
         studyTime: Value(DateTime.now()),
         groupName: const Value('new group 2'),
         creatingTime: Value(DateTime.now())));
-    final groups = await database.fetchGroups();
+    final groups = await database.fetchAllGroups();
 
     expect(groups.length, 2);
     expect(groups.first.groupName, 'new group');
