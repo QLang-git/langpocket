@@ -1,7 +1,5 @@
-import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:langpocket/src/data/services/data_sync.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:langpocket/src/features/practice/pronunciation/controllers/mic_controller.dart';
 import 'package:langpocket/src/features/practice/pronunciation/controllers/mic_group_controller.dart';
@@ -18,20 +16,16 @@ class App extends ConsumerWidget {
     _initializeSpeechToText(ref);
     _initializeAppNotifications();
     final goRouter = ref.watch(goRouterProvider);
-    final x = ref.watch(dataSyncProvider);
-    x.pullRemoteChanges();
 
-    return Authenticator(
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        restorationScopeId: 'Lang Pocket',
-        //builder: Authenticator.builder(),
-        routerConfig: goRouter,
-        onGenerateTitle: (BuildContext context) => 'Lang Pocket',
-        // darkTheme: darkMode,
-        theme: lightMode,
-        themeMode: ThemeMode.light,
-      ),
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      restorationScopeId: 'Lang Pocket',
+      //builder: Authenticator.builder(),
+      routerConfig: goRouter,
+      onGenerateTitle: (BuildContext context) => 'Lang Pocket',
+      // darkTheme: darkMode,
+      theme: lightMode,
+      themeMode: ThemeMode.light,
     );
   }
 

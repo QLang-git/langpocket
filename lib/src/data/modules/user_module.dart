@@ -1,16 +1,12 @@
 class UserModule {
-  final String id;
-  final String firstName;
-  final String lastName;
+  final String name;
   final String email;
-  final String password;
   final bool isPro;
+  final String photoUrl;
 
   UserModule(
-      {required this.id,
-      required this.firstName,
-      required this.lastName,
+      {required this.name,
       required this.email,
-      required this.password,
-      required this.isPro});
+      required this.isPro,
+      required this.photoUrl});
 }

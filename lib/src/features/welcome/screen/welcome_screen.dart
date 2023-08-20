@@ -222,25 +222,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   height:
                                       MediaQuery.of(context).size.height * 0.08,
                                   child: ElevatedButton.icon(
-                                    onPressed: () {},
-                                    icon: const Icon(
-                                      Ionicons.logo_amazon,
-                                      color: Colors.white,
-                                    ),
-                                    label: Text(
-                                      'Continue with Amazon',
-                                      style: textTheme.labelMedium!
-                                          .copyWith(color: Colors.white),
-                                    ),
-                                  ),
-                                ),
-                                const Spacer(flex: 1),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.9,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.08,
-                                  child: ElevatedButton.icon(
                                     onPressed: () => loginWithFacebook(ref),
                                     icon: const Icon(
                                       Ionicons.logo_facebook,

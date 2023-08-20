@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "108577881058",
+    "project_id": "langpocket-32c9b",
+    "storage_bucket": "langpocket-32c9b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:108577881058:android:bf390dd51ecc6a06d057bb",
+        "android_client_info": {
+          "package_name": "com.example.langpocket"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "108577881058-s9lnbv5eq269vi6ul9er2pkqdjn5gb4g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLWUQHcfY54O2ftyioo8ePUWOb4ZzFrYE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "108577881058-8uvn6v4j338uk6vg6idtkjlemp16dpri.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "108577881058-hv9qtg240p4ih64a5589lv3ob58fuomc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.langpocket"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
