@@ -85,7 +85,7 @@ ThemeData lightMode = ThemeData(
       // button
       labelMedium: GoogleFonts.rubik(
         fontWeight: FontWeight.w500,
-        fontSize: 15,
+        fontSize: 16,
         letterSpacing: 1.25,
       ),
       // caption

@@ -2,7 +2,6 @@
 
 import 'dart:io';
 
-import 'package:drift/drift.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/modules/word_module.dart';
 import 'package:http/http.dart' as http;

@@ -44,6 +44,15 @@ class AuthRepository {
     return null;
   }
 
+  Future<bool> logout() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<bool> signWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();

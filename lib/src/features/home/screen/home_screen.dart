@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:langpocket/src/common_widgets/responsive_center.dart';
+import 'package:langpocket/src/features/home/settings/setting_menu.dart';
 import 'package:langpocket/src/features/home/widgets/groups_list.dart';
 import 'package:langpocket/src/features/home/app_bar/home_appbar.dart';
 import 'package:langpocket/src/features/home/widgets/todo_style_button.dart';
@@ -16,6 +17,7 @@ class HomeScreen extends StatelessWidget {
     return ResponsiveCenter(
       child: Scaffold(
         backgroundColor: colorScheme.background,
+        drawer: const SettingsMenu(),
         appBar: HomeAppBar(
           screenHeight: sizeHeight,
           userName: 'User',

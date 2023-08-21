@@ -23,6 +23,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
     final colorSearch = Theme.of(context).colorScheme.secondary;
     return ResponsiveCenter(
       child: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
@@ -40,25 +41,14 @@ class _HomeAppBarState extends State<HomeAppBar> {
                       padding: const EdgeInsets.all(10.0),
                       child: IconButton(
                         icon: const Icon(
-                          Icons.settings,
+                          Icons.menu,
                           size: 50,
                         ),
                         color: Colors.white,
                         onPressed: () async {
-                          final pr = await SharedPreferences.getInstance();
-                          pr.clear();
+                          Scaffold.of(context).openDrawer();
                         },
                       )),
-                  Padding(
-                      padding: const EdgeInsets.only(right: 37),
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.account_box_rounded,
-                          size: 50,
-                        ),
-                        color: Colors.white,
-                        onPressed: () {},
-                      ))
                 ],
               ),
               Padding(

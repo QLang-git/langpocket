@@ -55,4 +55,15 @@ class RouterController
       return false;
     }
   }
+
+  Future<bool> logOut() async {
+    final res = await authRepository.logout();
+    if (res) {
+      state = const AsyncLoading();
+      state = const AsyncValue.data((isFirstTime: false, hasAuth: false));
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
