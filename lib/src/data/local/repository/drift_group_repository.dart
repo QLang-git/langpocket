@@ -1,7 +1,6 @@
 import 'package:langpocket/src/data/local/entities/word_entity.dart';
 import 'package:langpocket/src/data/local/repository/local_group_repository.dart';
 import 'package:drift/drift.dart';
-import 'package:langpocket/models/ModelProvider.dart' as AWS;
 
 import 'package:langpocket/src/data/local/entities/group_entity.dart';
 import 'package:langpocket/src/data/modules/extensions.dart';
@@ -134,24 +133,24 @@ class DriftGroupRepository extends _$DriftGroupRepository
         .write(const GroupCompanion(synced: Value(true)));
   }
 
-  @override
-  Future<void> upsertGroups(List<AWS.Group> awsGroups) async {
-    final groups = awsGroups.map((g) => g.toLocalData()).toList();
-    final List<WordCompanion> words = [];
-    for (var g in awsGroups) {
-      if (g.words != null) {
-        for (var w in g.words!) {
-          final myWord = await w.toLocalData();
-          words.add(myWord);
-        }
-      }
-    }
+  // @override
+  // Future<void> upsertGroups(List<AWS.Group> awsGroups) async {
+  //   final groups = awsGroups.map((g) => g.toLocalData()).toList();
+  //   final List<WordCompanion> words = [];
+  //   for (var g in awsGroups) {
+  //     if (g.words != null) {
+  //       for (var w in g.words!) {
+  //         final myWord = await w.toLocalData();
+  //         words.add(myWord);
+  //       }
+  //     }
+  //   }
 
-    await batch((b) {
-      b.insertAllOnConflictUpdate(group, groups);
-      b.insertAllOnConflictUpdate(word, words);
-    });
-  }
+  //   await batch((b) {
+  //     b.insertAllOnConflictUpdate(group, groups);
+  //     b.insertAllOnConflictUpdate(word, words);
+  //   });
+  // }
 
   @override
   Future<({List<GroupData> groups, List<WordData> words})>

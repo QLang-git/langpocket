@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:langpocket/models/ModelProvider.dart';
 
 import 'drift_group_repository.dart';
 import 'package:langpocket/src/data/local/connection/connection.dart' as impl;
@@ -22,7 +21,7 @@ abstract class LocalGroupRepository {
   Future<List<GroupData>> fetchAllGroups();
   Future<void> updateGroupLevel(int groupId, GroupCompanion newGroup);
   Future<void> markGroupAsSynced(int groupId);
-  Future<void> upsertGroups(List<Group> awsGroups);
+  // Future<void> upsertGroups(List<Group> awsGroups);
   Future<({List<GroupData> groups, List<WordData> words})>
       fetchUnsyncedGroups();
 }

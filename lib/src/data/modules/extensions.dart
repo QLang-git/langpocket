@@ -2,13 +2,8 @@
 
 import 'dart:io';
 
-import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:drift/drift.dart';
-import 'package:langpocket/models/Group.dart';
-import 'package:langpocket/models/Word.dart';
 import 'package:langpocket/src/data/local/repository/drift_group_repository.dart';
 import 'package:langpocket/src/data/modules/word_module.dart';
-import 'package:langpocket/models/ModelProvider.dart' as AWS;
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -25,17 +20,17 @@ extension WordExt on WordData {
     );
   }
 
-  Word toCloudData(Group group) {
-    return Word(
-        id: id.toString(),
-        group: group,
-        foreignWord: foreignWord,
-        wordMeans: splitPaths(wordMeans),
-        wordImages: splitPaths(wordImages),
-        wordExamples: splitPaths(wordExamples),
-        wordNote: wordNote,
-        createdAt: TemporalDateTime(wordDate));
-  }
+  // Word toCloudData(Group group) {
+  //   return Word(
+  //       id: id.toString(),
+  //       group: group,
+  //       foreignWord: foreignWord,
+  //       wordMeans: splitPaths(wordMeans),
+  //       wordImages: splitPaths(wordImages),
+  //       wordExamples: splitPaths(wordExamples),
+  //       wordNote: wordNote,
+  //       createdAt: TemporalDateTime(wordDate));
+  // }
 }
 
 extension Encoding on List<String> {
@@ -79,83 +74,84 @@ List<String> splitPaths(String joinedPaths) {
       .toList();
 }
 
-extension ToLocalTime on TemporalDateTime {
-  DateTime convertTemporalToDateTime() {
-    return DateTime.parse(format());
-  }
-}
+// extension ToLocalTime on TemporalDateTime {
+//   DateTime convertTemporalToDateTime() {
+//     return DateTime.parse(format());
+//   }
+// }
 
-extension ToLocalDate on TemporalDate {
-  DateTime convertTemporalToDateTime() {
-    return DateTime.parse(format());
-  }
-}
+// extension ToLocalDate on TemporalDate {
+//   DateTime convertTemporalToDateTime() {
+//     return DateTime.parse(format());
+//   }
+// }
 
-extension LocalGroupDB on AWS.Group {
-  GroupCompanion toLocalData() {
-    return GroupCompanion.insert(
-      id: Value(int.parse(id)),
-      creatingTime: createdAt.convertTemporalToDateTime(),
-      groupName: groupName,
-      studyTime: studyTime.convertTemporalToDateTime(),
-      level: Value(level),
-      synced: const Value(true),
-    );
-  }
-}
+// extension LocalGroupDB on AWS.Group {
+//   GroupCompanion toLocalData() {
+//     return GroupCompanion.insert(
+//       id: Value(int.parse(id)),
+//       creatingTime: createdAt.convertTemporalToDateTime(),
+//       groupName: groupName,
+//       studyTime: studyTime.convertTemporalToDateTime(),
+//       level: Value(level),
+//       synced: const Value(true),
+//     );
+//   }
+// }
 
-extension LocalWordDB on AWS.Word {
-  Future<WordCompanion> toLocalData() async {
-    final imgPaths = await _downloadAndSaveImage();
-    return WordCompanion.insert(
-        id: Value(int.parse(id)),
-        group: int.parse(group.id),
-        foreignWord: foreignWord,
-        wordMeans: wordMeans.join(';'),
-        wordExamples: wordExamples.join(';'),
-        wordImages: imgPaths.join(';'),
-        wordDate: createdAt.convertTemporalToDateTime(),
-        wordNote: wordNote ?? '');
-  }
+// extension LocalWordDB on AWS.Word {
+//   Future<WordCompanion> toLocalData() async {
+//     final imgPaths = await _downloadAndSaveImage();
+//     return WordCompanion.insert(
+//         id: Value(int.parse(id)),
+//         group: int.parse(group.id),
+//         foreignWord: foreignWord,
+//         wordMeans: wordMeans.join(';'),
+//         wordExamples: wordExamples.join(';'),
+//         wordImages: imgPaths.join(';'),
+//         wordDate: createdAt.convertTemporalToDateTime(),
+//         wordNote: wordNote ?? '');
+//   }
 
-  Future<List<String>> _downloadAndSaveImage() async {
-    final List<String> localPaths = [];
-    for (var imageUrl in wordImages) {
-      final response = await http.get(Uri.parse(imageUrl));
-      if (response.statusCode == 200) {
-        // Get the app directory
-        final appDir = await getApplicationDocumentsDirectory();
-        final targetPath = "${appDir.path}/images/";
-        final targetDirectory = Directory(targetPath);
-        if (!targetDirectory.existsSync()) {
-          targetDirectory.createSync(recursive: true);
-        }
-
-        // Generate a filename based on the URL or you can use DateTime as previously shown
-        final fileName = basename(imageUrl);
-        final targetFile = File("$targetPath$fileName");
-
-        // Write the image data to a file
-        await targetFile.writeAsBytes(response.bodyBytes);
-
-        localPaths.add(targetFile.path);
-      } else {
-        print('Failed to download image from $imageUrl');
+Future<List<String>> _downloadAndSaveImage() async {
+  final List<String> localPaths = [];
+  var wordImages;
+  for (var imageUrl in wordImages) {
+    final response = await http.get(Uri.parse(imageUrl));
+    if (response.statusCode == 200) {
+      // Get the app directory
+      final appDir = await getApplicationDocumentsDirectory();
+      final targetPath = "${appDir.path}/images/";
+      final targetDirectory = Directory(targetPath);
+      if (!targetDirectory.existsSync()) {
+        targetDirectory.createSync(recursive: true);
       }
+
+      // Generate a filename based on the URL or you can use DateTime as previously shown
+      final fileName = basename(imageUrl);
+      final targetFile = File("$targetPath$fileName");
+
+      // Write the image data to a file
+      await targetFile.writeAsBytes(response.bodyBytes);
+
+      localPaths.add(targetFile.path);
+    } else {
+      print('Failed to download image from $imageUrl');
     }
-    return localPaths;
-
-    // Fetch the image data
   }
+  return localPaths;
+
+  // Fetch the image data
 }
 
-extension ToCloud on GroupData {
-  Group toCloudData() {
-    return Group(
-        id: id.toString(),
-        groupName: groupName,
-        level: level,
-        createdAt: TemporalDateTime(creatingTime),
-        studyTime: TemporalDate(studyTime));
-  }
-}
+
+// extension ToCloud on GroupData {
+//   Group toCloudData() {
+//     return Group(
+//         id: id.toString(),
+//         groupName: groupName,
+//         level: level,
+//         createdAt: TemporalDateTime(creatingTime),
+//         studyTime: TemporalDate(studyTime));
+//   }
+// }
